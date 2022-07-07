@@ -25,6 +25,8 @@ interface INeatFiProtocolStorage {
 
   function isValidOrder(bytes32 orderHash) external returns(bool);
 
+  function isValidActorKey(bytes32 orderHash, bytes32 actorKey) external view;
+
   function isValidOwner(bytes32 orderHash, address maker) external view returns(bool);
 
   function changeOrderStartPrice(bytes32 orderHash, uint256 newStartPrice) external;

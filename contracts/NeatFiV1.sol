@@ -9,8 +9,6 @@ import {ReentrancyGuardUpgradeable} from "./lib/utils/ReentrancyGuardUpgradeable
 
 // TODO Treasury contract to transfer the fees. Non-upgradeable to hold funds. Phase 2
 
-// TODO Pass actorKey down and verify in order operations, actorKeys should match
-
 // TODO Implement close order by maker
 
 // TODO Implement cancel order by maker
@@ -90,7 +88,7 @@ contract NeatFiV1 is
     bytes calldata orderData,
     bytes calldata bidData
   ) external nonReentrant onlyActor(msg.sender) {
-    _approveAndResolveSwap(maker, orderHash, bidHash, orderData, bidData);
+    _approveAndResolveSwap(msg.sender, maker, orderHash, bidHash, orderData, bidData);
   }
 
   function buyItNow(
@@ -98,7 +96,7 @@ contract NeatFiV1 is
     bytes32 orderHash,
     bytes calldata data
   ) external payable nonReentrant onlyActor(msg.sender) {
-    _buyItNow(orderHash, msg.value, buyer, data);
+    _buyItNow(msg.sender, orderHash, msg.value, buyer, data);
   }
 
   function decreaseDucthAuctionPrice(
@@ -106,7 +104,7 @@ contract NeatFiV1 is
     bytes32 orderHash, 
     uint256 newPrice
   ) external nonReentrant onlyActor(msg.sender) {
-    _decreaseDucthAuctionPrice(maker, orderHash, newPrice);
+    _decreaseDucthAuctionPrice(msg.sender, maker, orderHash, newPrice);
   }
 
   function increaseEnglishAuctionPrice(
@@ -114,7 +112,7 @@ contract NeatFiV1 is
     bytes32 orderHash, 
     uint256 newPrice
   ) external nonReentrant onlyActor(msg.sender) {
-    _increaseEnglishAuctionPrice(maker, orderHash, newPrice);
+    _increaseEnglishAuctionPrice(msg.sender, maker, orderHash, newPrice);
   }
 
   function bidForEnglishAuction(
@@ -122,7 +120,7 @@ contract NeatFiV1 is
     bytes32 orderHash, 
     uint256 bidValue
   ) external nonReentrant onlyActor(msg.sender) {
-    _bidForEnglishAuction(bidder, orderHash, bidValue);
+    _bidForEnglishAuction(msg.sender, bidder, orderHash, bidValue);
   }
 
   function bidForDutchAuction(
@@ -130,14 +128,14 @@ contract NeatFiV1 is
     bytes32 orderHash, 
     uint256 bidValue
   ) external nonReentrant onlyActor(msg.sender) {
-    _bidForDutchAuction(bidder, orderHash, bidValue);
+    _bidForDutchAuction(msg.sender, bidder, orderHash, bidValue);
   }
 
   function approveLastBid(
     address maker, 
     bytes32 orderHash
   ) external nonReentrant onlyActor(msg.sender) {
-    _approveLastBid(maker, orderHash);
+    _approveLastBid(msg.sender, maker, orderHash);
   }
 
   function claimEnglishAuction(
@@ -145,7 +143,7 @@ contract NeatFiV1 is
     bytes32 orderHash, 
     bytes calldata data
   ) external payable nonReentrant onlyActor(msg.sender) {
-    _claimEnglishAuction(bidder, orderHash, msg.value, data);
+    _claimEnglishAuction(msg.sender, bidder, orderHash, msg.value, data);
   }
 
   function claimDutchAuction(
@@ -153,7 +151,7 @@ contract NeatFiV1 is
     bytes32 orderHash, 
     bytes calldata data
   ) external payable nonReentrant onlyActor(msg.sender) {
-    _claimDutchAuction(bidder, orderHash, msg.value, data);
+    _claimDutchAuction(msg.sender, bidder, orderHash, msg.value, data);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override 

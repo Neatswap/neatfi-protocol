@@ -55,10 +55,10 @@ contract NeatFiProtocolOperationsUpgradeable is
     actorFactory = newActorFactory;
   }
 
-  modifier onlyActor(address actor) {
+  modifier onlyActor(address actorAddress) {
     require(
-      IActorFactory(actorFactory).getActorKey(actor) != 0x0,
-      "Caller is not an actor."
+      IActorFactory(actorFactory).getActorKey(actorAddress) != 0x0,
+      "NeatFiProtocolOperationsUpgradeable::onlyActor: caller is not an actor."
     );
     _;
   }
@@ -67,6 +67,15 @@ contract NeatFiProtocolOperationsUpgradeable is
 
   function _requestActorKey(address actorAddress) internal {
     IActorFactory(actorFactory).requestActorKey(actorAddress);
+  }
+
+  function _isValidActorKey(address actorAddress, bytes32 orderHash) internal view 
+  returns(bool) {
+    bytes32 actorKey = IActorFactory(actorFactory).getActorKey(actorAddress);
+
+    INeatFiProtocolStorage(protocolStorage).isValidActorKey(orderHash, actorKey);
+
+    return true;
   }
 
   function _approveAndGenerateActorKey(address actorAddress) internal 
@@ -82,23 +91,25 @@ contract NeatFiProtocolOperationsUpgradeable is
     IActorFactory(actorFactory).inactivateActor(actorAddress);
   }
 
+  // Module functions
 
-
-
-
-  function _getEnglishAuctionProtocolFeeNumerator() internal view returns(uint256 englishAuctionProtocolFee) {
+  function _getEnglishAuctionProtocolFeeNumerator() internal view
+  returns(uint256 englishAuctionProtocolFee) {
     return IProtocolSettings(protocolSettings).getEnglishAuctionProtocolFeeNumerator();
   }
 
-  function _getDutchAuctionProtocolFeeNumerator() internal view returns(uint256 dutchAuctionProtocolFee) {
+  function _getDutchAuctionProtocolFeeNumerator() internal view 
+  returns(uint256 dutchAuctionProtocolFee) {
     return IProtocolSettings(protocolSettings).getDutchAuctionProtocolFeeNumerator();
   }
 
-  function _getSellProtocolFeeNumerator() internal view returns(uint256 sellProtocolFee) {
+  function _getSellProtocolFeeNumerator() internal view 
+  returns(uint256 sellProtocolFee) {
     return IProtocolSettings(protocolSettings).getSellProtocolFeeNumerator();
   }
 
-  function _getSwapProtocolFee() internal view returns(uint256 sellProtocolFee) {
+  function _getSwapProtocolFee() internal view 
+  returns(uint256 sellProtocolFee) {
     return IProtocolSettings(protocolSettings).getSwapProtocolFee();
   }
 
@@ -115,14 +126,26 @@ contract NeatFiProtocolOperationsUpgradeable is
     bytes32 actorKey
     ) internal returns (bytes32 orderHash) {
       if (orderType == AssetOrderType.SWAP) {
-        require(value == _getSwapProtocolFee(), "NeatFiV1::makeOrder: wrong value for SWAP protocol fee.");
+        require(value == _getSwapProtocolFee(), 
+        "NeatFiV1::makeOrder: wrong value for SWAP protocol fee."
+      );
       } else {
       require(value == 0, "NeatFiV1::makeOrder: value should be 0.");
       }
 
       //TODO implement transfer of protocol fee to the treasury contract - Phase 2 with the Governance contract
 
-      return INeatFiProtocolStorage(protocolStorage).makeOrder(tokens, orderType, maker, listingTime, expirationTime, startPrice, endPrice, salt, actorKey);
+      return INeatFiProtocolStorage(protocolStorage).makeOrder(
+        tokens, 
+        orderType, 
+        maker, 
+        listingTime, 
+        expirationTime, 
+        startPrice, 
+        endPrice, 
+        salt, 
+        actorKey
+      );
     }
 
   function _makeBid(
@@ -152,21 +175,27 @@ contract NeatFiProtocolOperationsUpgradeable is
   }
   
   function _approveAndResolveSwap(
+    address actor,
     address maker,
     bytes32 orderHash,
     bytes32 bidHash,
     bytes calldata orderData,
     bytes calldata bidData
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+    require(_isValidActorKey(actor, bidHash));
+
     IAssetSwap(swapModule).approveAndResolveSwap(maker, orderHash, bidHash, orderData, bidData);
   }
 
   function _buyItNow(
+    address actor,
     bytes32 orderHash,
     uint256 purchaseValue,
     address bidder,
     bytes calldata data
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
 
     address payable maker = INeatFiProtocolStorage(protocolStorage).getOrderMaker(orderHash);
     
@@ -182,47 +211,68 @@ contract NeatFiProtocolOperationsUpgradeable is
   }
 
   function _decreaseDucthAuctionPrice(
+    address actor,
     address maker, 
     bytes32 orderHash, 
     uint256 newPrice
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     IAssetAuction(auctionModule).decreaseDucthAuctionPrice(maker, orderHash, newPrice);
   }
 
   function _increaseEnglishAuctionPrice(
+    address actor,
     address maker, 
     bytes32 orderHash, 
     uint256 newPrice
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     IAssetAuction(auctionModule).increaseEnglishAuctionPrice(maker, orderHash, newPrice);
   }
 
   function _bidForEnglishAuction(
+    address actor,
     address bidder, 
     bytes32 orderHash, 
     uint256 bidValue
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     IAssetAuction(auctionModule).bidForEnglishAuction(bidder, orderHash, bidValue);
   }
 
   function _bidForDutchAuction(
+    address actor,
     address bidder, 
     bytes32 orderHash, 
     uint256 bidValue
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     IAssetAuction(auctionModule).bidForDutchAuction(bidder, orderHash, bidValue);
   }
 
-  function _approveLastBid(address maker, bytes32 orderHash) internal {
+  function _approveLastBid(
+    address actor,
+    address maker, 
+    bytes32 orderHash
+    ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     IAssetAuction(auctionModule).approveLastBid(maker, orderHash);
   }
 
   function _claimEnglishAuction(
+    address actor,
     address bidder,
     bytes32 orderHash, 
     uint256 purchaseValue, 
     bytes calldata data
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     address payable maker = INeatFiProtocolStorage(protocolStorage).getOrderMaker(orderHash);
 
     uint256 makerEarnings = IPaymentsResolver(paymentsResolver).englishAuctionFeeResolver(purchaseValue);
@@ -237,11 +287,14 @@ contract NeatFiProtocolOperationsUpgradeable is
   }
 
   function _claimDutchAuction(
+    address actor,
     address bidder, 
     bytes32 orderHash,
     uint256 purchaseValue, 
     bytes calldata data
   ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
     address payable maker = INeatFiProtocolStorage(protocolStorage).getOrderMaker(orderHash);
 
     uint256 makerEarnings = IPaymentsResolver(paymentsResolver).dutchAuctionFeeResolver(purchaseValue);
@@ -255,7 +308,12 @@ contract NeatFiProtocolOperationsUpgradeable is
     IAssetAuction(auctionModule).claimAuction(bidder, orderHash, data);
   }
 
-  function _getLastBidderAddress(bytes32 orderHash) internal view {
+  function _getLastBidderAddress(
+    address actor,
+    bytes32 orderHash
+    ) internal view {
+    require(_isValidActorKey(actor, orderHash));
+
     IAssetAuction(auctionModule).getLastBidderAddress(orderHash);
   }
 

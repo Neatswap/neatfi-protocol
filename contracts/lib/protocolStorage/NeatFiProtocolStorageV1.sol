@@ -55,6 +55,10 @@ contract NeatFiProtocolStorageV1 is AssetStorageOperationsUpgradeable, UUPSUpgra
     _isValidOrder(orderHash);
   }
 
+  function isValidActorKey(bytes32 orderHash, bytes32 actorKey) external view onlyRole(AUTHORIZED_OPERATOR) {
+    _isValidActorKey(orderHash, actorKey);
+  }
+
   function isValidOwner(bytes32 orderHash, address payable maker) external view onlyRole(AUTHORIZED_OPERATOR) {
     _isValidOwner(orderHash, maker);
   }

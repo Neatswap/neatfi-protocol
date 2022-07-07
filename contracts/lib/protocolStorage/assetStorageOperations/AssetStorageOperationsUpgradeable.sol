@@ -175,6 +175,15 @@ contract AssetStorageOperationsUpgradeable is
     return true;
   }
 
+  function _isValidActorKey(bytes32 orderHash, bytes32 actorKey) internal view {
+    Order storage order = orderInfo[orderHash];
+
+    require(
+      actorKey == order.actorKey,
+      "AssetStorageOperationsUpgradeable::_isValidActorKey: order and actor key mismtach."
+    );
+  }
+
   function _isValidOwner(bytes32 orderHash, address payable maker) internal view returns (bool) {
     Order storage order = orderInfo[orderHash];
     if (maker != order.maker) {
