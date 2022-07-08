@@ -3,13 +3,13 @@ pragma solidity ^0.8.15;
 
 //TODO put the current implementation here, upgradeable
 
-import {INeatFi} from "../../interfaces/INeatFi.sol";
-import {UUPSUpgradeable} from "../proxy/UUPSUpgradeable.sol";
-import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.sol";
-import {AssetStructsUpgradeable} from "../protocolStorage/assetStorage/AssetStructsUpgradeable.sol";
-import {AssetEnumsUpgradeable} from "../protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
-import {ContextUpgradeable} from "../utils/ContextUpgradeable.sol";
+import {INeatFi} from "./interfaces/INeatFi.sol";
+import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
+import {AccessControlUpgradeable} from "./lib/access/AccessControlUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "./lib/utils/ReentrancyGuardUpgradeable.sol";
+import {AssetStructsUpgradeable} from "./lib/protocolStorage/assetStorage/AssetStructsUpgradeable.sol";
+import {AssetEnumsUpgradeable} from "./lib/protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
+import {ContextUpgradeable} from "./lib/utils/ContextUpgradeable.sol";
 
 contract NeatSwapImplementationV1 is 
   ContextUpgradeable ,
