@@ -9,9 +9,7 @@ import {ReentrancyGuardUpgradeable} from "./lib/utils/ReentrancyGuardUpgradeable
 
 // TODO Treasury contract to transfer the fees. Non-upgradeable to hold funds. Phase 2
 
-// TODO Implement close order by maker
-
-// TODO Implement cancel order by maker
+// TODO TESTS
 
 contract NeatFiV1 is 
   NeatFiProtocolOperationsUpgradeable, 
@@ -79,6 +77,13 @@ contract NeatFiV1 is
       orderHash, 
       actorKey
     );
+  }
+
+  function cancelOrder(
+    address maker,
+    bytes32 orderHash
+  ) external nonReentrant onlyActor(msg.sender) {
+    _cancelOrder(msg.sender, maker, orderHash);
   }
 
   function approveAndResolveSwap(

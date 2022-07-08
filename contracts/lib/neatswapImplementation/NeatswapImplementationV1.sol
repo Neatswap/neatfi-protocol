@@ -83,6 +83,13 @@ contract NeatSwapImplementationV1 is
     );
   }
 
+  function cancelOrder(bytes32 orderHash) public {
+    INeatFi(neatFiProtocolAddress).cancelOrder(
+      _msgSender(),
+      orderHash
+    );
+  }
+
   function approveAndResolveSwap(
     bytes32 orderHash,
     bytes32 bidHash,

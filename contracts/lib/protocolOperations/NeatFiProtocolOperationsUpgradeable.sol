@@ -173,6 +173,21 @@ contract NeatFiProtocolOperationsUpgradeable is
       actorKey
     );
   }
+
+  function _cancelOrder(
+    address actor,
+    address maker,
+    bytes32 orderHash
+  ) internal {
+    require(_isValidActorKey(actor, orderHash));
+
+    require(INeatFiProtocolStorage(protocolStorage).isValidOwner(orderHash, maker));
+
+    INeatFiProtocolStorage(protocolStorage).changeOrderStatus(
+      orderHash, 
+      AssetOrderStatus.CANCELLED
+    );
+  }
   
   function _approveAndResolveSwap(
     address actor,

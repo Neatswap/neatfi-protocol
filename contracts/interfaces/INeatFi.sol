@@ -32,6 +32,11 @@ interface INeatFi {
     bytes32 actorKey
   ) external returns(bytes32 bidHash);
 
+  function cancelOrder(
+    address maker,
+    bytes32 orderHash
+  ) external;
+
   function approveAndResolveSwap(
     address maker,
     bytes32 orderHash,
