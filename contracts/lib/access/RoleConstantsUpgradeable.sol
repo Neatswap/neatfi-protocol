@@ -7,6 +7,9 @@ contract RoleConstantsUpgradeable is Initializable {
   // addresses that have the right to interact with the storage protocol
   bytes32 public constant PROTOCOL_ADMIN = keccak256("PROTOCOL_ADMIN");
 
+  // authorized treasurer address
+  bytes32 public constant PROTOCOL_TREASURER = keccak256("PROTOCOL_TREASURER"); 
+
   // authorized contract addresses
   bytes32 public constant AUTHORIZED_OPERATOR = keccak256("AUTHORIZED_OPERATOR");
   

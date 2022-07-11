@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
-//TODO put the current implementation here, upgradeable
-
 import {INeatFi} from "./interfaces/INeatFi.sol";
 import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "./lib/access/AccessControlUpgradeable.sol";

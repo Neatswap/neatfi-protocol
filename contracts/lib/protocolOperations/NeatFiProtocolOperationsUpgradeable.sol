@@ -26,6 +26,7 @@ contract NeatFiProtocolOperationsUpgradeable is
   address public protocolStorage;
   address public protocolSettings;
   address public actorFactory;
+  address payable public protocolTreasury;
 
   function _setSwapModule(address newSwapModule) internal {
     swapModule = newSwapModule;
@@ -129,11 +130,16 @@ contract NeatFiProtocolOperationsUpgradeable is
         require(value == _getSwapProtocolFee(), 
         "NeatFiV1::makeOrder: wrong value for SWAP protocol fee."
       );
+
+      bool sent = protocolTreasury.send(value);
+      require(
+        sent, 
+        "NeatFiV1::makeOrder: failed to send maker earnings."
+      );
+
       } else {
       require(value == 0, "NeatFiV1::makeOrder: value should be 0.");
       }
-
-      //TODO implement transfer of protocol fee to the treasury contract - Phase 2 with the Governance contract
 
       return INeatFiProtocolStorage(protocolStorage).makeOrder(
         tokens, 
@@ -215,11 +221,18 @@ contract NeatFiProtocolOperationsUpgradeable is
     address payable maker = INeatFiProtocolStorage(protocolStorage).getOrderMaker(orderHash);
     
     uint256 makerEarnings = IPaymentsResolver(paymentsResolver).sellFeeResolver(purchaseValue);
+    uint256 protocolFee = purchaseValue - makerEarnings;
 
-    bool sent = maker.send(makerEarnings);
+    bool makerEarningsSent = maker.send(makerEarnings);
     require(
-      sent, 
+      makerEarningsSent, 
       "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
+    );
+
+    bool protocolFeeSent = protocolTreasury.send(protocolFee);
+    require(
+      protocolFeeSent, 
+      "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
     );
     
     IAssetSell(sellModule).buyItNow(orderHash, purchaseValue, bidder, data);
@@ -291,6 +304,13 @@ contract NeatFiProtocolOperationsUpgradeable is
     address payable maker = INeatFiProtocolStorage(protocolStorage).getOrderMaker(orderHash);
 
     uint256 makerEarnings = IPaymentsResolver(paymentsResolver).englishAuctionFeeResolver(purchaseValue);
+    uint256 protocolFee = purchaseValue - makerEarnings;
+
+    bool protocolFeeSent = protocolTreasury.send(protocolFee);
+    require(
+      protocolFeeSent, 
+      "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send protocol fee."
+    );
 
     bool sent = maker.send(makerEarnings);
     require(
@@ -313,6 +333,13 @@ contract NeatFiProtocolOperationsUpgradeable is
     address payable maker = INeatFiProtocolStorage(protocolStorage).getOrderMaker(orderHash);
 
     uint256 makerEarnings = IPaymentsResolver(paymentsResolver).dutchAuctionFeeResolver(purchaseValue);
+    uint256 protocolFee = purchaseValue - makerEarnings;
+
+    bool protocolFeeSent = protocolTreasury.send(protocolFee);
+    require(
+      protocolFeeSent, 
+      "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send protocol fee."
+    );
 
     bool sent = maker.send(makerEarnings);
     require(
