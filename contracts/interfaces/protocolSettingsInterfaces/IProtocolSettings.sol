@@ -1,12 +1,41 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
+/**
+ * @title IProtocolSettings
+ * @author NeatFi
+ * @notice Interface to the {ProtocolSettings} contract of NeatFi.
+ */
 interface IProtocolSettings {
-  function getEnglishAuctionProtocolFeeNumerator() external view returns(uint256 englishAuctionFeeNumerator);
+    /**
+     * @notice Retrieves the protocol fee for an English Auction Order resolution.
+     * @dev Called only from the NeatFi contract.
+     * @return englishAuctionFeeNumerator - The protocol fee value.
+     */
+    function getEnglishAuctionProtocolFeeNumerator()
+        external
+        view
+        returns (uint256 englishAuctionFeeNumerator);
 
-  function getDutchAuctionProtocolFeeNumerator() external view returns(uint256 dutchAuctionFeeNumerator);
+    /**
+     * @notice Retrieves the protocol fee for a Dutch Auction Order resolution.
+     * @dev Called only from the NeatFi contract.
+     * @return dutchAuctionFeeNumerator - The protocol fee value.
+     */
+    function getDutchAuctionProtocolFeeNumerator()
+        external
+        view
+        returns (uint256 dutchAuctionFeeNumerator);
 
-  function getSellProtocolFeeNumerator() external view returns(uint256);
+    /**
+     * @notice Retrieves the protocol fee for a Sell Order resolution.
+     * @dev Called only from the NeatFi contract.
+     */
+    function getSellProtocolFeeNumerator() external view returns (uint256);
 
-  function getSwapProtocolFee() external view returns(uint256);
+    /**
+     * @notice Retrieves the protocol fee for a Swap Order creation.
+     * @dev Called only from the NeatFi contract.
+     */
+    function getSwapProtocolFee() external view returns (uint256);
 }

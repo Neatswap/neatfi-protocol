@@ -9,252 +9,372 @@ import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.so
 import {AddressVerifier} from "../../helpers/AddressVerifier.sol";
 import {LimitsVerifier} from "../../helpers/LimitsVerifier.sol";
 
-contract AssetStorageOperationsUpgradeable is 
-  RoleConstantsUpgradeable,
-  AssetStorageSettingsUpgradeable, 
-  AssetTypehasheConstantsUpgradeable, 
-  AssetMappingsUpgradeable,
-  AddressVerifier,
-  LimitsVerifier, 
-  AccessControlUpgradeable
-   {
-    //TODO make comments like this
+/**
+ * @title AssetStorageOperationsUpgradeable
+ * @author NeatFi
+ * @notice This contract implements the operations for the NeatFi
+ *         protocol storage.
+ */
+contract AssetStorageOperationsUpgradeable is
+    RoleConstantsUpgradeable,
+    AssetStorageSettingsUpgradeable,
+    AssetTypehasheConstantsUpgradeable,
+    AssetMappingsUpgradeable,
+    AddressVerifier,
+    LimitsVerifier,
+    AccessControlUpgradeable
+{
     /**
-     * @dev Internal pure function to derive required EIP-712 typehashes and
-     *      other hashes during contract creation.
      *
-     * @return nameHash                  The hash of the name of the contract.
-     * @return versionHash               The hash of the version string of the
-     *                                   contract.
-     * @return eip712DomainTypehash      The primary EIP-712 domain typehash.
-     * @return offerItemTypehash         The EIP-712 typehash for OfferItem
-     *                                   types.
-     * @return considerationItemTypehash The EIP-712 typehash for
-     *                                   ConsiderationItem types.
-     * @return orderTypehash             The EIP-712 typehash for Order types.
+     * @dev Regulates the maximum number of unique Token assets in an Order.
+     *      Can be executed by a Protocol Admin only.
+     * @param newMaxTokenNumber - new maximum number of Token assets.
      */
-
-  /// Regulates the maximum number of unique tokens in an Order.
-  /// @dev only available to the current Protocol managers.
-  /// @param newMaxTokenNumber - new maxTokenNumber.
-  function setMaxTokenNumber(uint256 newMaxTokenNumber) external onlyRole(PROTOCOL_ADMIN){
-    maxTokenNumber = newMaxTokenNumber;
-  }
-
-  /// Hashes a single Token asset.
-  /// @dev internal helper function.
-  /// @param token - Token asset struct.
-  /// @return bytes32 single Token hash.
-  function _hashSingleToken(Token memory token) internal returns (bytes32) {
-    bytes32 singleTokenHash = keccak256(
-      abi.encode(
-        TOKEN_TYPEHASH,
-        token.tokenContract,
-        token.tokenId,
-        token.amount,
-        token.tokenType
-      )
-    );
-
-    /// Mapping the token hash to the Token struct.
-    tokenInfo[singleTokenHash] = token;
-
-    return singleTokenHash;
-  }
-
-  /// Hashes a batch of Token assets.
-  /// @param tokens - array of Token assets.
-  /// @return array of bytes32 Token hashes.
-  function _hashTokens(Token[] memory tokens)
-    internal
-    returns (bytes32[] memory)
-  {
-    bytes32[] memory tokenHashes = new bytes32[](tokens.length);
-
-    for (uint256 i = 0; i < tokens.length; i++) {
-      require(isValidContractAddress(tokens[i].tokenContract), 
-      "AssetStorageOperations:_tokenHash: one of the Token contracts in the batch does not exist.");
-
-      tokenHashes[i] = _hashSingleToken(
-        Token(
-          tokens[i].tokenContract,
-          tokens[i].tokenId,
-          tokens[i].amount,
-          tokens[i].tokenType
-        )
-      );
-    }
-
-    return tokenHashes;
-  }
-
-  /// Hashes an Order.
-  /// @param order - Order struct.
-  /// @return bytes32 Order hash.
-  function _hashOrder(Order memory order) internal pure returns (bytes32) {
-    return
-      keccak256(
-        abi.encode(
-          ORDER_TYPEHASH,
-          order.tokenHashes,
-          order.maker,
-          order.orderType,
-          order.listingTime,
-          order.expirationTime,
-          order.startPrice,
-          order.endPrice,
-          order.salt,
-          order.status
-        )
-      );
-  }
-
-  /// Makes and order.
-  /// @return Order hash.
-  function _makeOrder(
-    Token[] calldata tokens,
-    address payable maker,
-    AssetOrderType orderType,
-    uint256 listingTime,
-    uint256 expirationTime,
-    uint256 startPrice,
-    uint256 endPrice,
-    uint256 salt,
-    bytes32 actorKey
-  ) internal returns (bytes32) {
-    require(
-      tokens.length >= 1 && tokens.length <= maxTokenNumber,
-      "AssetStorageOperations::_makeOrder: asset number increases the maximum allowed.");
-
-    bytes32[] memory tokenHashes = _hashTokens(tokens);
-
-    Order memory o = Order(
-      tokenHashes,
-      maker,
-      orderType,
-      listingTime,
-      expirationTime,
-      startPrice,
-      endPrice,
-      salt,
-      AssetOrderStatus.OPEN,
-      actorKey
-    );
-
-    bytes32 hash = _hashOrder(o);
-    orderInfo[hash] = o;
-
-    emit OrderCreated(o, hash);
-
-    return hash;
-  }
-
-  /// Verifies Order parameters.
-  /// @param orderHash - Order struct hash.
-  /// @return bool check result.
-  function _isValidOrder(bytes32 orderHash) internal returns (bool) {
-    Order storage order = orderInfo[orderHash];
-
-    /// Order must be ready for operations.
-    if (block.timestamp < order.listingTime) {
-      return false;
-    }
-
-    /// Order must be OPEN.
-    if (order.status != AssetOrderStatus.OPEN) {
-      return false;
-    }
-
-    /// Order must not be EXPIRED.
-    if (block.timestamp > order.expirationTime) {
-      order.status = AssetOrderStatus.EXPIRED;
-      emit OrderStatusChanged(order);
-      return false;
-    }
-
-    return true;
-  }
-
-  function _isValidActorKey(bytes32 orderHash, bytes32 actorKey) internal view {
-    Order storage order = orderInfo[orderHash];
-
-    require(
-      actorKey == order.actorKey,
-      "AssetStorageOperationsUpgradeable::_isValidActorKey: order and actor key mismtach."
-    );
-  }
-
-  function _isValidOwner(bytes32 orderHash, address payable maker) internal view returns (bool) {
-    Order storage order = orderInfo[orderHash];
-    if (maker != order.maker) {
-      return false;
-    }
-    
-    return true;
-  }
-
-  function _getOrder(bytes32 orderHash) internal view returns(Order storage) {
-    Order storage order = orderInfo[orderHash];
-
-    return order;
-  }
-
-  function _getOrderMaker(bytes32 orderHash) internal view returns(address payable maker) {
-    Order storage order = orderInfo[orderHash];
-
-    return order.maker;
-  }
-
-  function _getToken(bytes32 tokenHash) internal view returns(Token storage) {
-    Token storage token = tokenInfo[tokenHash];
-
-    return token;
-  }
-
-  function _changeOrderStartPrice(bytes32 orderHash, uint256 newStartPrice)
-   internal
-   isWithinLimits(newStartPrice)
+    function setMaxTokenNumber(uint256 newMaxTokenNumber)
+        external
+        onlyRole(PROTOCOL_ADMIN)
     {
-    Order storage order = orderInfo[orderHash];
+        maxTokenNumber = newMaxTokenNumber;
+    }
 
-    order.startPrice = newStartPrice;
-    
-    emit OrderStartPriceChanged(order);
-  }
-
-  function _changeOrderEndPrice(bytes32 orderHash, uint256 newEndPrice)
-   internal
-   isWithinLimits(newEndPrice)
+    /**
+     * @dev An internal function to generate the hash of a single Token asset.
+     * @param token - Token asset struct.
+     * @return singleTokenHash - The generated hash of the Token asset.
+     */
+    function _hashSingleToken(Token memory token)
+        internal
+        returns (bytes32 singleTokenHash)
     {
-    Order storage order = orderInfo[orderHash];
+        singleTokenHash = keccak256(
+            abi.encode(
+                TOKEN_TYPEHASH,
+                token.tokenContract,
+                token.tokenId,
+                token.amount,
+                token.tokenType
+            )
+        );
 
-    order.endPrice = newEndPrice;
-    
-    emit OrderEndPriceChanged(order);
-  }
+        tokenInfo[singleTokenHash] = token;
 
-  function _changeOrderStatus(bytes32 orderHash, AssetOrderStatus newStatus) internal {
-    Order storage order = orderInfo[orderHash];
+        return singleTokenHash;
+    }
 
-    order.status = newStatus;
+    /**
+     * @dev An internal function to generate the hash of a batch of
+     *      Token assets.
+     * @param tokens - The array of Token assets.
+     * @return tokenHashes - The generated hashes of the Token assets.
+     */
+    function _hashTokens(Token[] memory tokens)
+        internal
+        returns (bytes32[] memory tokenHashes)
+    {
+        tokenHashes = new bytes32[](tokens.length);
 
-    emit OrderStatusChanged(order);
-  }
+        for (uint256 i = 0; i < tokens.length; i++) {
+            require(
+                isValidContractAddress(tokens[i].tokenContract),
+                "AssetStorageOperations:_tokenHash: one of the Token contracts in the batch does not exist."
+            );
 
-  function _changeOrderExpirationTime(bytes32 orderHash, uint256 newExpirationTime) internal {
-    Order storage order = orderInfo[orderHash];
+            tokenHashes[i] = _hashSingleToken(
+                Token(
+                    tokens[i].tokenContract,
+                    tokens[i].tokenId,
+                    tokens[i].amount,
+                    tokens[i].tokenType
+                )
+            );
+        }
 
-    order.expirationTime = newExpirationTime;
+        return tokenHashes;
+    }
 
-    emit OrderExpirationTimeChanged(order);
-  }
+    /**
+     * @dev An internal function to generate the hash of an Order.
+     * @param order - The Order struct.
+     * @return orderHash - The generated hash of the Token asset.
+     */
+    function _hashOrder(Order memory order)
+        internal
+        pure
+        returns (bytes32 orderHash)
+    {
+        return
+            keccak256(
+                abi.encode(
+                    ORDER_TYPEHASH,
+                    order.tokenHashes,
+                    order.maker,
+                    order.orderType,
+                    order.listingTime,
+                    order.expirationTime,
+                    order.startPrice,
+                    order.endPrice,
+                    order.salt,
+                    order.status
+                )
+            );
+    }
 
-  function __AssetStorageOperations_init() internal initializer {
-    __RoleConstants_init();
-    __AssetEnums_init();
-    __AssetStorageSettings_init();
-    __AssetTypehasheConstants_init();
-    __AssetMappings_init();
-    __AccessControl_init();
-  }
+    /**
+     * @dev An internal function to create an Order struct record.
+     * @param tokens - The array of Token assets to include in the Order.
+     * @param orderType - The enum ype of an Order.
+     *                    0 - SELL,
+     *                    1 - ENGLISH_AUCTION,
+     *                    2 - DUTCH_AUCTION,
+     *                    3 - SWAP
+     *                    4 - BID
+     * @param maker - The address of the Order maker. This is NOT the actor contract.
+     * @param listingTime - The timestamp of the Order creation.
+     * @param expirationTime - The timestamp of the Order expiration.
+     * @param startPrice - The starting price of the Order.
+     * @param endPrice - The end price of the Order.
+     * @param actorKey - The actor key of the Actor contract through which the Order
+     *                   is being created.
+     * @return orderHash - The hash of the created Order.
+     */
+    function _makeOrder(
+        Token[] calldata tokens,
+        address payable maker,
+        AssetOrderType orderType,
+        uint256 listingTime,
+        uint256 expirationTime,
+        uint256 startPrice,
+        uint256 endPrice,
+        bytes32 actorKey
+    ) internal returns (bytes32 orderHash) {
+        require(
+            tokens.length >= 1 && tokens.length <= maxTokenNumber,
+            "AssetStorageOperations::_makeOrder: asset number increases the maximum allowed."
+        );
+
+        require(
+            listingTime >= block.timestamp,
+            "AssetStorageOperations::_makeOrder: wrong listing time."
+        );
+
+        bytes32[] memory tokenHashes = _hashTokens(tokens);
+
+        bytes32 salt = keccak256(abi.encode(maker, block.timestamp, actorKey));
+
+        Order memory o = Order(
+            tokenHashes,
+            maker,
+            orderType,
+            listingTime,
+            expirationTime,
+            startPrice,
+            endPrice,
+            salt,
+            AssetOrderStatus.OPEN,
+            actorKey
+        );
+
+        orderHash = _hashOrder(o);
+        orderInfo[orderHash] = o;
+
+        emit OrderCreated(o, orderHash);
+
+        return orderHash;
+    }
+
+    /**
+     * @dev Checks the validity of the Order. The Order is invalied if any of
+     *         the following conditions is not met:
+     *         - the Order listing timestamp is bigger than the current block timestamp,
+     *         - Order status is not OPEN,
+     *         - Order expiration timestamp is smaller than the current block timestamp.
+     * @param orderHash - The hash of the Order.
+     * @return The validity assessment result.
+     */
+    function _isValidOrder(bytes32 orderHash) internal returns (bool) {
+        Order storage order = orderInfo[orderHash];
+
+        /// Order must be ready for operations.
+        if (block.timestamp < order.listingTime) {
+            return false;
+        }
+
+        /// Order must be OPEN.
+        if (order.status != AssetOrderStatus.OPEN) {
+            return false;
+        }
+
+        /// Order must not be EXPIRED.
+        if (
+            order.expirationTime != 0 && block.timestamp > order.expirationTime
+        ) {
+            order.status = AssetOrderStatus.EXPIRED;
+            emit OrderStatusChanged(order);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @dev Verifies the actor key for a given Order. This prevents other Actors
+     *         interfering with an Order with a different actor key even if the
+     *         actor key is known.
+     * @param orderHash - The hash of the Order.
+     * @param actorKey - The actor key of the Actor.
+     * @return The validity assessment result.
+     */
+    function _isValidActorKey(bytes32 orderHash, bytes32 actorKey)
+        internal
+        view
+        returns (bool)
+    {
+        Order storage order = orderInfo[orderHash];
+
+        require(
+            actorKey == order.actorKey,
+            "AssetStorageOperationsUpgradeable::_isValidActorKey: order and actor key mismtach."
+        );
+
+        return true;
+    }
+
+    /**
+     * @dev Verifies that an address is the maker of an Order.
+     * @param orderHash - The hash of the Order.
+     * @param maker - The address of the claimant maker.
+     * @return The validity assessment result.
+     */
+    function _isValidOwner(bytes32 orderHash, address payable maker)
+        internal
+        view
+        returns (bool)
+    {
+        Order storage order = orderInfo[orderHash];
+        if (maker != order.maker) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @dev Retrieves an Order according to its hash.
+     * @param orderHash - The hash of the Order.
+     * @return order - The Order struct record.
+     */
+    function _getOrder(bytes32 orderHash)
+        internal
+        view
+        returns (Order storage order)
+    {
+        return orderInfo[orderHash];
+    }
+
+    /**
+     * @dev Retrieves the maker of the Order.
+     * @param orderHash - The hash of the Order.
+     * @return maker - The address of the Order maker.
+     */
+    function _getOrderMaker(bytes32 orderHash)
+        internal
+        view
+        returns (address payable maker)
+    {
+        Order storage order = orderInfo[orderHash];
+
+        return order.maker;
+    }
+
+    /**
+     * @dev Retrieves a Token struct record according to its hash.
+     * @param tokenHash - The hash of the Token.
+     * @return token - The Token struct record.
+     */
+    function _getToken(bytes32 tokenHash)
+        internal
+        view
+        returns (Token storage token)
+    {
+        return tokenInfo[tokenHash];
+    }
+
+    /**
+     * @dev Changes the start price of an Order.
+     * @param orderHash - The hash of the Order.
+     * @param newStartPrice - The new start price.
+     */
+    function _changeOrderStartPrice(bytes32 orderHash, uint256 newStartPrice)
+        internal
+        isWithinLimits(newStartPrice)
+    {
+        Order storage order = orderInfo[orderHash];
+
+        order.startPrice = newStartPrice;
+
+        emit OrderStartPriceChanged(order);
+    }
+
+    /**
+     * @dev Changes the end price of an Order.
+     * @param orderHash - The hash of the Order.
+     * @param newEndPrice - The new end price.
+     */
+    function _changeOrderEndPrice(bytes32 orderHash, uint256 newEndPrice)
+        internal
+        isWithinLimits(newEndPrice)
+    {
+        Order storage order = orderInfo[orderHash];
+
+        order.endPrice = newEndPrice;
+
+        emit OrderEndPriceChanged(order);
+    }
+
+    /**
+     * @dev Changes the status of an Order.
+     * @param orderHash - The hash of the Order.
+     * @param newStatus - The new status enum of an Order.
+     *                    0 - OPEN,
+     *                    1 - PROCESSING,
+     *                    2 - EXPIRED,
+     *                    3 - CANCELLED,
+     *                    4 - CLOSED.
+     */
+    function _changeOrderStatus(bytes32 orderHash, AssetOrderStatus newStatus)
+        internal
+    {
+        Order storage order = orderInfo[orderHash];
+
+        order.status = newStatus;
+
+        emit OrderStatusChanged(order);
+    }
+
+    /**
+     * @dev Changes the expiration time  of an Order.
+     * @param orderHash - The hash of the Order.
+     * @param newExpirationTime - The new expiration timestamp.
+     */
+    function _changeOrderExpirationTime(
+        bytes32 orderHash,
+        uint256 newExpirationTime
+    ) internal {
+        Order storage order = orderInfo[orderHash];
+
+        order.expirationTime = newExpirationTime;
+
+        emit OrderExpirationTimeChanged(order);
+    }
+
+    /** Initializers */
+
+    function __AssetStorageOperations_init() internal initializer {
+        __RoleConstants_init();
+        __AssetEnums_init();
+        __AssetStorageSettings_init();
+        __AssetTypehasheConstants_init();
+        __AssetMappings_init();
+        __AccessControl_init();
+    }
 }

@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
@@ -9,60 +8,100 @@ import {AssetEnumsUpgradeable} from "../../protocolStorage/assetStorage/AssetEnu
 import {AccessControlUpgradeable} from "../../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.sol";
 
+/**
+ * @title AssetSellOperationsUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the operations for the Asset Sell
+ *         module of Neatfi.
+ */
 contract AssetSellOperationsUpgradeable is
-  AssetEnumsUpgradeable,
-  AssetStructsUpgradeable,
-  RoleConstantsUpgradeable, 
-  AccessControlUpgradeable
-  {
-  address internal neatFiProtocolStorage;
-  address internal assetTransfer;
+    AssetEnumsUpgradeable,
+    AssetStructsUpgradeable,
+    RoleConstantsUpgradeable,
+    AccessControlUpgradeable
+{
+    address internal neatFiProtocolStorage;
+    address internal assetTransfer;
 
-  function _updateNeatFiProtocolStorageAddress(address newNeatFiProtocolStorage) internal {
-    neatFiProtocolStorage = newNeatFiProtocolStorage;
-  }
-
-  function _updateAssetTransferAddress(address newAssetTransfer) internal {
-    assetTransfer = newAssetTransfer;
-  }
-
-  /// Instantly buys the Token(s) of the Order for Ether.
-  /// @dev only for SELL.
-  /// @param orderHash - Order hash.
-  function _buyItNow(
-    bytes32 orderHash, 
-    uint256 purchaseValue, 
-    address bidder, 
-    bytes calldata data
+    /**
+     * @dev An internal function to update the address of the
+     *      NeatFi protocol's current implementation.
+     */
+    function _updateNeatFiProtocolStorageAddress(
+        address newNeatFiProtocolStorage
     ) internal {
-    require(!INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(orderHash, msg.sender), 
-    "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker."
-    );
+        neatFiProtocolStorage = newNeatFiProtocolStorage;
+    }
 
-    require(INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(orderHash), 
-    "AssetSellOperationsUpgradeable::_buyItNow: invalid order."
-    );
+    /**
+     * @dev An internal function to update the address of the
+     *      Asset Transfer contract's current implementation.
+     */
+    function _updateAssetTransferAddress(address newAssetTransfer) internal {
+        assetTransfer = newAssetTransfer;
+    }
 
-    Order memory order = INeatFiProtocolStorage(neatFiProtocolStorage).getOrder(orderHash);
+    /**
+     * @dev An internal function to instantly buy an Order. Handles the
+     *      transfer of the Token assets in the Order to the buyer.
+     * @param orderHash - The hash of the Order.
+     * @param purchaseValue - The end price of the Order, in native tokens.
+     * @param buyer - The address of the buyer.
+     * @param data - Optional additional data to include with the transaction.
+     */
+    function _buyItNow(
+        bytes32 orderHash,
+        uint256 purchaseValue,
+        address buyer,
+        bytes calldata data
+    ) internal {
+        require(
+            !INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(
+                orderHash,
+                msg.sender
+            ),
+            "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker."
+        );
 
-    require(
-      order.orderType == AssetOrderType.SELL,
-      "AssetSellOperationsUpgradeable::_buyItNow: wrong order type."
-      );
-    
-    require(
-      order.endPrice == purchaseValue,
-      "AssetSellOperationsUpgradeable::_buyItNow: wrong purchase value."
-      );
+        require(
+            INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
+                orderHash
+            ),
+            "AssetSellOperationsUpgradeable::_buyItNow: invalid order."
+        );
 
-    INeatFiProtocolStorage(neatFiProtocolStorage).changeOrderStatus(orderHash, AssetOrderStatus.CLOSED);
-    IAssetTransfer(assetTransfer).transferResolver(order, order.maker, bidder, data);
-  }
+        Order memory order = INeatFiProtocolStorage(neatFiProtocolStorage)
+            .getOrder(orderHash);
 
-  function __AssetSellOperations_init() internal initializer {
-    __AssetStructs_init();
-    __AssetEnums_init();
-    __RoleConstants_init();
-    __AccessControl_init();
-  }
+        require(
+            order.orderType == AssetOrderType.SELL,
+            "AssetSellOperationsUpgradeable::_buyItNow: wrong order type."
+        );
+
+        require(
+            order.endPrice == purchaseValue,
+            "AssetSellOperationsUpgradeable::_buyItNow: wrong purchase value."
+        );
+
+        INeatFiProtocolStorage(neatFiProtocolStorage).changeOrderStatus(
+            orderHash,
+            AssetOrderStatus.CLOSED
+        );
+
+        IAssetTransfer(assetTransfer).transferResolver(
+            order,
+            order.maker,
+            buyer,
+            data
+        );
+    }
+
+    /** Initializers */
+
+    function __AssetSellOperations_init() internal initializer {
+        __AssetStructs_init();
+        __AssetEnums_init();
+        __RoleConstants_init();
+        __AccessControl_init();
+    }
 }

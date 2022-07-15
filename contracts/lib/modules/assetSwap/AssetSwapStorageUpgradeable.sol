@@ -3,14 +3,29 @@ pragma solidity ^0.8.15;
 
 import {Initializable} from "../../utils/Initializable.sol";
 
+/**
+ * @title AssetSwapStorageUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the storage for the Asset Swap
+ *         module of Neatfi.
+ */
 contract AssetSwapStorageUpgradeable is Initializable {
-  mapping(bytes32 => bytes32[]) public bidsByOrder;
-  
-  mapping(bytes32 => bytes32) public swapEscrowParties;
+    /**
+     * @dev Maps the Bid type Order hashes to their Order hash.
+     */
+    mapping(bytes32 => bytes32[]) public bidsByOrder;
 
-  function __AssetSwapStorage_init() internal initializer {
-    __AssetSwapStorage_init_unchained();
-  }
+    /**
+     * @dev Records the escrow parties by mapping the Order hash
+     *      to the Bid hash.
+     */
+    mapping(bytes32 => bytes32) public swapEscrowParties;
 
-  function __AssetSwapStorage_init_unchained() internal initializer {}
+    /** Initializers */
+
+    function __AssetSwapStorage_init() internal initializer {
+        __AssetSwapStorage_init_unchained();
+    }
+
+    function __AssetSwapStorage_init_unchained() internal initializer {}
 }

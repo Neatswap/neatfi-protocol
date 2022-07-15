@@ -4,27 +4,50 @@ pragma solidity ^0.8.15;
 import {AssetStructsUpgradeable} from "./AssetStructsUpgradeable.sol";
 import {Initializable} from "../../utils/Initializable.sol";
 
+/**
+ * @title AssetEventsUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the events for the protocol storage events
+ *         of NeatFi.
+ */
 contract AssetEventsUpgradeable is Initializable, AssetStructsUpgradeable {
-  /// Fired when an Order is made.
-  event OrderCreated(Order order, bytes32 hash);
+    /**
+     * @dev Fired when an Order is created.
+     * @param order - The Order struct record.
+     * @param orderHash - The hash of the Order.
+     */
+    event OrderCreated(Order order, bytes32 orderHash);
 
-  /// Fired when an Order status is changed.
-  event OrderStatusChanged(Order order);
+    /**
+     * @dev Fired when an Order status is changed.
+     * @param order - The Order struct record.
+     */
+    event OrderStatusChanged(Order order);
 
-  /// Fired when an Order start price is changed.
-  event OrderStartPriceChanged(Order order);
+    /**
+     * @dev Fired when an Order start price is changed.
+     * @param order - The Order struct record.
+     */
+    event OrderStartPriceChanged(Order order);
 
-  /// Fired when an Order end price is changed.
-  event OrderEndPriceChanged(Order order);
+    /**
+     * @dev Fired when an Order end price is changed.
+     * @param order - The Order struct record.
+     */
+    event OrderEndPriceChanged(Order order);
 
-  event OrderExpirationTimeChanged(Order order);
+    /**
+     * @dev Fired when an Order expiration timestamp is changed.
+     * @param order - The Order struct record.
+     */
+    event OrderExpirationTimeChanged(Order order);
 
-  /* Initializers */
+    /* Initializers */
 
-  function __AssetEvents_init() internal initializer {
-    __AssetStructs_init_unchained();
-    __AssetEvents_init_unchained();
-  }
+    function __AssetEvents_init() internal initializer {
+        __AssetStructs_init_unchained();
+        __AssetEvents_init_unchained();
+    }
 
-  function __AssetEvents_init_unchained() internal initializer {}
+    function __AssetEvents_init_unchained() internal initializer {}
 }

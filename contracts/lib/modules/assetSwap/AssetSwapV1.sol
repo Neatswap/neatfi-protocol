@@ -4,77 +4,105 @@ pragma solidity ^0.8.15;
 import {AssetSwapOperationsUpgradeable} from "./AssetSwapOperationsUpgradeable.sol";
 import {UUPSUpgradeable} from "../../proxy/UUPSUpgradeable.sol";
 
+/**
+ * @title AssetSwapV1
+ * @author NeatFi
+ * @notice This contract implements the external facing functionality
+ *         for the Asset Swap module of NeatFi.
+ */
 contract AssetSwapV1 is AssetSwapOperationsUpgradeable, UUPSUpgradeable {
-  string internal name;
-  string internal currentVersion;
+    string internal name;
+    string internal currentVersion;
 
-  function _setVersion(string memory newVersion) internal 
-  onlyRole(PROTOCOL_ADMIN) {
-    currentVersion = newVersion;
-  }
+    /**
+     * @dev Sets the version for the current implementation of this contract.
+     */
+    function _setVersion(string memory newVersion)
+        internal
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        currentVersion = newVersion;
+    }
 
-  function updateNeatFiProtocolStorageAddress(address newNeatFiProtocolStorage) external
-  onlyRole(PROTOCOL_ADMIN) {
-    _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
-  }
+    /**
+     * @dev Updates the NeatFi Protocol storage address. Can be executed by a
+     *      Protocol Admin only.
+     */
+    function updateNeatFiProtocolStorageAddress(
+        address newNeatFiProtocolStorage
+    ) external onlyRole(PROTOCOL_ADMIN) {
+        _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
+    }
 
-  function updateAssetTransferAddress(address newAssetTransfer) external
-  onlyRole(PROTOCOL_ADMIN) {
-    _updateAssetTransferAddress(newAssetTransfer);
-  }
+    /**
+     * @dev Updates the Asset Transfer contract address. Can be executed by a
+     *      Protocol Admin only.
+     */
+    function updateAssetTransferAddress(address newAssetTransfer)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        _updateAssetTransferAddress(newAssetTransfer);
+    }
 
-  function makeBid(
-    address bidder,
-    Token[] calldata tokens,
-    AssetOrderType orderType,
-    uint256 listingTime,
-    uint256 expirationTime,
-    uint256 startPrice,
-    uint256 endPrice,
-    uint256 salt,
-    bytes32 orderHash,
-    bytes32 actorKey
-  ) external 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _makeBid(
-      bidder, 
-      tokens, 
-      orderType, 
-      listingTime, 
-      expirationTime, 
-      startPrice, 
-      endPrice, 
-      salt, 
-      orderHash, 
-      actorKey
-    );
-  }
+    /**
+     * @dev An external function to create a Bid type Order for a Swap Order.
+     *      Can be called from the NeatFi contract only.
+     * @param bidder - The address of the bidder.
+     * @param tokens - The array of Token assets to include in the Bid.
+     * @param listingTime - The timestamp of the Bid creation.
+     * @param orderHash - The hash of the Swap Order.
+     * @param actorKey - The actor key of the Actor contract.
+     * @return bidHash - The hash of the Bid type Order.
+     */
+    function makeBid(
+        address bidder,
+        Token[] calldata tokens,
+        uint256 listingTime,
+        bytes32 orderHash,
+        bytes32 actorKey
+    ) external onlyRole(AUTHORIZED_OPERATOR) returns (bytes32 bidHash) {
+        return _makeBid(bidder, tokens, listingTime, orderHash, actorKey);
+    }
 
-  function approveAndResolveSwap(
-    address maker,
-    bytes32 orderHash,
-    bytes32 bidHash,
-    bytes calldata orderData,
-    bytes calldata bidData
-  ) external
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _approveAndResolveSwap(maker, orderHash, bidHash, orderData, bidData);
-  }
+    /**
+     * @dev An external function for the Order maker to approve and resolve a Swap Order.
+     *      Can be called from the NeatFi contract only.
+     * @param maker - The address of the Order maker.
+     * @param orderHash - The hash of the Order.
+     * @param bidHash - The hash of the Bid type Order.
+     * @param orderData - Optional additional data to include with the transaction.
+     * @param bidData - Optional additional data to include with the transaction.
+     */
+    function approveAndResolveSwap(
+        address maker,
+        bytes32 orderHash,
+        bytes32 bidHash,
+        bytes calldata orderData,
+        bytes calldata bidData
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _approveAndResolveSwap(maker, orderHash, bidHash, orderData, bidData);
+    }
 
-  function _authorizeUpgrade(address newImplementation) internal override 
-  onlyRole(PROTOCOL_ADMIN) {}
+    /** Initializers */
 
-  function initialize(
-    address neatFiProtocolStorage, 
-    address assetTransfer
-    ) public initializer {
-    __UUPSUpgradeable_init();
-    __AssetSwapOperations_init();
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyRole(PROTOCOL_ADMIN)
+    {}
 
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
-    _updateAssetTransferAddress(assetTransfer);
-    name = "NeatFi Asset Swap Module";
-    _setVersion("1.0.0");
-  }
+    function initialize(address neatFiProtocolStorage, address assetTransfer)
+        public
+        initializer
+    {
+        __UUPSUpgradeable_init();
+        __AssetSwapOperations_init();
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
+        _updateAssetTransferAddress(assetTransfer);
+        name = "NeatFi Asset Swap Module";
+        _setVersion("1.0.0");
+    }
 }

@@ -3,17 +3,37 @@ pragma solidity ^0.8.15;
 
 import {Initializable} from "../../utils/Initializable.sol";
 
+/**
+ * @title AssetAuctionStorageUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the storage for the Asset Auction
+ *         module of Neatfi.
+ */
 contract AssetAuctionStorageUpgradeable is Initializable {
-  // mapping orderhash - address
-  mapping(bytes32 => address) public lastBidderForOrder;
+    /**
+     * @dev Maps the hash of the Order to the last bidder's address.
+     */
+    mapping(bytes32 => address) public lastBidderForOrder;
 
-  function _getLastBidderAddress(bytes32 orderHash) internal view returns(address) {
-    return lastBidderForOrder[orderHash];
-  }
+    /**
+     * @dev An internal function to retrieve the last bidder's address
+     *      for a given Order.
+     * @param orderHash - The hash of the Order.
+     * @return lastBidder - The address of the last bidder.
+     */
+    function _getLastBidderAddress(bytes32 orderHash)
+        internal
+        view
+        returns (address lastBidder)
+    {
+        return lastBidderForOrder[orderHash];
+    }
 
-  function __AssetAuctionStorage_init() internal initializer {
-    __AssetAuctionStorage_init_unchained();
-  }
+    /** Initializers */
 
-  function __AssetAuctionStorage_init_unchained() internal initializer {}
+    function __AssetAuctionStorage_init() internal initializer {
+        __AssetAuctionStorage_init_unchained();
+    }
+
+    function __AssetAuctionStorage_init_unchained() internal initializer {}
 }

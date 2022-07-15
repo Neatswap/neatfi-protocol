@@ -7,98 +7,134 @@ import {ActorFactoryTypehashesUpgradeable} from "./ActorFactoryTypehashesUpgrade
 import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 
-contract ActorFactoryOperationsUpgradeable is 
-  ActorFactoryStorageUpgradeable,
-  ActorFactoryEventsUpgradeable,
-  ActorFactoryTypehashesUpgradeable,   
-  RoleConstantsUpgradeable,
-  AccessControlUpgradeable 
+/**
+ * @title ActorFactoryOperationsUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the operations for the Actor Factory.
+ */
+contract ActorFactoryOperationsUpgradeable is
+    ActorFactoryStorageUpgradeable,
+    ActorFactoryEventsUpgradeable,
+    ActorFactoryTypehashesUpgradeable,
+    RoleConstantsUpgradeable,
+    AccessControlUpgradeable
 {
+    /**
+     * @dev Requests the actor Key. Creates an Actor struct record without
+     *      generating the actor key.
+     * @param actorAddress - The address of the Actor contract.
+     */
+    function _requestActorKey(address actorAddress) internal {
+        require(
+            actorAddress.code.length > 0,
+            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor address is not a smart contract."
+        );
 
-  function _requestActorKey(address actorAddress) internal {
-    require(
-      actorAddress.code.length > 0,
-      "ActorFactoryOperationsUpgradeable::_requestActorKey: actor address is not a smart contract."
-    );
+        Actor memory actor = Actor(actorAddress, ActorStatus.REQUESTED, 0x0);
 
-    Actor memory actor = Actor(
-      actorAddress,
-      ActorStatus.REQUESTED,
-      0x0
-    );
+        actorInfo[actorAddress] = actor;
 
-    actorInfo[actorAddress] = actor;
+        emit ActorKeyRequested(actorAddress);
+    }
 
-    emit ActorKeyRequested(actorAddress);
-  }
+    /**
+     * @dev Approves and generates the actor Key. Updates the Actor struct record with
+     *      the generated actor key. Updates the Actor status to ACTIVE.
+     * @param actorAddress - The address of the Actor contract.
+     * @return actorKey - The generated actor key.
+     */
+    function _approveAndGenerateActorKey(address actorAddress)
+        internal
+        returns (bytes32 actorKey)
+    {
+        Actor memory actor = actorInfo[actorAddress];
 
-  function _approveAndGenerateActorKey(address actorAddress) internal returns(bytes32 actorKey) {
-    Actor memory actor = actorInfo[actorAddress];
+        require(
+            actor.actorKey == 0x0,
+            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor key already generated."
+        );
 
-    require(
-      actor.actorKey == 0x0,
-      "ActorFactoryOperationsUpgradeable::_requestActorKey: actor key already generated."
-    );
+        actorKey = keccak256(abi.encode(ACTORKEY_TYPEHASH, actorAddress));
 
-    actorKey = keccak256(abi.encode(
-      ACTORKEY_TYPEHASH,
-      actorAddress
-    ));
+        actor.actorStatus = ActorStatus.ACTIVE;
+        actor.actorKey = actorKey;
 
-    actor.actorStatus = ActorStatus.ACTIVE;
-    actor.actorKey = actorKey;
+        emit ActorKeyCreated(actorAddress, actorKey);
 
-    emit ActorKeyCreated(actorAddress, actorKey);
-     
-    return actorKey;
-  }
+        return actorKey;
+    }
 
-  function _activateActor(address actorAddress) internal {
-    Actor memory actor = actorInfo[actorAddress];
+    /**
+     * @dev Activates an inactive Actor. Updates the Actor status to ACTIVE.
+     * @param actorAddress - The address of the Actor contract.
+     */
+    function _activateActor(address actorAddress) internal {
+        Actor memory actor = actorInfo[actorAddress];
 
-    require(
-      actor.actorKey != 0x0,
-      "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
-    );
+        require(
+            actor.actorKey != 0x0,
+            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
+        );
 
-    require(
-      actor.actorStatus == ActorStatus.INACTIVE,
-      "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already active."
-    );
+        require(
+            actor.actorStatus == ActorStatus.INACTIVE,
+            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already active."
+        );
 
-    actor.actorStatus = ActorStatus.ACTIVE;
+        actor.actorStatus = ActorStatus.ACTIVE;
 
-    emit ActorActivated(actorAddress);
-  }
+        emit ActorActivated(actorAddress);
+    }
 
-  function _inactivateActor(address actorAddress) internal {
-    Actor memory actor = actorInfo[actorAddress];
+    /**
+     * @dev Inactivates an active Actor. Updates the Actor status to INACTIVE.
+     * @param actorAddress - The address of the Actor contract.
+     */
+    function _inactivateActor(address actorAddress) internal {
+        Actor memory actor = actorInfo[actorAddress];
 
-    require(
-      actor.actorKey != 0x0,
-      "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
-    );
+        require(
+            actor.actorKey != 0x0,
+            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
+        );
 
-    require(
-      actor.actorStatus == ActorStatus.ACTIVE,
-      "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already inactive."
-    );
+        require(
+            actor.actorStatus == ActorStatus.ACTIVE,
+            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already inactive."
+        );
 
-    actor.actorStatus = ActorStatus.INACTIVE;
+        actor.actorStatus = ActorStatus.INACTIVE;
 
-    emit ActorInactivated(actorAddress);
-  }
+        emit ActorInactivated(actorAddress);
+    }
 
-  function _getActorKey(address actorAddress) internal view returns(bytes32 actorKey) {
-    Actor memory actor = actorInfo[actorAddress];
-    return actor.actorKey;
-  }
+    /**
+     * @dev Retrieves the actor key for a given Actor address.
+     * @param actorAddress - The address of the Actor contract.
+     * @return actorKey - The generated actor key.
+     */
+    function _getActorKey(address actorAddress)
+        internal
+        view
+        returns (bytes32 actorKey)
+    {
+        Actor memory actor = actorInfo[actorAddress];
 
-  function __ActorFactoryOperations_init() internal initializer {
-    __ActorFactoryStorage_init();
-    __ActorFactoryEvents_init();
-    __ActorFactoryTypehashes_init();
-    __RoleConstants_init();
-    __AccessControl_init();
-  }
+        require(
+            actor.actorKey != 0x0,
+            "ActorFactoryOperationsUpgradeable::_getActorKey: actor key is 0x0."
+        );
+
+        return actor.actorKey;
+    }
+
+    /** Initializer */
+
+    function __ActorFactoryOperations_init() internal initializer {
+        __ActorFactoryStorage_init();
+        __ActorFactoryEvents_init();
+        __ActorFactoryTypehashes_init();
+        __RoleConstants_init();
+        __AccessControl_init();
+    }
 }

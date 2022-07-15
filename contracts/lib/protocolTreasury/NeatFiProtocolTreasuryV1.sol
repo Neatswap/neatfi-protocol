@@ -5,49 +5,74 @@ import {UUPSUpgradeable} from "../proxy/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 
+/**
+ * @title NeatFiProtocolTreasuryV1
+ * @author NeatFi
+ * @notice This contract implements the external facing functionality
+ *         for the Protocol Treasury contract of NeatFi. This is the contract
+ *         that is used to manage the protocol fees.
+ */
 contract NeatFiProtocolTreasuryV1 is
-  UUPSUpgradeable,
-  AccessControlUpgradeable,
-  RoleConstantsUpgradeable
+    UUPSUpgradeable,
+    AccessControlUpgradeable,
+    RoleConstantsUpgradeable
 {
-  string internal name;
-  string internal currentVersion;
+    string internal name;
+    string internal currentVersion;
 
-  function _setVersion(string memory newVersion) internal 
-  onlyRole(PROTOCOL_ADMIN) {
-    currentVersion = newVersion;
-  }
+    /**
+     * @dev Sets the version for the current implementation of this contract.
+     */
+    function _setVersion(string memory newVersion)
+        internal
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        currentVersion = newVersion;
+    }
 
-  function getBalance() public view returns(uint256 contractBalance) {
-    return address(this).balance;
-  }
+    /**
+     * @dev Retrieves the balance of the protocol treasury.
+     */
+    function getBalance() public view returns (uint256 contractBalance) {
+        return address(this).balance;
+    }
 
-  function withdraw(
-    address payable withdrawalAddress, 
-    uint256 withdrawalAmount
-  ) external onlyRole(PROTOCOL_TREASURER) {
-    require(
-      withdrawalAmount <= getBalance(),
-      "NeatFiProtocolTreasuryV1::withdraw: incorrect withdrawal amount."
-    );
+    /**
+     * @dev Withdraws Ether from this contract. Only available to a
+     *      Protocol Treasurer.
+     * @param withdrawalAddress - The target address of the withdrawal.
+     */
+    function withdraw(
+        address payable withdrawalAddress,
+        uint256 withdrawalAmount
+    ) external onlyRole(PROTOCOL_TREASURER) {
+        require(
+            withdrawalAmount <= getBalance(),
+            "NeatFiProtocolTreasuryV1::withdraw: incorrect withdrawal amount."
+        );
 
-    bool sent = withdrawalAddress.send(withdrawalAmount);
-    require(
-      sent, 
-      "NeatFiProtocolTreasuryV1::withdraw: failed to withdraw."
-    ); 
-  }
+        bool sent = withdrawalAddress.send(withdrawalAmount);
+        require(
+            sent,
+            "NeatFiProtocolTreasuryV1::withdraw: failed to withdraw."
+        );
+    }
 
-  function _authorizeUpgrade(address newImplementation) internal override 
-  onlyRole(PROTOCOL_ADMIN) {}
+    /** Initializers */
 
-  function initialize() public initializer {
-    __UUPSUpgradeable_init();
-    __RoleConstants_init();
-    __AccessControl_init();
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyRole(PROTOCOL_ADMIN)
+    {}
 
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    name = "NeatFi Treasury Contract";
-    _setVersion("1.0.0");
-  }
+    function initialize() public initializer {
+        __UUPSUpgradeable_init();
+        __RoleConstants_init();
+        __AccessControl_init();
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        name = "NeatFi Treasury Contract";
+        _setVersion("1.0.0");
+    }
 }

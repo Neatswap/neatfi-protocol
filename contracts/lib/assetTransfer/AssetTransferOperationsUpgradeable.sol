@@ -10,46 +10,75 @@ import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {INeatFiProtocolStorage} from "../../interfaces/storageInterfaces/INeatFiProtocolStorage.sol";
 
+/**
+ * @title AssetTransferOperationsUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the internal operations for asset transfer within NeatFi.
+ */
 contract AssetTransferOperationsUpgradeable is
-  AssetEnumsUpgradeable,
-  AssetStructsUpgradeable,
-  RoleConstantsUpgradeable,
-  AccessControlUpgradeable
-  {
-  address internal neatFiProtocolStorage;
+    AssetEnumsUpgradeable,
+    AssetStructsUpgradeable,
+    RoleConstantsUpgradeable,
+    AccessControlUpgradeable
+{
+    address internal neatFiProtocolStorage;
 
-  function _updateNeatFiProtocolStorageAddress(address newNeatFiProtocolStorage) internal {
-    neatFiProtocolStorage = newNeatFiProtocolStorage;
-  }
-  
-  /// Resolves ownership transfer of Tokens.
-  /// @dev Loops over Tokens of the Order.
-  /// @param order - struct Order.
-  /// @param from - address From.
-  /// @param to - address to.
-  function _transferResolver(
-    Order memory order,
-    address from,
-    address to,
-    bytes calldata data
-  ) internal {
-    for (uint256 i = 0; i < order.tokenHashes.length; i++) {
-      Token memory token = INeatFiProtocolStorage(neatFiProtocolStorage).getToken(order.tokenHashes[i]);
-
-      if (token.tokenType == TokenType.ERC721) {
-        IERC721(token.tokenContract).safeTransferFrom(from, to, token.tokenId, data);
-      } else if (token.tokenType == TokenType.ERC1155) {
-        IERC1155(token.tokenContract).safeTransferFrom(from, to, token.tokenId, token.amount, data);
-      } else if (token.tokenType == TokenType.ERC20) {
-        IERC20(token.tokenContract).transferFrom(from, to, token.amount);
-      }
+    /**
+     * @dev Updates the NeatFi Protocol storage address.
+     */
+    function _updateNeatFiProtocolStorageAddress(
+        address newNeatFiProtocolStorage
+    ) internal {
+        neatFiProtocolStorage = newNeatFiProtocolStorage;
     }
-  }
 
-  function __AssetTransferOperations_init() internal initializer {
-    __AssetStructs_init();
-    __AssetEnums_init(); 
-    __RoleConstants_init();
-    __AccessControl_init();
-  }
+    /**
+     * @dev Resolves ownership transfer of Token assets. Loops over the Token
+     *      assets of the Order and invokes transfer functions via interfaces.
+     * @param order - The Order struct.
+     * @param from - The address of the current owner of the asset.
+     * @param to - The address of the new owner of the asset.
+     */
+    function _transferResolver(
+        Order memory order,
+        address from,
+        address to,
+        bytes calldata data
+    ) internal {
+        for (uint256 i = 0; i < order.tokenHashes.length; i++) {
+            Token memory token = INeatFiProtocolStorage(neatFiProtocolStorage)
+                .getToken(order.tokenHashes[i]);
+            if (token.tokenType == TokenType.ERC721) {
+                IERC721(token.tokenContract).safeTransferFrom(
+                    from,
+                    to,
+                    token.tokenId,
+                    data
+                );
+            } else if (token.tokenType == TokenType.ERC1155) {
+                IERC1155(token.tokenContract).safeTransferFrom(
+                    from,
+                    to,
+                    token.tokenId,
+                    token.amount,
+                    data
+                );
+            } else if (token.tokenType == TokenType.ERC20) {
+                IERC20(token.tokenContract).transferFrom(
+                    from,
+                    to,
+                    token.amount
+                );
+            }
+        }
+    }
+
+    /** Initializers */
+
+    function __AssetTransferOperations_init() internal initializer {
+        __AssetStructs_init();
+        __AssetEnums_init();
+        __RoleConstants_init();
+        __AccessControl_init();
+    }
 }

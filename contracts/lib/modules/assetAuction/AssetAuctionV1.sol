@@ -3,81 +3,176 @@ pragma solidity ^0.8.15;
 
 import {AssetAuctionOperationsUpgradeable} from "./AssetAuctionOperationsUpgradeable.sol";
 import {UUPSUpgradeable} from "../../proxy/UUPSUpgradeable.sol";
-//TODO documentation should mention that this works only with ENGLISH_AUCTION and DUTCH_AUCTION ordertypes
-// TODO provide docs on how the logic of this module works
-// TODO make these upgradeable
 
+/**
+ * @title AssetAuctionV1
+ * @author NeatFi
+ * @notice This contract implements the external facing functionality
+ *         for the Asset Auction module of NeatFi.
+ */
 contract AssetAuctionV1 is AssetAuctionOperationsUpgradeable, UUPSUpgradeable {
-  string internal name;
-  string internal currentVersion;
+    string internal name;
+    string internal currentVersion;
 
-  function _setVersion(string memory newVersion) internal 
-  onlyRole(PROTOCOL_ADMIN) {
-    currentVersion = newVersion;
-  }
+    /**
+     * @dev Sets the version for the current implementation of this contract.
+     */
+    function _setVersion(string memory newVersion)
+        internal
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        currentVersion = newVersion;
+    }
 
-  function updateNeatFiProtocolStorageAddress(address newNeatFiProtocolStorage) external
-  onlyRole(PROTOCOL_ADMIN) {
-    _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
-  }
+    /**
+     * @dev Updates the NeatFi Protocol storage address. Can be executed by a
+     *      Protocol Admin only.
+     */
+    function updateNeatFiProtocolStorageAddress(
+        address newNeatFiProtocolStorage
+    ) external onlyRole(PROTOCOL_ADMIN) {
+        _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
+    }
 
-  function updateAssetTransferAddress(address newAssetTransfer) external
-  onlyRole(PROTOCOL_ADMIN) {
-    _updateAssetTransferAddress(newAssetTransfer);
-  }
+    /**
+     * @dev Updates the Asset Transfer contract address. Can be executed by a
+     *      Protocol Admin only.
+     */
+    function updateAssetTransferAddress(address newAssetTransfer)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        _updateAssetTransferAddress(newAssetTransfer);
+    }
 
-  function decreaseDucthAuctionPrice(address maker, bytes32 orderHash, uint256 newPrice) external 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _decreaseDucthAuctionPrice(maker, orderHash, newPrice);
-  }
+    /**
+     * @dev An external function to change the price of a Dutch Auction Order.
+     *      Only available for the Order maker. Can be called from the NeatFi
+     *      contract only.
+     * @param maker - The address of the Order maker.
+     * @param orderHash - The hash of the Order.
+     * @param newPrice - The new price of the Order.
+     */
+    function decreaseDucthAuctionPrice(
+        address maker,
+        bytes32 orderHash,
+        uint256 newPrice
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _decreaseDucthAuctionPrice(maker, orderHash, newPrice);
+    }
 
-  function increaseEnglishAuctionPrice(address maker, bytes32 orderHash, uint256 newPrice) external 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _increaseEnglishAuctionPrice(maker, orderHash, newPrice);
-  }
+    /**
+     * @dev An external function to change the price of an English Auction Order.
+     *      Only available for the Order maker. Can be called from the NeatFi
+     *      contract only.
+     * @param maker - The address of the Order maker.
+     * @param orderHash - The hash of the Order.
+     * @param newPrice - The new price of the Order.
+     */
+    function increaseEnglishAuctionPrice(
+        address maker,
+        bytes32 orderHash,
+        uint256 newPrice
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _increaseEnglishAuctionPrice(maker, orderHash, newPrice);
+    }
 
-  function bidForEnglishAuction(address bidder, bytes32 orderHash, uint256 bidValue) external 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _bidForEnglishAuction(bidder, orderHash, bidValue);
-  }
+    /**
+     * @dev An external function to record a bid committment in native tokens
+     *      for an English Auction Order. Can be called from the NeatFi
+     *      contract only.
+     * @param bidder - The address of the bidder.
+     * @param orderHash - The hash of the Order.
+     * @param bidValue - The value of the bid committment.
+     */
+    function bidForEnglishAuction(
+        address bidder,
+        bytes32 orderHash,
+        uint256 bidValue
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _bidForEnglishAuction(bidder, orderHash, bidValue);
+    }
 
-  function bidForDutchAuction(
-    address bidder, 
-    bytes32 orderHash, 
-    uint256 bidValue
-  ) external onlyRole(AUTHORIZED_OPERATOR) {
-    _bidForDutchAuction(bidder, orderHash, bidValue);
-  }
+    /**
+     * @dev An external function to record a bid committment in native tokens
+     *      for a Dutch Auction Order. Can be called from the NeatFi
+     *      contract only.
+     * @param bidder - The address of the bidder.
+     * @param orderHash - The hash of the Order.
+     * @param bidValue - The value of the bid committment.
+     */
+    function bidForDutchAuction(
+        address bidder,
+        bytes32 orderHash,
+        uint256 bidValue
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _bidForDutchAuction(bidder, orderHash, bidValue);
+    }
 
-  function approveLastBid(address maker, bytes32 orderHash) external 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _approveLastBid(maker, orderHash);
-  }
+    /**
+     * @dev An external function for the maker to approve the
+     *      last bidder to claim the Order. Can be called from the NeatFi
+     *      contract only.
+     * @param orderHash - The hash of the Order.
+     * @param maker - The address of the Order maker.
+     */
+    function approveLastBid(address maker, bytes32 orderHash)
+        external
+        onlyRole(AUTHORIZED_OPERATOR)
+    {
+        _approveLastBid(maker, orderHash);
+    }
 
-  function claimAuction(address bidder, bytes32 orderHash, bytes calldata data) external 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _claimAuction(bidder, orderHash, data);
-  }
+    /**
+     * @dev An external function for the approved bidder to claim
+     *      an Auction Order (English or Dutch). Can be called from the NeatFi
+     *      contract only.
+     * @param orderHash - The hash of the Order.
+     * @param bidder - The address of the approved bidder.
+     */
+    function claimAuction(
+        address bidder,
+        bytes32 orderHash,
+        bytes calldata data
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _claimAuction(bidder, orderHash, data);
+    }
 
-  function getLastBidderAddress(bytes32 orderHash) external view 
-  onlyRole(AUTHORIZED_OPERATOR) {
-    _getLastBidderAddress(orderHash);
-  }
+    /**
+     * @dev An external function to retrieve the last bidder's address
+     *      for a given Order. Can be called from the NeatFi
+     *      contract only.
+     * @param orderHash - The hash of the Order.
+     * @return lastBidder -  The address of the last bidder.
+     */
+    function getLastBidderAddress(bytes32 orderHash)
+        external
+        view
+        onlyRole(AUTHORIZED_OPERATOR)
+        returns (address lastBidder)
+    {
+        return _getLastBidderAddress(orderHash);
+    }
 
-  function _authorizeUpgrade(address newImplementation) internal override 
-  onlyRole(PROTOCOL_ADMIN) {}
+    /** Initializers */
 
-  function initialize(
-    address neatFiProtocolStorage, 
-    address assetTransfer
-    ) public initializer {
-    __UUPSUpgradeable_init();
-    __AssetAuctionOperations_init();
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyRole(PROTOCOL_ADMIN)
+    {}
 
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
-    _updateAssetTransferAddress(assetTransfer);
-    name = "NeatFi Asset Auction Module";
-    _setVersion("1.0.0");
-  }
+    function initialize(address neatFiProtocolStorage, address assetTransfer)
+        public
+        initializer
+    {
+        __UUPSUpgradeable_init();
+        __AssetAuctionOperations_init();
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
+        _updateAssetTransferAddress(assetTransfer);
+        name = "NeatFi Asset Auction Module";
+        _setVersion("1.0.0");
+    }
 }

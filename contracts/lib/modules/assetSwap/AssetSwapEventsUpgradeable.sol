@@ -3,12 +3,24 @@ pragma solidity ^0.8.15;
 
 import {Initializable} from "../../utils/Initializable.sol";
 
+/**
+ * @title AssetSwapEventsUpgradeable
+ * @author NeatFi
+ * @notice This contract holds the events for the Asset Swap module of NeatFi.
+ */
 contract AssetSwapEventsUpgradeable is Initializable {
-  event BidForOrder(bytes32 orderHash, bytes32 bidHash);
+    /**
+     * @dev Fired when a Bid type Order is created for a Swap Order.
+     * @param orderHash - The hash of the Order.
+     * @param bidHash - The hash of the Bid type Order.
+     */
+    event BidForOrder(bytes32 orderHash, bytes32 bidHash);
 
-  function __AssetSwapEvents_init() internal initializer {
-    __AssetSwapEvents_init_unchained();
-  }
+    /** Initializers */
 
-  function __AssetSwapEvents_init_unchained() internal initializer {}
+    function __AssetSwapEvents_init() internal initializer {
+        __AssetSwapEvents_init_unchained();
+    }
+
+    function __AssetSwapEvents_init_unchained() internal initializer {}
 }
