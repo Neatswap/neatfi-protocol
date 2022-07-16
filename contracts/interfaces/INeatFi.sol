@@ -43,7 +43,6 @@ interface INeatFi {
      * @param listingTime - The timestamp of the Order creation.
      * @param expirationTime - The timestamp of the Order expiration.
      * @param startPrice - The starting price of the Order.
-     * @param endPrice - The end price of the Order.
      * @param actorKey - The actor key of the Actor contract through which the Order
      *                   is being created.
      * @return orderHash - The hash of the created Order.
