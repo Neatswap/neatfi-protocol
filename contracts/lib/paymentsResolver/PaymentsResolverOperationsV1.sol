@@ -32,11 +32,11 @@ contract PaymentsResolverOperationsV1 is
      *      current implementation of the NeatFi protocol settings contract.
      *      Can be executed by a Protocol Admin only.
      */
-    function setProtocolSettingsAddress(address newProtocolAddress)
+    function updateProtocolSettingsAddress(address newProtocolAddress)
         external
         onlyRole(PROTOCOL_ADMIN)
     {
-        _setProtocolSettingsAddress(newProtocolAddress);
+        _updateProtocolSettingsAddress(newProtocolAddress);
     }
 
     /**
@@ -115,10 +115,10 @@ contract PaymentsResolverOperationsV1 is
 
     function initialize(address transferResolver) public initializer {
         __UUPSUpgradeable_init();
-        __AssetSwapOperations_init();
+        __AssetSwapOperations_init(transferResolver);
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setProtocolSettingsAddress(transferResolver);
+
         name = "NeatFi Payments Resolver";
         _setVersion("1.0.0");
     }

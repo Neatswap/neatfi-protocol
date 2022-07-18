@@ -106,6 +106,18 @@ contract NeatFiProtocolOperationsUpgradeable is
 
     /**
      * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Protocol Treasury contract.
+     * @param newProtocolTreasury - The address of the new Protocol Treasury
+     *                        implementation contract.
+     */
+    function _setProtocolTreasury(address payable newProtocolTreasury)
+        internal
+    {
+        protocolTreasury = newProtocolTreasury;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
      *      contract of NeatFi's Actor Factory contract.
      * @param newActorFactory - The address of the new Actor Factory
      *                        implementation contract.
@@ -155,12 +167,11 @@ contract NeatFiProtocolOperationsUpgradeable is
             actorAddress
         );
 
-        INeatFiProtocolStorage(protocolStorage).isValidActorKey(
-            orderHash,
-            actorKey
-        );
-
-        return true;
+        return
+            INeatFiProtocolStorage(protocolStorage).isValidActorKey(
+                orderHash,
+                actorKey
+            );
     }
 
     /**
@@ -623,10 +634,28 @@ contract NeatFiProtocolOperationsUpgradeable is
 
     /** Initializers */
 
-    function __NeatFiProtocolOperations_init() internal initializer {
+    function __NeatFiProtocolOperations_init(
+        address newSwapModule,
+        address newSellModule,
+        address newAuctionModule,
+        address newPaymentsResolver,
+        address newProtocolSettings,
+        address newProtocolStorage,
+        address newActorFactory,
+        address payable newProtocolTreasury
+    ) internal initializer {
         __AssetStructs_init();
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
+
+        _setSwapModule(newSwapModule);
+        _setSellModule(newSellModule);
+        _setAuctionModule(newAuctionModule);
+        _setPaymentsResolver(newPaymentsResolver);
+        _setProtocolSettings(newProtocolSettings);
+        _setProtocolStorage(newProtocolStorage);
+        _setActorFactory(newActorFactory);
+        _setProtocolTreasury(newProtocolTreasury);
     }
 }

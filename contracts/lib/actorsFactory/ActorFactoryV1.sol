@@ -88,7 +88,7 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize() public initializer {
+    function initialize() public initializer onlyProxy {
         __UUPSUpgradeable_init();
         __ActorFactoryOperations_init();
 

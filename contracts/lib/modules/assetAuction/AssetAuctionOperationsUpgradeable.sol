@@ -319,12 +319,18 @@ contract AssetAuctionOperationsUpgradeable is
 
     /** Initializers */
 
-    function __AssetAuctionOperations_init() internal initializer {
+    function __AssetAuctionOperations_init(
+        address newAssetTransfer,
+        address newNeatFiProtocolStorage
+    ) internal initializer {
         __AssetStructs_init();
         __AssetEnums_init();
         __AssetAuctionStorage_init();
         __AssetAuctionEvents_init();
         __RoleConstants_init();
         __AccessControl_init();
+
+        _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
+        _updateAssetTransferAddress(newAssetTransfer);
     }
 }

@@ -162,16 +162,18 @@ contract AssetAuctionV1 is AssetAuctionOperationsUpgradeable, UUPSUpgradeable {
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize(address neatFiProtocolStorage, address assetTransfer)
-        public
-        initializer
-    {
+    function initialize(
+        address neatFiProtocolStorageAddress,
+        address assetTransferAddress
+    ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
-        __AssetAuctionOperations_init();
+        __AssetAuctionOperations_init(
+            assetTransferAddress,
+            neatFiProtocolStorageAddress
+        );
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
-        _updateAssetTransferAddress(assetTransfer);
+
         name = "NeatFi Asset Auction Module";
         _setVersion("1.0.0");
     }

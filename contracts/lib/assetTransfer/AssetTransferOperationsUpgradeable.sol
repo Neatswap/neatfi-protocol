@@ -44,7 +44,7 @@ contract AssetTransferOperationsUpgradeable is
         address from,
         address to,
         bytes calldata data
-    ) internal {
+    ) internal returns (bool transferResult) {
         for (uint256 i = 0; i < order.tokenHashes.length; i++) {
             Token memory token = INeatFiProtocolStorage(neatFiProtocolStorage)
                 .getToken(order.tokenHashes[i]);
@@ -55,6 +55,7 @@ contract AssetTransferOperationsUpgradeable is
                     token.tokenId,
                     data
                 );
+                return true;
             } else if (token.tokenType == TokenType.ERC1155) {
                 IERC1155(token.tokenContract).safeTransferFrom(
                     from,
@@ -63,22 +64,29 @@ contract AssetTransferOperationsUpgradeable is
                     token.amount,
                     data
                 );
+                return true;
             } else if (token.tokenType == TokenType.ERC20) {
-                IERC20(token.tokenContract).transferFrom(
-                    from,
-                    to,
-                    token.amount
-                );
+                return
+                    IERC20(token.tokenContract).transferFrom(
+                        from,
+                        to,
+                        token.amount
+                    );
             }
         }
     }
 
     /** Initializers */
 
-    function __AssetTransferOperations_init() internal initializer {
+    function __AssetTransferOperations_init(address newNeatFiProtocolStorage)
+        internal
+        initializer
+    {
         __AssetStructs_init();
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
+
+        _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
     }
 }

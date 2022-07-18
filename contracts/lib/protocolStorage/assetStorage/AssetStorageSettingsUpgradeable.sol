@@ -12,11 +12,28 @@ contract AssetStorageSettingsUpgradeable is Initializable {
     // Controller of maximum numbers of unique Tokens in an Order.
     uint256 public maxTokenNumber;
 
-    /* Initializers */
-
-    function __AssetStorageSettings_init() internal initializer {
-        __AssetStorageSettings_init_unchained();
+    /**
+     *
+     * @dev Regulates the maximum number of unique Token assets in an Order.
+     * @param newMaxTokenNumber - new maximum number of Token assets.
+     */
+    function _setMaxTokenNumber(uint256 newMaxTokenNumber) internal {
+        maxTokenNumber = newMaxTokenNumber;
     }
 
-    function __AssetStorageSettings_init_unchained() internal initializer {}
+    /* Initializers */
+
+    function __AssetStorageSettings_init(uint256 newMaxTokenNumber)
+        internal
+        initializer
+    {
+        __AssetStorageSettings_init_unchained(newMaxTokenNumber);
+    }
+
+    function __AssetStorageSettings_init_unchained(uint256 newMaxTokenNumber)
+        internal
+        initializer
+    {
+        _setMaxTokenNumber(newMaxTokenNumber);
+    }
 }

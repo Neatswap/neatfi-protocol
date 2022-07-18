@@ -23,7 +23,9 @@ contract PaymentsResolverOperationsUpgradeable is
      * @dev An internal function to update the address of the
      *      current implementation of the NeatFi protocol settings contract.
      */
-    function _setProtocolSettingsAddress(address newProtocolSettings) internal {
+    function _updateProtocolSettingsAddress(address newProtocolSettings)
+        internal
+    {
         protocolSettings = newProtocolSettings;
     }
 
@@ -95,9 +97,14 @@ contract PaymentsResolverOperationsUpgradeable is
 
     /** Initializers */
 
-    function __AssetSwapOperations_init() internal initializer {
+    function __AssetSwapOperations_init(address newProtocolSettings)
+        internal
+        initializer
+    {
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
+
+        _updateProtocolSettingsAddress(newProtocolSettings);
     }
 }

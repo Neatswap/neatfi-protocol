@@ -23,6 +23,10 @@ contract NeatFiV1 is
     string internal currentVersion;
 
     /**
+     * Administrative operations
+     */
+
+    /**
      * @dev Sets the version for the current implementation of this contract.
      */
     function _setVersion(string memory newVersion)
@@ -30,6 +34,118 @@ contract NeatFiV1 is
         onlyRole(PROTOCOL_ADMIN)
     {
         currentVersion = newVersion;
+    }
+
+    /**
+     * @dev An external function to update the address of the implementation
+     *      contract of NeatFi's Asset Swap module. Can be executed by
+     *      a Protocol Admin only.
+     * @param newSwapModule - The address of the new Asset Swap module
+     *                        implementation contract.
+     */
+    function setSwapModule(address newSwapModule)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        swapModule = newSwapModule;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Asset Sell module. Can be executed by
+     *      a Protocol Admin only.
+     * @param newSellModule - The address of the new Asset Sell module
+     *                        implementation contract.
+     */
+    function setSellModule(address newSellModule)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        sellModule = newSellModule;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Asset Sell module. Can be executed by
+     *      a Protocol Admin only.
+     * @param newAuctionModule - The address of the new Asset Sell module
+     *                        implementation contract.
+     */
+    function setAuctionModule(address newAuctionModule)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        auctionModule = newAuctionModule;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Payment Resolver contract. Can be executed by
+     *      a Protocol Admin only.
+     * @param newPaymentsResolver - The address of the new Payment Resolver
+     *                        implementation contract.
+     */
+    function setPaymentsResolver(address newPaymentsResolver)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        paymentsResolver = newPaymentsResolver;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Protocol Storage contract. Can be executed by
+     *      a Protocol Admin only.
+     * @param newProtocolStorage - The address of the new Protocol Storage
+     *                        implementation contract.
+     */
+    function setProtocolStorage(address newProtocolStorage)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        protocolStorage = newProtocolStorage;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Protocol Settings contract. Can be executed by
+     *      a Protocol Admin only.
+     * @param newProtocolSettings - The address of the new Protocol Settings
+     *                        implementation contract.
+     */
+    function setProtocolSettings(address newProtocolSettings)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        protocolSettings = newProtocolSettings;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Protocol Treasury contract. Can be executed by
+     *      a Protocol Admin only.
+     * @param newProtocolTreasury - The address of the new Protocol Treasury
+     *                        implementation contract.
+     */
+    function setProtocolTreasury(address payable newProtocolTreasury)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        protocolTreasury = newProtocolTreasury;
+    }
+
+    /**
+     * @dev An internal function to update the address of the implementation
+     *      contract of NeatFi's Actor Factory contract. Can be executed by
+     *      a Protocol Admin only.
+     * @param newActorFactory - The address of the new Actor Factory
+     *                        implementation contract.
+     */
+    function setActorFactory(address newActorFactory)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        actorFactory = newActorFactory;
     }
 
     /**
@@ -307,11 +423,30 @@ contract NeatFiV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize() public initializer {
+    function initialize(
+        address swapModuleAddress,
+        address sellModuleAddress,
+        address auctionModuleAddress,
+        address paymentsResolverAddress,
+        address protocolSettingsAddress,
+        address protocolStorageAddress,
+        address actorFactoryAddress,
+        address payable protocolTreasuryAddress
+    ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
-        __NeatFiProtocolOperations_init();
+        __NeatFiProtocolOperations_init(
+            swapModuleAddress,
+            sellModuleAddress,
+            auctionModuleAddress,
+            paymentsResolverAddress,
+            protocolSettingsAddress,
+            protocolStorageAddress,
+            actorFactoryAddress,
+            protocolTreasuryAddress
+        );
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+
         name = "NeatFi Protocol";
         _setVersion("1.0.0");
     }

@@ -28,6 +28,19 @@ contract NeatFiProtocolStorageV1 is
     }
 
     /**
+     *
+     * @dev An external function to regulate the maximum number of unique
+     *      Token assets in an Order. Can be executed by a Protocol Admin only.
+     * @param newMaxTokenNumber - new maximum number of Token assets.
+     */
+    function setMaxTokenNumber(uint256 newMaxTokenNumber)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        maxTokenNumber = newMaxTokenNumber;
+    }
+
+    /**
      * @dev An external function to create an Order struct record. Can be
      *      called by the NeatFi contract only.
      * @param tokens - The array of Token assets to include in the Order.
@@ -224,9 +237,13 @@ contract NeatFiProtocolStorageV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize() public initializer {
+    function initialize(uint256 maxTokenNumberValue)
+        public
+        initializer
+        onlyProxy
+    {
         __UUPSUpgradeable_init();
-        __AssetStorageOperations_init();
+        __AssetStorageOperations_init(maxTokenNumberValue);
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         name = "NeatFi Protocol Storage Layer";

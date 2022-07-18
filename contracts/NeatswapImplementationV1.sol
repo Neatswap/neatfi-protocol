@@ -265,7 +265,7 @@ contract NeatSwapImplementationV1 is
         onlyRole(DEFAULT_ADMIN_ROLE)
     {}
 
-    function initialize() public initializer {
+    function initialize() public initializer onlyProxy {
         __UUPSUpgradeable_init();
         __AccessControl_init();
 

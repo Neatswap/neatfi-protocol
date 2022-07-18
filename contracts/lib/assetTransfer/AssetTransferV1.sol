@@ -60,12 +60,15 @@ contract AssetTransferV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize(address neatFiProtocolStorage) public initializer {
+    function initialize(address neatFiProtocolStorageAddress)
+        public
+        initializer
+        onlyProxy
+    {
         __UUPSUpgradeable_init();
-        __AssetTransferOperations_init();
+        __AssetTransferOperations_init(neatFiProtocolStorageAddress);
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
         name = "NeatFi Asset Transfer Resolver";
         _setVersion("1.0.0");
     }

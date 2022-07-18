@@ -161,12 +161,18 @@ contract AssetSwapOperationsUpgradeable is
 
     /** Initializers */
 
-    function __AssetSwapOperations_init() internal initializer {
+    function __AssetSwapOperations_init(
+        address newAssetTransfer,
+        address newNeatFiProtocolStorage
+    ) internal initializer {
         __AssetStructs_init();
         __AssetEnums_init();
         __AssetSwapStorage_init();
         __AssetSwapEvents_init();
         __RoleConstants_init();
         __AccessControl_init();
+
+        _updateAssetTransferAddress(newAssetTransfer);
+        _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
     }
 }

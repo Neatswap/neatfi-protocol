@@ -71,16 +71,18 @@ contract AssetSellV1 is AssetSellOperationsUpgradeable, UUPSUpgradeable {
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize(address neatFiProtocolStorage, address assetTransfer)
-        public
-        initializer
-    {
+    function initialize(
+        address neatFiProtocolStorageAddress,
+        address assetTransferAddress
+    ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
-        __AssetSellOperations_init();
+        __AssetSellOperations_init(
+            assetTransferAddress,
+            neatFiProtocolStorageAddress
+        );
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _updateNeatFiProtocolStorageAddress(neatFiProtocolStorage);
-        _updateAssetTransferAddress(assetTransfer);
+
         name = "NeatFi Asset Sell Module";
         _setVersion("1.0.0");
     }

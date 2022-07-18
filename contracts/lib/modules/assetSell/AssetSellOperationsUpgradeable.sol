@@ -98,10 +98,16 @@ contract AssetSellOperationsUpgradeable is
 
     /** Initializers */
 
-    function __AssetSellOperations_init() internal initializer {
+    function __AssetSellOperations_init(
+        address newAssetTransfer,
+        address newNeatFiProtocolStorage
+    ) internal initializer {
         __AssetStructs_init();
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
+
+        _updateAssetTransferAddress(newAssetTransfer);
+        _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
     }
 }

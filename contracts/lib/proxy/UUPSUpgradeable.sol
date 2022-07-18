@@ -23,8 +23,8 @@ abstract contract UUPSUpgradeable is Initializable, ERC1967UpgradeUpgradeable {
         __UUPSUpgradeable_init_unchained();
     }
 
-    function __UUPSUpgradeable_init_unchained() internal initializer {
-    }
+    function __UUPSUpgradeable_init_unchained() internal initializer {}
+
     /// @custom:oz-upgrades-unsafe-allow state-variable-immutable state-variable-assignment
     address private immutable __self = address(this);
 
@@ -36,8 +36,14 @@ abstract contract UUPSUpgradeable is Initializable, ERC1967UpgradeUpgradeable {
      * fail.
      */
     modifier onlyProxy() {
-        require(address(this) != __self, "Function must be called through delegatecall");
-        require(_getImplementation() == __self, "Function must be called through active proxy");
+        require(
+            address(this) != __self,
+            "Function must be called through delegatecall"
+        );
+        require(
+            _getImplementation() == __self,
+            "Function must be called through active proxy"
+        );
         _;
     }
 
@@ -61,7 +67,12 @@ abstract contract UUPSUpgradeable is Initializable, ERC1967UpgradeUpgradeable {
      *
      * Emits an {Upgraded} event.
      */
-    function upgradeToAndCall(address newImplementation, bytes memory data) external payable virtual onlyProxy {
+    function upgradeToAndCall(address newImplementation, bytes memory data)
+        external
+        payable
+        virtual
+        onlyProxy
+    {
         _authorizeUpgrade(newImplementation);
         _upgradeToAndCallSecure(newImplementation, data, true);
     }
@@ -77,5 +88,6 @@ abstract contract UUPSUpgradeable is Initializable, ERC1967UpgradeUpgradeable {
      * ```
      */
     function _authorizeUpgrade(address newImplementation) internal virtual;
+
     uint256[50] private __gap;
 }

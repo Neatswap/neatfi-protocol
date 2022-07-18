@@ -25,19 +25,6 @@ contract AssetStorageOperationsUpgradeable is
     AccessControlUpgradeable
 {
     /**
-     *
-     * @dev Regulates the maximum number of unique Token assets in an Order.
-     *      Can be executed by a Protocol Admin only.
-     * @param newMaxTokenNumber - new maximum number of Token assets.
-     */
-    function setMaxTokenNumber(uint256 newMaxTokenNumber)
-        external
-        onlyRole(PROTOCOL_ADMIN)
-    {
-        maxTokenNumber = newMaxTokenNumber;
-    }
-
-    /**
      * @dev An internal function to generate the hash of a single Token asset.
      * @param token - Token asset struct.
      * @return singleTokenHash - The generated hash of the Token asset.
@@ -369,10 +356,13 @@ contract AssetStorageOperationsUpgradeable is
 
     /** Initializers */
 
-    function __AssetStorageOperations_init() internal initializer {
+    function __AssetStorageOperations_init(uint256 maxTokenNumber)
+        internal
+        initializer
+    {
         __RoleConstants_init();
         __AssetEnums_init();
-        __AssetStorageSettings_init();
+        __AssetStorageSettings_init(maxTokenNumber);
         __AssetTypehasheConstants_init();
         __AssetMappings_init();
         __AccessControl_init();

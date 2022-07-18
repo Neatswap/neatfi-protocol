@@ -5,6 +5,8 @@ import {UUPSUpgradeable} from "../proxy/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 
+// TODO implement signing and pre-approving mechanism prior to withdrawals
+
 /**
  * @title NeatFiProtocolTreasuryV1
  * @author NeatFi
@@ -51,6 +53,7 @@ contract NeatFiProtocolTreasuryV1 is
             "NeatFiProtocolTreasuryV1::withdraw: incorrect withdrawal amount."
         );
 
+        //slither-disable-next-line arbitrary-send
         bool sent = withdrawalAddress.send(withdrawalAmount);
         require(
             sent,
@@ -66,7 +69,7 @@ contract NeatFiProtocolTreasuryV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize() public initializer {
+    function initialize() public initializer onlyProxy {
         __UUPSUpgradeable_init();
         __RoleConstants_init();
         __AccessControl_init();
