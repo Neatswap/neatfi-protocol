@@ -112,6 +112,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
         if (!rollbackTesting.value) {
             // Trigger rollback using upgradeTo from the new implementation
             rollbackTesting.value = true;
+            // slither-disable-next-line reentrancy-events
             _functionDelegateCall(
                 newImplementation,
                 abi.encodeWithSignature("upgradeTo(address)", oldImplementation)

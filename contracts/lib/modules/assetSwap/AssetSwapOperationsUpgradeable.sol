@@ -9,6 +9,7 @@ import {AccessControlUpgradeable} from "../../access/AccessControlUpgradeable.so
 import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.sol";
 import {AssetSwapStorageUpgradeable} from "./AssetSwapStorageUpgradeable.sol";
 import {AssetSwapEventsUpgradeable} from "./AssetSwapEventsUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "../../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title AssetSwapOperationsUpgradeable
@@ -22,7 +23,8 @@ contract AssetSwapOperationsUpgradeable is
     RoleConstantsUpgradeable,
     AccessControlUpgradeable,
     AssetSwapEventsUpgradeable,
-    AssetSwapStorageUpgradeable
+    AssetSwapStorageUpgradeable,
+    ReentrancyGuardUpgradeable
 {
     address internal neatFiProtocolStorage;
     address internal assetTransfer;
@@ -60,7 +62,7 @@ contract AssetSwapOperationsUpgradeable is
         uint256 listingTime,
         bytes32 orderHash,
         bytes32 actorKey
-    ) internal returns (bytes32 bidHash) {
+    ) internal nonReentrant returns (bytes32 bidHash) {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -108,7 +110,7 @@ contract AssetSwapOperationsUpgradeable is
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) internal {
+    ) internal nonReentrant {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -171,6 +173,7 @@ contract AssetSwapOperationsUpgradeable is
         __AssetSwapEvents_init();
         __RoleConstants_init();
         __AccessControl_init();
+        __ReentrancyGuard_init();
 
         _updateAssetTransferAddress(newAssetTransfer);
         _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);

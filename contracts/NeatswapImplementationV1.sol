@@ -72,7 +72,7 @@ contract NeatSwapImplementationV1 is
         uint256 expirationTime,
         uint256 startPrice,
         bytes32 actorKey
-    ) public payable returns (bytes32 orderHash) {
+    ) public payable nonReentrant returns (bytes32 orderHash) {
         return
             INeatFi(neatFiProtocolAddress).makeOrder{value: msg.value}(
                 tokens,
@@ -97,7 +97,7 @@ contract NeatSwapImplementationV1 is
         AssetStructsUpgradeable.Token[] calldata tokens,
         bytes32 orderHash,
         bytes32 actorKey
-    ) public returns (bytes32 bidHash) {
+    ) public nonReentrant returns (bytes32 bidHash) {
         return
             INeatFi(neatFiProtocolAddress).makeBid(
                 tokens,
@@ -129,7 +129,7 @@ contract NeatSwapImplementationV1 is
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) public {
+    ) public nonReentrant {
         INeatFi(neatFiProtocolAddress).approveAndResolveSwap(
             _msgSender(),
             orderHash,
@@ -145,7 +145,11 @@ contract NeatSwapImplementationV1 is
      * @param orderHash - The hash of the Order.
      * @param data - Optional additional data to include with the transaction.
      */
-    function buyItNow(bytes32 orderHash, bytes calldata data) public payable {
+    function buyItNow(bytes32 orderHash, bytes calldata data)
+        public
+        payable
+        nonReentrant
+    {
         INeatFi(neatFiProtocolAddress).buyItNow{value: msg.value}(
             _msgSender(),
             orderHash,
@@ -161,6 +165,7 @@ contract NeatSwapImplementationV1 is
      */
     function decreaseDucthAuctionPrice(bytes32 orderHash, uint256 newPrice)
         public
+        nonReentrant
     {
         INeatFi(neatFiProtocolAddress).decreaseDucthAuctionPrice(
             _msgSender(),
@@ -177,6 +182,7 @@ contract NeatSwapImplementationV1 is
      */
     function increaseEnglishAuctionPrice(bytes32 orderHash, uint256 newPrice)
         public
+        nonReentrant
     {
         INeatFi(neatFiProtocolAddress).increaseEnglishAuctionPrice(
             _msgSender(),
@@ -192,7 +198,10 @@ contract NeatSwapImplementationV1 is
      * @param orderHash - The hash of the Order.
      * @param bidValue - The committment of the bidder in native tokens.
      */
-    function bidForEnglishAuction(bytes32 orderHash, uint256 bidValue) public {
+    function bidForEnglishAuction(bytes32 orderHash, uint256 bidValue)
+        public
+        nonReentrant
+    {
         INeatFi(neatFiProtocolAddress).bidForEnglishAuction(
             _msgSender(),
             orderHash,
@@ -207,7 +216,10 @@ contract NeatSwapImplementationV1 is
      * @param orderHash - The hash of the Order.
      * @param bidValue - The committment of the bidder in native tokens.
      */
-    function bidForDutchAuction(bytes32 orderHash, uint256 bidValue) public {
+    function bidForDutchAuction(bytes32 orderHash, uint256 bidValue)
+        public
+        nonReentrant
+    {
         INeatFi(neatFiProtocolAddress).bidForDutchAuction(
             _msgSender(),
             orderHash,
@@ -219,7 +231,7 @@ contract NeatSwapImplementationV1 is
      * @dev A public function for the maker to approve the last bidder.
      * @param orderHash - The hash of the Order.
      */
-    function approveLastBid(bytes32 orderHash) public {
+    function approveLastBid(bytes32 orderHash) public nonReentrant {
         INeatFi(neatFiProtocolAddress).approveLastBid(_msgSender(), orderHash);
     }
 
@@ -232,6 +244,7 @@ contract NeatSwapImplementationV1 is
     function claimEnglishAuction(bytes32 orderHash, bytes calldata data)
         public
         payable
+        nonReentrant
     {
         INeatFi(neatFiProtocolAddress).claimEnglishAuction(
             _msgSender(),
@@ -249,6 +262,7 @@ contract NeatSwapImplementationV1 is
     function claimDutchAuction(bytes32 orderHash, bytes calldata data)
         public
         payable
+        nonReentrant
     {
         INeatFi(neatFiProtocolAddress).claimDutchAuction(
             _msgSender(),
@@ -268,6 +282,7 @@ contract NeatSwapImplementationV1 is
     function initialize() public initializer onlyProxy {
         __UUPSUpgradeable_init();
         __AccessControl_init();
+        __ReentrancyGuard_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         name = "NeatFi Protocol";

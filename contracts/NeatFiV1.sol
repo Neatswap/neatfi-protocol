@@ -3,7 +3,6 @@ pragma solidity ^0.8.15;
 
 import {NeatFiProtocolOperationsUpgradeable} from "./lib/protocolOperations/NeatFiProtocolOperationsUpgradeable.sol";
 import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "./lib/utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title NeatFiV1
@@ -17,7 +16,6 @@ import {ReentrancyGuardUpgradeable} from "./lib/utils/ReentrancyGuardUpgradeable
 contract NeatFiV1 is
     NeatFiProtocolOperationsUpgradeable,
     UUPSUpgradeable,
-    ReentrancyGuardUpgradeable
 {
     string internal name;
     string internal currentVersion;

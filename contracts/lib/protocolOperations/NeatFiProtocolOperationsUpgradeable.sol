@@ -12,6 +12,7 @@ import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {AssetEnumsUpgradeable} from "../protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
 import {AssetStructsUpgradeable} from "../protocolStorage/assetStorage/AssetStructsUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title NeatFiProtocolOperationsUpgradeable
@@ -22,7 +23,8 @@ contract NeatFiProtocolOperationsUpgradeable is
     RoleConstantsUpgradeable,
     AccessControlUpgradeable,
     AssetEnumsUpgradeable,
-    AssetStructsUpgradeable
+    AssetStructsUpgradeable,
+    ReentrancyGuardUpgradeable
 {
     address public swapModule;
     address public sellModule;
@@ -147,7 +149,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      *      Actor Factory contract.
      * @param actorAddress - The address of the Actor contract.
      */
-    function _requestActorKey(address actorAddress) internal {
+    function _requestActorKey(address actorAddress) internal nonReentrant {
         IActorFactory(actorFactory).requestActorKey(actorAddress);
     }
 
@@ -160,7 +162,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _isValidActorKey(address actorAddress, bytes32 orderHash)
         internal
-        view
+        nonReentrant
         returns (bool)
     {
         bytes32 actorKey = IActorFactory(actorFactory).getActorKey(
@@ -186,7 +188,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getEnglishAuctionProtocolFeeNumerator()
         internal
-        view
+        nonReentrant
         returns (uint256 englishAuctionProtocolFee)
     {
         return
@@ -202,7 +204,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getDutchAuctionProtocolFeeNumerator()
         internal
-        view
+        nonReentrant
         returns (uint256 dutchAuctionProtocolFee)
     {
         return
@@ -218,7 +220,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getSellProtocolFeeNumerator()
         internal
-        view
+        nonReentrant
         returns (uint256 sellProtocolFee)
     {
         return
@@ -233,7 +235,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getSwapProtocolFee()
         internal
-        view
+        nonReentrant
         returns (uint256 sellProtocolFee)
     {
         return IProtocolSettings(protocolSettings).getSwapProtocolFee();
@@ -264,7 +266,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 expirationTime,
         uint256 startPrice,
         bytes32 actorKey
-    ) internal returns (bytes32 orderHash) {
+    ) internal nonReentrant returns (bytes32 orderHash) {
         if (orderType == AssetOrderType.SWAP) {
             require(
                 value == _getSwapProtocolFee(),
@@ -308,7 +310,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 listingTime,
         bytes32 orderHash,
         bytes32 actorKey
-    ) internal returns (bytes32 bidHash) {
+    ) internal nonReentrant returns (bytes32 bidHash) {
         return
             IAssetSwap(swapModule).makeBid(
                 bidder,
@@ -329,7 +331,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address actorAddress,
         address maker,
         bytes32 orderHash
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         require(
@@ -365,7 +367,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
         require(_isValidActorKey(actorAddress, bidHash));
 
@@ -397,7 +399,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 purchaseValue,
         address bidder,
         bytes calldata data
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         address payable maker = INeatFiProtocolStorage(protocolStorage)
@@ -439,7 +441,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).decreaseDucthAuctionPrice(
@@ -462,7 +464,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).increaseEnglishAuctionPrice(
@@ -485,7 +487,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).bidForEnglishAuction(
@@ -508,7 +510,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).bidForDutchAuction(
@@ -529,7 +531,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address actorAddress,
         address maker,
         bytes32 orderHash
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).approveLastBid(maker, orderHash);
@@ -550,7 +552,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bytes32 orderHash,
         uint256 purchaseValue,
         bytes calldata data
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         address payable maker = INeatFiProtocolStorage(protocolStorage)
@@ -590,7 +592,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bytes32 orderHash,
         uint256 purchaseValue,
         bytes calldata data
-    ) internal {
+    ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
         address payable maker = INeatFiProtocolStorage(protocolStorage)
@@ -624,7 +626,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getLastBidderAddress(address actorAddress, bytes32 orderHash)
         internal
-        view
+        nonReentrant
         returns (address lastBidder)
     {
         require(_isValidActorKey(actorAddress, orderHash));
@@ -648,6 +650,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
+        __ReentrancyGuard_init();
 
         _setSwapModule(newSwapModule);
         _setSellModule(newSellModule);

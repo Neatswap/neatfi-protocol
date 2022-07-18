@@ -49,6 +49,10 @@ contract NeatFiProtocolTreasuryV1 is
         uint256 withdrawalAmount
     ) external onlyRole(PROTOCOL_TREASURER) {
         require(
+            withdrawalAddress != address(0),
+            "NeatFiProtocolTreasuryV1::withdraw: withdrawal address can not be 0."
+        );
+        require(
             withdrawalAmount <= getBalance(),
             "NeatFiProtocolTreasuryV1::withdraw: incorrect withdrawal amount."
         );

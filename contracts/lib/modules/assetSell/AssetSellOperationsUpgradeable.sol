@@ -7,6 +7,7 @@ import {AssetStructsUpgradeable} from "../../protocolStorage/assetStorage/AssetS
 import {AssetEnumsUpgradeable} from "../../protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "../../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title AssetSellOperationsUpgradeable
@@ -18,7 +19,8 @@ contract AssetSellOperationsUpgradeable is
     AssetEnumsUpgradeable,
     AssetStructsUpgradeable,
     RoleConstantsUpgradeable,
-    AccessControlUpgradeable
+    AccessControlUpgradeable,
+    ReentrancyGuardUpgradeable
 {
     address internal neatFiProtocolStorage;
     address internal assetTransfer;
@@ -54,7 +56,7 @@ contract AssetSellOperationsUpgradeable is
         uint256 purchaseValue,
         address buyer,
         bytes calldata data
-    ) internal {
+    ) internal nonReentrant {
         require(
             !INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(
                 orderHash,
@@ -106,6 +108,7 @@ contract AssetSellOperationsUpgradeable is
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
+        __ReentrancyGuard_init();
 
         _updateAssetTransferAddress(newAssetTransfer);
         _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
