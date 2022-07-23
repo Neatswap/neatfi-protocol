@@ -29,7 +29,6 @@ contract NeatFiV1 is
      */
     function _setVersion(string memory newVersion)
         internal
-        onlyRole(PROTOCOL_ADMIN)
     {
         currentVersion = newVersion;
     }

@@ -86,11 +86,7 @@ contract AssetSwapV1 is AssetSwapOperationsUpgradeable, UUPSUpgradeable {
 
     /** Initializers */
 
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-        onlyRole(PROTOCOL_ADMIN)
-    {}
+    function _authorizeUpgrade(address newImplementation) internal override {}
 
     function initialize(
         address neatFiProtocolStorageAddress,

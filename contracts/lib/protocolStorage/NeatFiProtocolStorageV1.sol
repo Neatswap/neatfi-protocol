@@ -20,10 +20,7 @@ contract NeatFiProtocolStorageV1 is
     /**
      * @dev Sets the version for the current implementation of this contract.
      */
-    function _setVersion(string memory newVersion)
-        internal
-        onlyRole(PROTOCOL_ADMIN)
-    {
+    function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
     }
 
