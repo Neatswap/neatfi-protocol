@@ -261,4 +261,31 @@ describe('ActorsFactoryOperationsUpgradeable', () => {
       });
     });
   });
+
+  describe('getActorKey', () => {
+    context('when the address is valid and the actor exists', () => {
+      beforeEach(async () => {
+        await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
+        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
+      });
+
+      it('returns the actor key', async () => {
+        const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
+
+        expect(await actorFactoryV1.getActorKey(actorAddress)).to.eq(actorInfo.actorKey);
+      });
+    });
+
+    context('when actor was not approved', () => {
+      beforeEach(async () => {
+        await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
+      });
+
+      it('returns an error', async () => {
+        await expect(
+          actorFactoryV1.connect(protocolAdmin).getActorKey(actorAddress),
+        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_getActorKey: actor key is 0x0.');
+      });
+    });
+  });
 });
