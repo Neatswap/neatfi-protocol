@@ -18,7 +18,7 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
      */
     function _setVersion(string memory newVersion)
         internal
-        onlyRole(PROTOCOL_ADMIN)
+        onlyRole(DEFAULT_ADMIN_ROLE)
     {
         currentVersion = newVersion;
     }
@@ -85,7 +85,6 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
     function _authorizeUpgrade(address newImplementation)
         internal
         override
-        onlyRole(PROTOCOL_ADMIN)
     {}
 
     function initialize() public initializer onlyProxy {
