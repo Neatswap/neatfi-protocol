@@ -49,7 +49,7 @@ contract ActorFactoryOperationsUpgradeable is
     {
         require(
             actorInfo[actorAddress].actorKey == 0x0,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor key already generated."
+            "ActorFactoryOperationsUpgradeable::_approveAndGenerateActorKey: actor key already generated."
         );
 
         actorInfo[actorAddress].actorKey = keccak256(abi.encode(ACTORKEY_TYPEHASH, actorAddress));
@@ -67,12 +67,12 @@ contract ActorFactoryOperationsUpgradeable is
     function _activateActor(address actorAddress) internal {
         require(
             actorInfo[actorAddress].actorKey != 0x0,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
+            "ActorFactoryOperationsUpgradeable::_activateActor: actor is not approved yet."
         );
 
         require(
             actorInfo[actorAddress].actorStatus == ActorStatus.INACTIVE,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already active."
+            "ActorFactoryOperationsUpgradeable::_activateActor: actor is already active."
         );
 
         actorInfo[actorAddress].actorStatus = ActorStatus.ACTIVE;
@@ -87,12 +87,12 @@ contract ActorFactoryOperationsUpgradeable is
     function _inactivateActor(address actorAddress) internal {
         require(
             actorInfo[actorAddress].actorKey != 0x0,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
+            "ActorFactoryOperationsUpgradeable::_inactivateActor: actor is not approved yet."
         );
 
         require(
             actorInfo[actorAddress].actorStatus == ActorStatus.ACTIVE,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already inactive."
+            "ActorFactoryOperationsUpgradeable::_inactivateActor: actor is already inactive."
         );
 
         actorInfo[actorAddress].actorStatus = ActorStatus.INACTIVE;

@@ -126,7 +126,7 @@ describe('ActorsFactoryOperationsUpgradeable', () => {
         await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
 
         await expect(actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress))
-          .to.be.revertedWith('ActorFactoryOperationsUpgradeable::_requestActorKey: actor key already generated.');
+          .to.be.revertedWith('ActorFactoryOperationsUpgradeable::_approveAndGenerateActorKey: actor key already generated.');
       });
     });
 
@@ -173,7 +173,7 @@ describe('ActorsFactoryOperationsUpgradeable', () => {
       it('returns an error', async () => {
         await expect(
           actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already inactive');
+        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_inactivateActor: actor is already inactive');
       });
     });
 
@@ -185,7 +185,7 @@ describe('ActorsFactoryOperationsUpgradeable', () => {
       it('returns an error', async () => {
         await expect(
           actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet');
+        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_inactivateActor: actor is not approved yet');
       });
     });
 
@@ -232,7 +232,7 @@ describe('ActorsFactoryOperationsUpgradeable', () => {
       it('returns an error', async () => {
         await expect(
           actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already active');
+        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_activateActor: actor is already active');
       });
     });
 
@@ -244,7 +244,7 @@ describe('ActorsFactoryOperationsUpgradeable', () => {
       it('returns an error', async () => {
         await expect(
           actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet');
+        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_activateActor: actor is not approved yet');
       });
     });
 
