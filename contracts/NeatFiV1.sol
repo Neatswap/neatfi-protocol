@@ -15,7 +15,7 @@ import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
  */
 contract NeatFiV1 is
     NeatFiProtocolOperationsUpgradeable,
-    UUPSUpgradeable,
+    UUPSUpgradeable
 {
     string internal name;
     string internal currentVersion;
@@ -158,7 +158,6 @@ contract NeatFiV1 is
      */
     function getSwapProtocolFee()
         external
-        view
         returns (uint256 sellProtocolFee)
     {
         return _getSwapProtocolFee();
