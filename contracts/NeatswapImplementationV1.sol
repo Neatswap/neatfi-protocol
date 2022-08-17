@@ -48,6 +48,20 @@ contract NeatSwapImplementationV1 is
     }
 
     /**
+     * @notice Changes the fee distribution address for this Actor.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function changeFeeDistributionAddress(
+        address payable newFeeDistributionAddress
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        INeatFi(neatFiProtocolAddress).changeFeeDistributionAddress(
+            address(this),
+            newFeeDistributionAddress
+        );
+    }
+
+    /**
      * @dev A public payable function to make an Order asset. For Swap
      *      Orders, msg.value must be equal to the protocol fee for Swap
      *      Order creation. For other Orders, it should be 0.

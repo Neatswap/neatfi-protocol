@@ -46,7 +46,6 @@ contract PaymentsResolverOperationsV1 is
      */
     function englishAuctionFeeResolver(uint256 value)
         external
-        view
         onlyRole(AUTHORIZED_OPERATOR)
         returns (uint256 makerEarnings)
     {
@@ -63,7 +62,6 @@ contract PaymentsResolverOperationsV1 is
      */
     function dutchAuctionFeeResolver(uint256 value)
         external
-        view
         onlyRole(AUTHORIZED_OPERATOR)
         returns (uint256 makerEarnings)
     {
@@ -80,7 +78,6 @@ contract PaymentsResolverOperationsV1 is
      */
     function sellFeeResolver(uint256 value)
         internal
-        view
         onlyRole(AUTHORIZED_OPERATOR)
         returns (uint256 makerEarnings)
     {
@@ -95,7 +92,6 @@ contract PaymentsResolverOperationsV1 is
      */
     function swapFeeResolver()
         external
-        view
         onlyRole(AUTHORIZED_OPERATOR)
         returns (uint256 feeToBePaid)
     {

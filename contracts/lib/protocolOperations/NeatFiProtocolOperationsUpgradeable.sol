@@ -177,6 +177,23 @@ contract NeatFiProtocolOperationsUpgradeable is
     }
 
     /**
+     * @dev An internal function to change the fee distribution
+     *      address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function _changeFeeDistributionAddress(
+        address actorAddress,
+        address payable newFeeDistributionAddress
+    ) internal nonReentrant {
+        IActorFactory(actorFactory).changeFeeDistributionAddress(
+            actorAddress,
+            newFeeDistributionAddress
+        );
+    }
+
+    /**
      * Protocol Settings operations implementation
      */
 

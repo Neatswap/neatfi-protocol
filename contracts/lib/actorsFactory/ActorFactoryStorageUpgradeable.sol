@@ -22,8 +22,22 @@ contract ActorFactoryStorageUpgradeable is
      *                      2 - INACTIVE.
      */
     struct Actor {
+        /**
+         * This is the address of the Actor contract implementation of NeatFi
+         * modules that will interact with the NeatFi protocol through
+         * the actor key.
+         */
         address actorContract;
+        /**
+         * This is the address that will receive protocol fees. Can be
+         * either a contract address as well. At the moment of the actor creation
+         * this address is the same as the actor contract address. Actors are
+         * able to change this address afterwards.
+         */
+        address payable feeDistributionAddress;
+        // Actor status.
         ActorStatus actorStatus;
+        // Actor key for the Actor contract address.
         bytes32 actorKey;
     }
 

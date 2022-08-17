@@ -19,8 +19,18 @@ interface INeatFi {
     function requestActorKey(address actorAddress) external;
 
     /**
-     * @dev An external function to retrieve the protocol fee
-     *      numerator for Swap Order creation.
+     * @notice Changes the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function changeFeeDistributionAddress(
+        address actorAddress,
+        address payable newFeeDistributionAddress
+    ) external;
+
+    /**
+     * @dev Retrieves the protocol fee numerator for Swap Order creation.
      * @return sellProtocolFee - The protocol fee numerator for
      *                           a Swap Order creation.
      */

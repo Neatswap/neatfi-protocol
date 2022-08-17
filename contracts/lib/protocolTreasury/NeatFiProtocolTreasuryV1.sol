@@ -2,10 +2,7 @@
 pragma solidity ^0.8.15;
 
 import {UUPSUpgradeable} from "../proxy/UUPSUpgradeable.sol";
-import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
-import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
-
-// TODO implement signing and pre-approving mechanism prior to withdrawals
+import {ProtocolTreasuryOperationsUpgradeable} from "./ProtocolTreasuryOperationsUpgradeable.sol";
 
 /**
  * @title NeatFiProtocolTreasuryV1
@@ -16,8 +13,7 @@ import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
  */
 contract NeatFiProtocolTreasuryV1 is
     UUPSUpgradeable,
-    AccessControlUpgradeable,
-    RoleConstantsUpgradeable
+    ProtocolTreasuryOperationsUpgradeable
 {
     string internal name;
     string internal currentVersion;
@@ -33,7 +29,7 @@ contract NeatFiProtocolTreasuryV1 is
      * @dev Retrieves the balance of the protocol treasury.
      */
     function getBalance() public view returns (uint256 contractBalance) {
-        return address(this).balance;
+        return _getBalance();
     }
 
     /**
@@ -45,21 +41,7 @@ contract NeatFiProtocolTreasuryV1 is
         address payable withdrawalAddress,
         uint256 withdrawalAmount
     ) external onlyRole(PROTOCOL_TREASURER) {
-        require(
-            withdrawalAddress != address(0),
-            "NeatFiProtocolTreasuryV1::withdraw: withdrawal address can not be 0."
-        );
-        require(
-            withdrawalAmount <= getBalance(),
-            "NeatFiProtocolTreasuryV1::withdraw: incorrect withdrawal amount."
-        );
-
-        //slither-disable-next-line arbitrary-send
-        bool sent = withdrawalAddress.send(withdrawalAmount);
-        require(
-            sent,
-            "NeatFiProtocolTreasuryV1::withdraw: failed to withdraw."
-        );
+        _withdraw(withdrawalAddress, withdrawalAmount);
     }
 
     /** Initializers */
