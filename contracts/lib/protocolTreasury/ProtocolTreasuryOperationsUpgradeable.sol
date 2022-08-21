@@ -4,10 +4,14 @@ pragma solidity ^0.8.15;
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 
-// TODO implement signing and pre-approving mechanism prior to withdrawals, multisig
 // TODO implement protocol fee distribution for actors
+// actor fee distributon address - DONE
+// add protocol settings (numerator) for the actor earnings
+// change payment resolver to split the fees
+
 // TODO implement vesting creation of Neat tokens
 // TODO implement Neat staking
+// TODO implement signing and pre-approving mechanism prior to withdrawals, multisig
 
 contract ProtocolTreasuryOperationsUpgradeable is
     AccessControlUpgradeable,
