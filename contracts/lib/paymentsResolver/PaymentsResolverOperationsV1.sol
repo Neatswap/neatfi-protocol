@@ -22,7 +22,7 @@ contract PaymentsResolverOperationsV1 is
      */
     function _setVersion(string memory newVersion)
         internal
-        onlyRole(PROTOCOL_ADMIN)
+        onlyRole(DEFAULT_ADMIN_ROLE)
     {
         currentVersion = newVersion;
     }
@@ -80,7 +80,7 @@ contract PaymentsResolverOperationsV1 is
      *         native tokens.
      */
     function sellFeeResolver(uint256 value)
-        internal
+        external 
         onlyRole(AUTHORIZED_OPERATOR)
         returns (uint256 makerEarnings)
     {
