@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     'airbnb-base',
     'plugin:mocha/recommended',
+    'plugin:import/typescript',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -20,5 +21,16 @@ module.exports = {
     'mocha/no-mocha-arrows': 0,
     indent: ['error', 2],
     '@typescript-eslint/indent': ['error', 2],
+    '@typescript-eslint/no-shadow': ['error'],
+    '@typescript-eslint/no-unused-vars': ['error'],
+    'no-shadow': 'off',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        '': 'never',
+        'ts': 'never',
+      },
+   ],
   },
 };
