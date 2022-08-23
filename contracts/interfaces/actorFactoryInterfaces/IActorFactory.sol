@@ -38,4 +38,15 @@ interface IActorFactory {
         address actorAddress,
         address payable newFeeDistributionAddress
     ) external;
+
+    /**
+     * @notice Retrieves the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @return feeDistributionAddress - The receiver address
+     *                                    of protocol fees.
+     */
+    function getFeeDistributionAddress(address actorAddress)
+        external
+        view
+        returns (address payable feeDistributionAddress);
 }

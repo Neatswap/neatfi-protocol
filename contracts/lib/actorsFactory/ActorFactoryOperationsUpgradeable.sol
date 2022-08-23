@@ -133,6 +133,28 @@ contract ActorFactoryOperationsUpgradeable is
         return actor.actorKey;
     }
 
+    /**
+     * @dev Retrieves the actor protocol fee distribution address
+     *      for a given Actor address.
+     * @param actorAddress - The address of the Actor contract.
+     * @return feeDistributionAddress - The fee distribution address.
+     */
+    function _getFeeDistributionAddress(address actorAddress)
+        internal
+        view
+        returns (address payable feeDistributionAddress)
+    {
+        Actor storage actor = actorInfo[actorAddress];
+        return actor.feeDistributionAddress;
+    }
+
+    /**
+     * @dev Changes the actor protocol fee distribution address
+     *      for a given Actor address.
+     * @param actorAddress - The address of the Actor contract.
+     * @param newFeeDistributionAddress - The new address to receive
+     *                                    protocol fees.
+     */
     function _changeFeeDistributionAddress(
         address actorAddress,
         address payable newFeeDistributionAddress

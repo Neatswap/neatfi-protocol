@@ -275,6 +275,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      * @return orderHash - The hash of the Order.
      */
     function _makeOrder(
+        address actorAddress,
         Token[] calldata tokens,
         AssetOrderType orderType,
         address payable maker,
@@ -290,11 +291,35 @@ contract NeatFiProtocolOperationsUpgradeable is
                 "NeatFiV1::makeOrder: wrong value for SWAP protocol fee."
             );
 
-            bool sent = protocolTreasury.send(value);
-            require(
-                sent,
-                "NeatFiV1::makeOrder: failed to send maker earnings."
+            // Actor earnings distribution
+
+            uint256 actorEarningsNumerator = IProtocolSettings(protocolSettings)
+                .getActorEarningsNumerator();
+
+            uint256 actorEarnings = value -
+                (value * actorEarningsNumerator) /
+                1000;
+
+            address payable actorFeeDistributionAddress = IActorFactory(
+                actorFactory
+            ).getFeeDistributionAddress(actorAddress);
+
+            bool actorEarningsSent = actorFeeDistributionAddress.send(
+                actorEarnings
             );
+
+            require(
+                actorEarningsSent,
+                "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+            );
+
+            // Protocol fee distribution
+
+            uint256 netProtocolFee = value - actorEarnings;
+
+            bool sent = protocolTreasury.send(netProtocolFee);
+
+            require(sent, "NeatFiV1::makeOrder: failed to send protocol fee.");
         } else {
             require(value == 0, "NeatFiV1::makeOrder: value should be 0.");
         }
@@ -419,12 +444,13 @@ contract NeatFiProtocolOperationsUpgradeable is
     ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
+        // Maker earnings distribution
+
         address payable maker = INeatFiProtocolStorage(protocolStorage)
             .getOrderMaker(orderHash);
 
         uint256 makerEarnings = IPaymentsResolver(paymentsResolver)
             .sellFeeResolver(purchaseValue);
-        uint256 protocolFee = purchaseValue - makerEarnings;
 
         bool makerEarningsSent = maker.send(makerEarnings);
         require(
@@ -432,7 +458,35 @@ contract NeatFiProtocolOperationsUpgradeable is
             "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
         );
 
-        bool protocolFeeSent = protocolTreasury.send(protocolFee);
+        // Actor earnings distribution
+
+        uint256 grossProtocolFee = purchaseValue - makerEarnings;
+
+        uint256 actorEarningsNumerator = IProtocolSettings(protocolSettings)
+            .getActorEarningsNumerator();
+
+        uint256 actorEarnings = grossProtocolFee -
+            (grossProtocolFee * actorEarningsNumerator) /
+            1000;
+
+        address payable actorFeeDistributionAddress = IActorFactory(
+            actorFactory
+        ).getFeeDistributionAddress(actorAddress);
+
+        bool actorEarningsSent = actorFeeDistributionAddress.send(
+            actorEarnings
+        );
+
+        require(
+            actorEarningsSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+        );
+
+        // Protocol fee distribution
+
+        uint256 netProtocolFee = grossProtocolFee - actorEarnings;
+
+        bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
         require(
             protocolFeeSent,
             "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
@@ -572,23 +626,52 @@ contract NeatFiProtocolOperationsUpgradeable is
     ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
+        // Maker earnings distribution
+
         address payable maker = INeatFiProtocolStorage(protocolStorage)
             .getOrderMaker(orderHash);
 
         uint256 makerEarnings = IPaymentsResolver(paymentsResolver)
             .englishAuctionFeeResolver(purchaseValue);
-        uint256 protocolFee = purchaseValue - makerEarnings;
 
-        bool protocolFeeSent = protocolTreasury.send(protocolFee);
+        bool makerEarningsSent = maker.send(makerEarnings);
         require(
-            protocolFeeSent,
-            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send protocol fee."
+            makerEarningsSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
         );
 
-        bool sent = maker.send(makerEarnings);
+        // Actor earnings distribution
+
+        uint256 grossProtocolFee = purchaseValue - makerEarnings;
+
+        uint256 actorEarningsNumerator = IProtocolSettings(protocolSettings)
+            .getActorEarningsNumerator();
+
+        uint256 actorEarnings = grossProtocolFee -
+            (grossProtocolFee * actorEarningsNumerator) /
+            1000;
+
+        address payable actorFeeDistributionAddress = IActorFactory(
+            actorFactory
+        ).getFeeDistributionAddress(actorAddress);
+
+        bool actorEarningsSent = actorFeeDistributionAddress.send(
+            actorEarnings
+        );
+
         require(
-            sent,
-            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send maker earnings."
+            actorEarningsSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+        );
+
+        // Protocol fee distribution
+
+        uint256 netProtocolFee = grossProtocolFee - actorEarnings;
+
+        bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
+        require(
+            protocolFeeSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
         );
 
         IAssetAuction(auctionModule).claimAuction(bidder, orderHash, data);
@@ -612,23 +695,52 @@ contract NeatFiProtocolOperationsUpgradeable is
     ) internal nonReentrant {
         require(_isValidActorKey(actorAddress, orderHash));
 
+        // Maker earnings distribution
+
         address payable maker = INeatFiProtocolStorage(protocolStorage)
             .getOrderMaker(orderHash);
 
         uint256 makerEarnings = IPaymentsResolver(paymentsResolver)
             .dutchAuctionFeeResolver(purchaseValue);
-        uint256 protocolFee = purchaseValue - makerEarnings;
 
-        bool protocolFeeSent = protocolTreasury.send(protocolFee);
+        bool makerEarningsSent = maker.send(makerEarnings);
         require(
-            protocolFeeSent,
-            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send protocol fee."
+            makerEarningsSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
         );
 
-        bool sent = maker.send(makerEarnings);
+        // Actor earnings distribution
+
+        uint256 grossProtocolFee = purchaseValue - makerEarnings;
+
+        uint256 actorEarningsNumerator = IProtocolSettings(protocolSettings)
+            .getActorEarningsNumerator();
+
+        uint256 actorEarnings = grossProtocolFee -
+            (grossProtocolFee * actorEarningsNumerator) /
+            1000;
+
+        address payable actorFeeDistributionAddress = IActorFactory(
+            actorFactory
+        ).getFeeDistributionAddress(actorAddress);
+
+        bool actorEarningsSent = actorFeeDistributionAddress.send(
+            actorEarnings
+        );
+
         require(
-            sent,
-            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send maker earnings."
+            actorEarningsSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+        );
+
+        // Protocol fee distribution
+
+        uint256 netProtocolFee = grossProtocolFee - actorEarnings;
+
+        bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
+        require(
+            protocolFeeSent,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
         );
 
         IAssetAuction(auctionModule).claimAuction(bidder, orderHash, data);

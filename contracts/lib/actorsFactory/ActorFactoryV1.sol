@@ -78,6 +78,21 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
     }
 
     /**
+     * @dev Retrieves the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @return feeDistributionAddress - The receiver address
+     *                                    of protocol fees.
+     */
+    function getFeeDistributionAddress(address actorAddress)
+        external
+        view
+        onlyRole(AUTHORIZED_OPERATOR)
+        returns (address payable feeDistributionAddress)
+    {
+        return _getFeeDistributionAddress(actorAddress);
+    }
+
+    /**
      * @dev Changes the fee distribution address for an Actor.
      * @param actorAddress - The address of the Actor contract.
      * @param newFeeDistributionAddress - The new receiver address
