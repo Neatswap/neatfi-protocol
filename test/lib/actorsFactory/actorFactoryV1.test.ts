@@ -3,7 +3,7 @@ import { Signer } from 'ethers';
 import { ethers, upgrades } from 'hardhat';
 import { ActorFactoryV1, ActorFactoryV1__factory as ActorFactoryV1Factory } from 'src/types';
 
-describe('ActorsFactoryOperationsUpgradeable', () => {
+describe('ActorFactoryV1', () => {
   let deployer: Signer;
   let deployerAddress: string;
 
