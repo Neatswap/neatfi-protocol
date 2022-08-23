@@ -4,4 +4,5 @@
 export * as neatswapImplementationV1Sol from "./NeatswapImplementationV1.sol";
 export * as interfaces from "./interfaces";
 export * as lib from "./lib";
+export * as mocks from "./mocks";
 export { NeatFiV1__factory } from "./NeatFiV1__factory";
