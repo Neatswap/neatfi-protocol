@@ -21,17 +21,30 @@ contract ProtocolSettingsV1 is
     string internal name;
     string internal currentVersion;
 
-    // Protocol fee numerator for ENGLISH_AUCTION
+    // Protocol fee numerator for ENGLISH_AUCTION.
     uint256 public englishAuctionProtocolFeeNumerator;
 
-    // Protocol fee numerator for DUTCH_AUCTION
+    // Protocol fee numerator for DUTCH_AUCTION.
     uint256 public dutchAuctionProtocolFeeNumerator;
 
-    // Protocol fee numerator for SELL
+    // Protocol fee numerator for SELL.
     uint256 public sellProtocolFee;
 
-    // Protocol fee for SWAP creation
+    // Protocol fee for SWAP creation.
     uint256 public swapProtocolFee;
+
+    // Numerator to calculate earnings from protocol fees for Actor contracts.
+    uint256 public actorEarningsNumerator;
+
+    /**
+     * @dev An internal function to set new actorEarningsNumerator.
+     * @param newActorEarningsNumerator - new actorEarningsNumerator.
+     */
+    function _setActorEarningsNumerator(uint256 newActorEarningsNumerator)
+        internal
+    {
+        actorEarningsNumerator = newActorEarningsNumerator;
+    }
 
     /**
      * @dev An internal function to set a new englishAuctionFeeNumerator.
@@ -76,12 +89,9 @@ contract ProtocolSettingsV1 is
     }
 
     /**
-     * @dev Sets the version for the current implementation of this contract.
+     * @dev An internal function to get the protocol fee numerator
+     *      for English auction.
      */
-    function _setVersion(string memory newVersion) internal {
-        currentVersion = newVersion;
-    }
-
     function getEnglishAuctionProtocolFeeNumerator()
         external
         view
@@ -90,6 +100,10 @@ contract ProtocolSettingsV1 is
         return englishAuctionProtocolFeeNumerator;
     }
 
+    /**
+     * @dev An internal function to get the protocol fee numerator
+     *      for Dutch auction.
+     */
     function getDutchAuctionProtocolFeeNumerator()
         external
         view
@@ -98,12 +112,35 @@ contract ProtocolSettingsV1 is
         return dutchAuctionProtocolFeeNumerator;
     }
 
+    /**
+     * @dev An internal function to get the protocol fee numerator
+     *      for Sell order.
+     */
     function getSellProtocolFeeNumerator() external view returns (uint256) {
         return sellProtocolFee;
     }
 
+    /**
+     * @dev An internal function to get the protocol fee
+     *      for Swap order.
+     */
     function getSwapProtocolFee() external view returns (uint256) {
         return swapProtocolFee;
+    }
+
+    /**
+     * @dev An internal function to get the numerator
+     *      for Actor earnings.
+     */
+    function getActorEarningsNumerator() external view returns (uint256) {
+        return actorEarningsNumerator;
+    }
+
+    /**
+     * @dev Sets the version for the current implementation of this contract.
+     */
+    function _setVersion(string memory newVersion) internal {
+        currentVersion = newVersion;
     }
 
     /**
@@ -166,7 +203,8 @@ contract ProtocolSettingsV1 is
         uint256 newSwapProtocolFeeValue,
         uint256 newSellProtocolFeeValue,
         uint256 newDutchAuctionProtocolFeeNumeratorValue,
-        uint256 newEnglishAuctionProtocolFeeNumeratorValue
+        uint256 newEnglishAuctionProtocolFeeNumeratorValue,
+        uint256 newActorEarningsNumerator
     ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
         __RoleConstants_init();
@@ -180,6 +218,7 @@ contract ProtocolSettingsV1 is
         _setDutchAuctionProtocolFeeNumerator(
             newEnglishAuctionProtocolFeeNumeratorValue
         );
+        _setActorEarningsNumerator(newActorEarningsNumerator);
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         name = "NeatFi Payments Transfer Resolver";
