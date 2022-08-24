@@ -19,6 +19,19 @@ contract NeatFiProtocolTreasuryV1 is
     string internal currentVersion;
 
     /**
+     * @dev An internal function to update the address of the
+     *      current implementation of the NeatFi vesting escrow contract.
+     * @param newVestingEscrow - The address of a new implementation for the
+     *                           Vesting Escrow contract.
+     */
+    function updateVestingEscrowAddress(address newVestingEscrow)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        _updateVestingEscrowAddress(newVestingEscrow);
+    }
+
+    /**
      * @dev Sets the version for the current implementation of this contract.
      */
     function _setVersion(string memory newVersion) internal {
@@ -30,6 +43,42 @@ contract NeatFiProtocolTreasuryV1 is
      */
     function getBalance() public view returns (uint256 contractBalance) {
         return _getBalance();
+    }
+
+    /**
+     * @dev Retrieves the Neat token balance of the Treasury.
+     */
+    function getNeatTokenBalance() external returns (uint256 neatTokenBalance) {
+        _getNeatTokenBalance();
+    }
+
+    /**
+     * @dev Vests Neat tokens through the interface of Vesting Escrow contract.
+     *      Transfers Neat tokens from the balance of the Treasury to the
+     *      Vesting Escrow contract for further management.
+     * @param vestee - The address of the vestee. This is not the address
+     *                 of the Vesting Escrow contract, but the address of the
+     *                 actuall vestee.
+     * @param tokenAmount - The amount of Neat tokens to be vested.
+     * @param cliffDays - The number of days of the vesting cliff (0 if no cliff).
+     * @param initiallyAvailableTokens - The amount of Neat tokens the vestee can claim
+     *                                   after the vesting creation.
+     * @param periodMonths - The number of vesting months.
+     */
+    function vestNeatTokens(
+        address vestee,
+        uint256 tokenAmount,
+        uint256 cliffDays,
+        uint256 initiallyAvailableTokens,
+        uint256 periodMonths
+    ) external onlyRole(PROTOCOL_TREASURER) {
+        _vestNeatTokens(
+            vestee,
+            tokenAmount,
+            cliffDays,
+            initiallyAvailableTokens,
+            periodMonths
+        );
     }
 
     /**
@@ -52,10 +101,15 @@ contract NeatFiProtocolTreasuryV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize() public initializer onlyProxy {
+    function initialize(
+        address _neatTokenAddress,
+        address _vestingEscrowAddress
+    ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
-        __RoleConstants_init();
-        __AccessControl_init();
+        __ProtocolTreasuryOperations_init(
+            _neatTokenAddress,
+            _vestingEscrowAddress
+        );
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         name = "NeatFi Treasury Contract";
