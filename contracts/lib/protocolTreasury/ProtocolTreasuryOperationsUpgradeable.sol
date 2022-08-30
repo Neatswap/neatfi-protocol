@@ -261,7 +261,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
                     extensionPeriod == 30 * DAY ||
                     extensionPeriod == 60 * DAY ||
                     extensionPeriod == 180 * DAY),
-            "ProtocolTreasuryOperationsUpgradeable::_lockNeatTokens: wrong extension period."
+            "ProtocolTreasuryOperationsUpgradeable::_extendLockPeriod: wrong extension period."
         );
 
         Locker storage locker = lockerInfo[lockerHash];
@@ -335,13 +335,13 @@ contract ProtocolTreasuryOperationsUpgradeable is
         // Sanity check on first run, before pool generation.
         require(
             lastPoolGenerationTimestamp != 0,
-            "ProtocolTreasuryOperationsUpgradeable::_claimFees: the first pool is not yet generated."
+            "ProtocolTreasuryOperationsUpgradeable::_claimYield: the first pool is not yet generated."
         );
 
         // Making sure no double-claimings for the same pool can happen.
         require(
             lastClaimedTimestamp[tokenHolder] <= lastPoolGenerationTimestamp,
-            "ProtocolTreasuryOperationsUpgradeable::_claimFees: Yield can not be claimed yet."
+            "ProtocolTreasuryOperationsUpgradeable::_claimYield: yield can not be claimed yet."
         );
 
         /* 
@@ -370,7 +370,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
          */
         require(
             yield <= address(this).balance,
-            "ProtocolTreasuryOperationsUpgradeable::_claimFees: not enough Eth on contract balance to distribute."
+            "ProtocolTreasuryOperationsUpgradeable::_claimYield: not enough Eth on contract balance to distribute."
         );
 
         lastClaimedTimestamp[tokenHolder] = block.timestamp;
@@ -379,7 +379,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
 
         require(
             sent,
-            "ProtocolTreasuryOperationsUpgradeable::_claimFees: failed to distribute fee yield."
+            "ProtocolTreasuryOperationsUpgradeable::_claimYield: failed to distribute fee yield."
         );
 
         emit YieldClaimed(tokenHolder, yield);
