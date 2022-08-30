@@ -157,6 +157,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
             lockPeriod == 15 * DAY ||
                 lockPeriod == 30 * DAY ||
                 lockPeriod == 60 * DAY ||
+                lockPeriod == 90 * DAY ||
                 lockPeriod == 180 * DAY,
             "ProtocolTreasuryOperationsUpgradeable::_lockNeatTokens: wrong lock period."
         );
@@ -260,6 +261,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
                 (extensionPeriod == 15 * DAY ||
                     extensionPeriod == 30 * DAY ||
                     extensionPeriod == 60 * DAY ||
+                    extensionPeriod == 90 * DAY ||
                     extensionPeriod == 180 * DAY),
             "ProtocolTreasuryOperationsUpgradeable::_extendLockPeriod: wrong extension period."
         );
