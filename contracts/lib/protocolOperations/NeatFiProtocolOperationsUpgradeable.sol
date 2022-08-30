@@ -637,7 +637,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bool makerEarningsSent = maker.send(makerEarnings);
         require(
             makerEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
+            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send maker earnings."
         );
 
         // Actor earnings distribution
@@ -661,7 +661,7 @@ contract NeatFiProtocolOperationsUpgradeable is
 
         require(
             actorEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to actor earnings."
         );
 
         // Protocol fee distribution
@@ -671,7 +671,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
         require(
             protocolFeeSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
+            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send protocol fee."
         );
 
         IAssetAuction(auctionModule).claimAuction(bidder, orderHash, data);
@@ -706,7 +706,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bool makerEarningsSent = maker.send(makerEarnings);
         require(
             makerEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
+            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send maker earnings."
         );
 
         // Actor earnings distribution
@@ -730,7 +730,7 @@ contract NeatFiProtocolOperationsUpgradeable is
 
         require(
             actorEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to actor earnings."
         );
 
         // Protocol fee distribution
@@ -740,7 +740,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
         require(
             protocolFeeSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
+            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send protocol fee."
         );
 
         IAssetAuction(auctionModule).claimAuction(bidder, orderHash, data);
