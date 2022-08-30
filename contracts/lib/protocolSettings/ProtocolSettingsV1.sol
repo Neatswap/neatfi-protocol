@@ -33,8 +33,28 @@ contract ProtocolSettingsV1 is
     // Protocol fee for SWAP creation.
     uint256 public swapProtocolFee;
 
-    // Numerator to calculate earnings from protocol fees for Actor contracts.
+    /**
+     * @notice Numerator to calculate earnings from protocol fees for Actor contracts.
+     *         Value between 0 and 1000.
+     */
     uint256 public actorEarningsNumerator;
+
+    /**
+     * @notice Numerator to calculate the percentage of the protocol fee to be
+     *         distributed to Neat holders who have locked their Neats on the
+     *         treasury contract. Value between 0 and 1000.
+     */
+    uint256 public protocolFeeDistributionNumerator;
+
+    /**
+     * @dev An internal function to set new protocolFeeDistributionNumerator.
+     * @param newProtocolFeeDistributionNumerator - new protocolFeeDistributionNumerator.
+     */
+    function _setProtocolFeeDistributionNumerator(
+        uint256 newProtocolFeeDistributionNumerator
+    ) internal {
+        protocolFeeDistributionNumerator = newProtocolFeeDistributionNumerator;
+    }
 
     /**
      * @dev An internal function to set new actorEarningsNumerator.
@@ -134,6 +154,18 @@ contract ProtocolSettingsV1 is
      */
     function getActorEarningsNumerator() external view returns (uint256) {
         return actorEarningsNumerator;
+    }
+
+    /**
+     * @dev An internal function to get the numerator
+     *      for the protocol fee distribution.
+     */
+    function getProtocolFeeDistributionNumerator()
+        external
+        view
+        returns (uint256)
+    {
+        return protocolFeeDistributionNumerator;
     }
 
     /**

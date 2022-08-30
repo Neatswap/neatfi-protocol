@@ -53,4 +53,13 @@ interface IProtocolSettings {
         external
         view
         returns (uint256 actorEarningsNumerator);
+
+    /**
+     * @notice Retrieves the numerator for protocol fee distribution.
+     * @dev Called only from the NeatFi contract.
+     */
+    function getProtocolFeeDistributionNumerator()
+        external
+        view
+        returns (uint256 protocolFeeDistributionNumerator);
 }

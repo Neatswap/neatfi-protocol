@@ -18,9 +18,12 @@ contract NeatFiProtocolTreasuryV1 is
     string internal name;
     string internal currentVersion;
 
+    /** Administration */
+
     /**
-     * @dev An internal function to update the address of the
+     * @notice An external function to update the address of the
      *      current implementation of the NeatFi vesting escrow contract.
+     * @dev Can be executed by a protocol admin only.
      * @param newVestingEscrow - The address of a new implementation for the
      *                           Vesting Escrow contract.
      */
@@ -29,6 +32,20 @@ contract NeatFiProtocolTreasuryV1 is
         onlyRole(PROTOCOL_ADMIN)
     {
         _updateVestingEscrowAddress(newVestingEscrow);
+    }
+
+    /**
+     * @notice An internal function to update the address of the
+     *      current implementation of the NeatFi protocol settings contract.
+     * @dev Can be executed by a protocol admin only.
+     * @param newProtocolSettings - The address of a new implementation for the
+     *                           Protocol Settings contract.
+     */
+    function updateProtocolSettingsAddress(address newProtocolSettings)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        _updateProtocolSettingsAddress(newProtocolSettings);
     }
 
     /**
@@ -49,8 +66,120 @@ contract NeatFiProtocolTreasuryV1 is
      * @dev Retrieves the Neat token balance of the Treasury.
      */
     function getNeatTokenBalance() external returns (uint256 neatTokenBalance) {
-        _getNeatTokenBalance();
+        return _getNeatTokenBalance();
     }
+
+    /** Protocol Fee Distribution & Neat Locking */
+
+    /**
+     * @notice A public function to lock Neat tokens and receive yields
+     *         of protocol fees in Ethers. More info can be found in the
+     *         notes of the internal function.
+     * @param tokenAmount - The number of Neat tokens to lock.
+     * @param lockPeriod - The number of days to lock the tokens.
+     */
+    function lockNeatTokens(uint256 tokenAmount, uint256 lockPeriod)
+        public
+        returns (bytes32 lockerHash)
+    {
+        return _lockNeatTokens(_msgSender(), tokenAmount, lockPeriod);
+    }
+
+    /**
+     * @notice Public function to unlock Neat tokens from a specific Locker.
+     *         More info can be found in the notes of the internal function.
+     * @param lockerHash - The hash of the Locker to unlock.
+     */
+    function unlockNeatTokens(bytes32 lockerHash) public {
+        _unlockNeatTokens(_msgSender(), lockerHash);
+    }
+
+    /**
+     * @notice Public function to extend the lock period of a specific Locker.
+     *         More info can be found in the notes of the internal function.
+     * @param lockerHash - The hash of the Locker.
+     * @param extensionPeriod - The number of days to extend the Locker.
+     */
+    function extendLockPeriod(bytes32 lockerHash, uint256 extensionPeriod)
+        public
+    {
+        _extendLockPeriod(_msgSender(), lockerHash, extensionPeriod);
+    }
+
+    /**
+     * @notice Public function to retrive all Lockers of an address.
+     * @return allLockersByAddress - Array containing Locker hashes.
+     */
+    function getAllLockersByAddress()
+        public
+        view
+        returns (bytes32[] memory allLockersByAddress)
+    {
+        return _getAllLockersByAddress(_msgSender());
+    }
+
+    /**
+     * @notice Public function to retrive all ACTIVE Lockers
+     *         of an address.
+     * @return An array containing ACTIVE Locker hashes.
+     */
+    function getActiveLockersByAddress()
+        public
+        view
+        returns (bytes32[] memory)
+    {
+        return _getActiveLockersByAddress(_msgSender());
+    }
+
+    /**
+     * @notice Public function to retrive the Locker struct record
+     *         by its hash.
+     * @param lockerHash - The hash of the Locker.
+     * @return locker - The Locker struct record.
+     */
+    function getLocker(bytes32 lockerHash)
+        public
+        view
+        returns (Locker memory locker)
+    {
+        return _getLocker(lockerHash);
+    }
+
+    /**
+     * @notice Public function to retrive the total number of
+     *         locked tokens in all Lockers (ACTIVE and EXPIRED).
+     * @return totalLockedNeats - The number of locked tokens.
+     */
+    function getTotlaLockedNeats()
+        public
+        view
+        returns (uint256 totalLockedNeats)
+    {
+        return _getTotlaLockedNeats(_msgSender());
+    }
+
+    /**
+     * @notice Public function to claim yield of protocol fees
+     *         from tokens in ACTIVE Lockers. More info can be
+     *         found in the notes of the internal function.
+     */
+    function claimYield() public {
+        _claimYield(payable(_msgSender()));
+    }
+
+    /** Distribution Pool Generation */
+
+    /**
+     * @notice External function to generate the current Pool
+     *         protocol fee yields. More info in the docs of the
+     *         internal function.
+     * @dev Can be executed by a protocol treasurer only.
+     */
+    function generateDistributionPool() external onlyRole(PROTOCOL_TREASURER) {
+        _generateDistributionPool();
+    }
+
+    /** Neat Token Vesting */
 
     /**
      * @dev Vests Neat tokens through the interface of Vesting Escrow contract.
