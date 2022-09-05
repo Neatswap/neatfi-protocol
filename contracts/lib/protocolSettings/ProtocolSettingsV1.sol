@@ -112,6 +112,12 @@ contract ProtocolSettingsV1 is
      * @dev An internal function to get the protocol fee numerator
      *      for English auction.
      */
+    function _setVersion(string memory newVersion)
+        internal
+    {
+        currentVersion = newVersion;
+    }
+
     function getEnglishAuctionProtocolFeeNumerator()
         external
         view

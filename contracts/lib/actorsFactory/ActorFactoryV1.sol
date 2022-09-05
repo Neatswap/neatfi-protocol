@@ -110,7 +110,6 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
     function _authorizeUpgrade(address newImplementation)
         internal
         override
-        onlyRole(PROTOCOL_ADMIN)
     {}
 
     function initialize() public initializer onlyProxy {

@@ -13,7 +13,9 @@ import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
  *         to requeest actor keys to be able to get verified and approved in order
  *         to interact with the NeatFi contract through its INeatFi interface.
  */
+
 contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
+
     string internal name;
     string internal currentVersion;
 
@@ -150,6 +152,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      * @return sellProtocolFee - The protocol fee numerator for
      *                           a Swap Order creation.
      */
+
     function getSwapProtocolFee() external returns (uint256 sellProtocolFee) {
         return _getSwapProtocolFee();
     }

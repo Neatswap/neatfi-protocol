@@ -52,19 +52,15 @@ contract ActorFactoryOperationsUpgradeable is
         internal
         returns (bytes32 actorKey)
     {
-        Actor memory actor = actorInfo[actorAddress];
-
         require(
-            actor.actorKey == 0x0,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor key already generated."
+            actorInfo[actorAddress].actorKey == 0x0,
+            "ActorFactoryOperationsUpgradeable::_approveAndGenerateActorKey: actor key already generated."
         );
 
-        actorKey = keccak256(abi.encode(ACTORKEY_TYPEHASH, actorAddress));
+        actorInfo[actorAddress].actorKey = keccak256(abi.encode(ACTORKEY_TYPEHASH, actorAddress));
+        actorInfo[actorAddress].actorStatus = ActorStatus.ACTIVE;
 
-        actor.actorStatus = ActorStatus.ACTIVE;
-        actor.actorKey = actorKey;
-
-        emit ActorKeyCreated(actorAddress, actorKey);
+        emit ActorKeyCreated(actorAddress, actorInfo[actorAddress].actorKey);
 
         return actorKey;
     }
@@ -74,19 +70,17 @@ contract ActorFactoryOperationsUpgradeable is
      * @param actorAddress - The address of the Actor contract.
      */
     function _activateActor(address actorAddress) internal {
-        Actor memory actor = actorInfo[actorAddress];
-
         require(
-            actor.actorKey != 0x0,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
+            actorInfo[actorAddress].actorKey != 0x0,
+            "ActorFactoryOperationsUpgradeable::_activateActor: actor is not approved yet."
         );
 
         require(
-            actor.actorStatus == ActorStatus.INACTIVE,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already active."
+            actorInfo[actorAddress].actorStatus == ActorStatus.INACTIVE,
+            "ActorFactoryOperationsUpgradeable::_activateActor: actor is already active."
         );
 
-        actor.actorStatus = ActorStatus.ACTIVE;
+        actorInfo[actorAddress].actorStatus = ActorStatus.ACTIVE;
 
         emit ActorActivated(actorAddress);
     }
@@ -96,19 +90,17 @@ contract ActorFactoryOperationsUpgradeable is
      * @param actorAddress - The address of the Actor contract.
      */
     function _inactivateActor(address actorAddress) internal {
-        Actor memory actor = actorInfo[actorAddress];
-
         require(
-            actor.actorKey != 0x0,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is not approved yet."
+            actorInfo[actorAddress].actorKey != 0x0,
+            "ActorFactoryOperationsUpgradeable::_inactivateActor: actor is not approved yet."
         );
 
         require(
-            actor.actorStatus == ActorStatus.ACTIVE,
-            "ActorFactoryOperationsUpgradeable::_requestActorKey: actor is already inactive."
+            actorInfo[actorAddress].actorStatus == ActorStatus.ACTIVE,
+            "ActorFactoryOperationsUpgradeable::_inactivateActor: actor is already inactive."
         );
 
-        actor.actorStatus = ActorStatus.INACTIVE;
+        actorInfo[actorAddress].actorStatus = ActorStatus.INACTIVE;
 
         emit ActorInactivated(actorAddress);
     }
