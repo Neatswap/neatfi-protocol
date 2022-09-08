@@ -31,11 +31,35 @@ interface IProtocolSettings {
      * @notice Retrieves the protocol fee for a Sell Order resolution.
      * @dev Called only from the NeatFi contract.
      */
-    function getSellProtocolFeeNumerator() external view returns (uint256);
+    function getSellProtocolFeeNumerator()
+        external
+        view
+        returns (uint256 sellProtocolFeeNumerator);
 
     /**
      * @notice Retrieves the protocol fee for a Swap Order creation.
      * @dev Called only from the NeatFi contract.
      */
-    function getSwapProtocolFee() external view returns (uint256);
+    function getSwapProtocolFee()
+        external
+        view
+        returns (uint256 swapProtocolFee);
+
+    /**
+     * @notice Retrieves the numerator for Actor earnings.
+     * @dev Called only from the NeatFi contract.
+     */
+    function getActorEarningsNumerator()
+        external
+        view
+        returns (uint256 actorEarningsNumerator);
+
+    /**
+     * @notice Retrieves the numerator for protocol fee distribution.
+     * @dev Called only from the NeatFi contract.
+     */
+    function getProtocolFeeDistributionNumerator()
+        external
+        view
+        returns (uint256 protocolFeeDistributionNumerator);
 }

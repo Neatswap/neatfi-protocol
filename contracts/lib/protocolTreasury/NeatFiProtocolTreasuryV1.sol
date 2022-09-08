@@ -2,10 +2,7 @@
 pragma solidity ^0.8.15;
 
 import {UUPSUpgradeable} from "../proxy/UUPSUpgradeable.sol";
-import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
-import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
-
-// TODO implement signing and pre-approving mechanism prior to withdrawals
+import {ProtocolTreasuryOperationsUpgradeable} from "./ProtocolTreasuryOperationsUpgradeable.sol";
 
 /**
  * @title NeatFiProtocolTreasuryV1
@@ -16,19 +13,45 @@ import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
  */
 contract NeatFiProtocolTreasuryV1 is
     UUPSUpgradeable,
-    AccessControlUpgradeable,
-    RoleConstantsUpgradeable
+    ProtocolTreasuryOperationsUpgradeable
 {
     string internal name;
     string internal currentVersion;
 
+    /** Administration */
+
+    /**
+     * @notice An external function to update the address of the
+     *      current implementation of the NeatFi vesting escrow contract.
+     * @dev Can be executed by a protocol admin only.
+     * @param newVestingEscrow - The address of a new implementation for the
+     *                           Vesting Escrow contract.
+     */
+    function updateVestingEscrowAddress(address newVestingEscrow)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        _updateVestingEscrowAddress(newVestingEscrow);
+    }
+
+    /**
+     * @notice An internal function to update the address of the
+     *      current implementation of the NeatFi protocol settings contract.
+     * @dev Can be executed by a protocol admin only.
+     * @param newProtocolSettings - The address of a new implementation for the
+     *                           Protocol Settings contract.
+     */
+    function updateProtocolSettingsAddress(address newProtocolSettings)
+        external
+        onlyRole(PROTOCOL_ADMIN)
+    {
+        _updateProtocolSettingsAddress(newProtocolSettings);
+    }
+
     /**
      * @dev Sets the version for the current implementation of this contract.
      */
-    function _setVersion(string memory newVersion)
-        internal
-        onlyRole(PROTOCOL_ADMIN)
-    {
+    function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
     }
 
@@ -36,7 +59,155 @@ contract NeatFiProtocolTreasuryV1 is
      * @dev Retrieves the balance of the protocol treasury.
      */
     function getBalance() public view returns (uint256 contractBalance) {
-        return address(this).balance;
+        return _getBalance();
+    }
+
+    /**
+     * @dev Retrieves the Neat token balance of the Treasury.
+     */
+    function getNeatTokenBalance() external returns (uint256 neatTokenBalance) {
+        return _getNeatTokenBalance();
+    }
+
+    /** Protocol Fee Distribution & Neat Locking */
+
+    /**
+     * @notice A public function to lock Neat tokens and receive yields
+     *         of protocol fees in Ethers. More info can be found in the
+     *         notes of the internal function.
+     * @param tokenAmount - The number of Neat tokens to lock.
+     * @param lockPeriod - The number of days to lock the tokens.
+     */
+    function lockNeatTokens(uint256 tokenAmount, uint256 lockPeriod)
+        public
+        returns (bytes32 lockerHash)
+    {
+        return _lockNeatTokens(_msgSender(), tokenAmount, lockPeriod);
+    }
+
+    /**
+     * @notice Public function to unlock Neat tokens from a specific Locker.
+     *         More info can be found in the notes of the internal function.
+     * @param lockerHash - The hash of the Locker to unlock.
+     */
+    function unlockNeatTokens(bytes32 lockerHash) public {
+        _unlockNeatTokens(_msgSender(), lockerHash);
+    }
+
+    /**
+     * @notice Public function to extend the lock period of a specific Locker.
+     *         More info can be found in the notes of the internal function.
+     * @param lockerHash - The hash of the Locker.
+     * @param extensionPeriod - The number of days to extend the Locker.
+     */
+    function extendLockPeriod(bytes32 lockerHash, uint256 extensionPeriod)
+        public
+    {
+        _extendLockPeriod(_msgSender(), lockerHash, extensionPeriod);
+    }
+
+    /**
+     * @notice Public function to retrive all Lockers of an address.
+     * @return allLockersByAddress - Array containing Locker hashes.
+     */
+    function getAllLockersByAddress()
+        public
+        view
+        returns (bytes32[] memory allLockersByAddress)
+    {
+        return _getAllLockersByAddress(_msgSender());
+    }
+
+    /**
+     * @notice Public function to retrive all ACTIVE Lockers
+     *         of an address.
+     * @return An array containing ACTIVE Locker hashes.
+     */
+    function getActiveLockersByAddress()
+        public
+        view
+        returns (bytes32[] memory)
+    {
+        return _getActiveLockersByAddress(_msgSender());
+    }
+
+    /**
+     * @notice Public function to retrive the Locker struct record
+     *         by its hash.
+     * @param lockerHash - The hash of the Locker.
+     * @return locker - The Locker struct record.
+     */
+    function getLocker(bytes32 lockerHash)
+        public
+        view
+        returns (Locker memory locker)
+    {
+        return _getLocker(lockerHash);
+    }
+
+    /**
+     * @notice Public function to retrive the total number of
+     *         locked tokens in all Lockers (ACTIVE and EXPIRED).
+     * @return totalLockedNeats - The number of locked tokens.
+     */
+    function getTotlaLockedNeats()
+        public
+        view
+        returns (uint256 totalLockedNeats)
+    {
+        return _getTotlaLockedNeats(_msgSender());
+    }
+
+    /**
+     * @notice Public function to claim yield of protocol fees
+     *         from tokens in ACTIVE Lockers. More info can be
+     *         found in the notes of the internal function.
+     */
+    function claimYield() public {
+        _claimYield(payable(_msgSender()));
+    }
+
+    /** Distribution Pool Generation */
+
+    /**
+     * @notice External function to generate the current Pool
+     *         protocol fee yields. More info in the docs of the
+     *         internal function.
+     * @dev Can be executed by a protocol treasurer only.
+     */
+    function generateDistributionPool() external onlyRole(PROTOCOL_TREASURER) {
+        _generateDistributionPool();
+    }
+
+    /** Neat Token Vesting */
+
+    /**
+     * @dev Vests Neat tokens through the interface of Vesting Escrow contract.
+     *      Transfers Neat tokens from the balance of the Treasury to the
+     *      Vesting Escrow contract for further management.
+     * @param vestee - The address of the vestee. This is not the address
+     *                 of the Vesting Escrow contract, but the address of the
+     *                 actuall vestee.
+     * @param tokenAmount - The amount of Neat tokens to be vested.
+     * @param cliffDays - The number of days of the vesting cliff (0 if no cliff).
+     * @param initiallyAvailableTokens - The amount of Neat tokens the vestee can claim
+     *                                   after the vesting creation.
+     * @param periodMonths - The number of vesting months.
+     */
+    function vestNeatTokens(
+        address vestee,
+        uint256 tokenAmount,
+        uint256 cliffDays,
+        uint256 initiallyAvailableTokens,
+        uint256 periodMonths
+    ) external onlyRole(PROTOCOL_TREASURER) {
+        _vestNeatTokens(
+            vestee,
+            tokenAmount,
+            cliffDays,
+            initiallyAvailableTokens,
+            periodMonths
+        );
     }
 
     /**
@@ -48,21 +219,7 @@ contract NeatFiProtocolTreasuryV1 is
         address payable withdrawalAddress,
         uint256 withdrawalAmount
     ) external onlyRole(PROTOCOL_TREASURER) {
-        require(
-            withdrawalAddress != address(0),
-            "NeatFiProtocolTreasuryV1::withdraw: withdrawal address can not be 0."
-        );
-        require(
-            withdrawalAmount <= getBalance(),
-            "NeatFiProtocolTreasuryV1::withdraw: incorrect withdrawal amount."
-        );
-
-        //slither-disable-next-line arbitrary-send
-        bool sent = withdrawalAddress.send(withdrawalAmount);
-        require(
-            sent,
-            "NeatFiProtocolTreasuryV1::withdraw: failed to withdraw."
-        );
+        _withdraw(withdrawalAddress, withdrawalAmount);
     }
 
     /** Initializers */
@@ -73,10 +230,15 @@ contract NeatFiProtocolTreasuryV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize() public initializer onlyProxy {
+    function initialize(
+        address _neatTokenAddress,
+        address _vestingEscrowAddress
+    ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
-        __RoleConstants_init();
-        __AccessControl_init();
+        __ProtocolTreasuryOperations_init(
+            _neatTokenAddress,
+            _vestingEscrowAddress
+        );
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         name = "NeatFi Treasury Contract";

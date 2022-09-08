@@ -34,10 +34,7 @@ contract NeatSwapImplementationV1 is
     /**
      * @dev Sets the version for the current implementation of this contract.
      */
-    function _setVersion(string memory newVersion)
-        internal
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
     }
 
@@ -48,6 +45,20 @@ contract NeatSwapImplementationV1 is
      */
     function requestActorKey() public onlyRole(DEFAULT_ADMIN_ROLE) {
         INeatFi(neatFiProtocolAddress).requestActorKey(address(this));
+    }
+
+    /**
+     * @notice Changes the fee distribution address for this Actor.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function changeFeeDistributionAddress(
+        address payable newFeeDistributionAddress
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        INeatFi(neatFiProtocolAddress).changeFeeDistributionAddress(
+            address(this),
+            newFeeDistributionAddress
+        );
     }
 
     /**

@@ -13,10 +13,9 @@ import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
  *         to requeest actor keys to be able to get verified and approved in order
  *         to interact with the NeatFi contract through its INeatFi interface.
  */
-contract NeatFiV1 is
-    NeatFiProtocolOperationsUpgradeable,
-    UUPSUpgradeable
-{
+
+contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
+
     string internal name;
     string internal currentVersion;
 
@@ -27,10 +26,7 @@ contract NeatFiV1 is
     /**
      * @dev Sets the version for the current implementation of this contract.
      */
-    function _setVersion(string memory newVersion)
-        internal
-        onlyRole(PROTOCOL_ADMIN)
-    {
+    function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
     }
 
@@ -156,10 +152,8 @@ contract NeatFiV1 is
      * @return sellProtocolFee - The protocol fee numerator for
      *                           a Swap Order creation.
      */
-    function getSwapProtocolFee()
-        external
-        returns (uint256 sellProtocolFee)
-    {
+
+    function getSwapProtocolFee() external returns (uint256 sellProtocolFee) {
         return _getSwapProtocolFee();
     }
 
@@ -176,6 +170,20 @@ contract NeatFiV1 is
      */
     function requestActorKey(address actorAddress) external nonReentrant {
         _requestActorKey(actorAddress);
+    }
+
+    /**
+     * @dev An external function to change the fee distribution
+     *      address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function changeFeeDistributionAddress(
+        address actorAddress,
+        address payable newFeeDistributionAddress
+    ) external nonReentrant {
+        _changeFeeDistributionAddress(actorAddress, newFeeDistributionAddress);
     }
 
     /**
@@ -218,6 +226,7 @@ contract NeatFiV1 is
     {
         return
             _makeOrder(
+                msg.sender,
                 tokens,
                 orderType,
                 maker,

@@ -17,10 +17,7 @@ contract AssetSellV1 is AssetSellOperationsUpgradeable, UUPSUpgradeable {
     /**
      * @dev Sets the version for the current implementation of this contract.
      */
-    function _setVersion(string memory newVersion)
-        internal
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
     }
 

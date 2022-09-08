@@ -27,4 +27,26 @@ interface IActorFactory {
         external
         view
         returns (bytes32 actorKey);
+
+    /**
+     * @notice Changes the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function changeFeeDistributionAddress(
+        address actorAddress,
+        address payable newFeeDistributionAddress
+    ) external;
+
+    /**
+     * @notice Retrieves the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @return feeDistributionAddress - The receiver address
+     *                                    of protocol fees.
+     */
+    function getFeeDistributionAddress(address actorAddress)
+        external
+        view
+        returns (address payable feeDistributionAddress);
 }

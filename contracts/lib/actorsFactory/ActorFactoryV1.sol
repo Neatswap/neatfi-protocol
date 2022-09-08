@@ -16,10 +16,7 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
     /**
      * @dev Sets the version for the current implementation of this contract.
      */
-    function _setVersion(string memory newVersion)
-        internal
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
     }
 
@@ -78,6 +75,34 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
         returns (bytes32 actorKey)
     {
         return _getActorKey(actorAddress);
+    }
+
+    /**
+     * @dev Retrieves the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @return feeDistributionAddress - The receiver address
+     *                                    of protocol fees.
+     */
+    function getFeeDistributionAddress(address actorAddress)
+        external
+        view
+        onlyRole(AUTHORIZED_OPERATOR)
+        returns (address payable feeDistributionAddress)
+    {
+        return _getFeeDistributionAddress(actorAddress);
+    }
+
+    /**
+     * @dev Changes the fee distribution address for an Actor.
+     * @param actorAddress - The address of the Actor contract.
+     * @param newFeeDistributionAddress - The new receiver address
+     *                                    of protocol fees.
+     */
+    function changeFeeDistributionAddress(
+        address actorAddress,
+        address payable newFeeDistributionAddress
+    ) external onlyRole(AUTHORIZED_OPERATOR) {
+        _changeFeeDistributionAddress(actorAddress, newFeeDistributionAddress);
     }
 
     /** Initializers */
