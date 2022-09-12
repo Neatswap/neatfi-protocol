@@ -53,6 +53,7 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
     "bidForEnglishAuction(bytes32,uint256)": FunctionFragment;
     "buyItNow(bytes32,bytes)": FunctionFragment;
     "cancelOrder(bytes32)": FunctionFragment;
+    "changeFeeDistributionAddress(address)": FunctionFragment;
     "claimDutchAuction(bytes32,bytes)": FunctionFragment;
     "claimEnglishAuction(bytes32,bytes)": FunctionFragment;
     "currentVersion()": FunctionFragment;
@@ -83,6 +84,7 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
       | "bidForEnglishAuction"
       | "buyItNow"
       | "cancelOrder"
+      | "changeFeeDistributionAddress"
       | "claimDutchAuction"
       | "claimEnglishAuction"
       | "currentVersion"
@@ -136,6 +138,10 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "cancelOrder",
     values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "changeFeeDistributionAddress",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "claimDutchAuction",
@@ -244,6 +250,10 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
   decodeFunctionResult(functionFragment: "buyItNow", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "cancelOrder",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "changeFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -446,6 +456,11 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    changeFeeDistributionAddress(
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     claimDutchAuction(
       orderHash: PromiseOrValue<BytesLike>,
       data: PromiseOrValue<BytesLike>,
@@ -584,6 +599,11 @@ export interface NeatSwapImplementationV1 extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  changeFeeDistributionAddress(
+    newFeeDistributionAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   claimDutchAuction(
     orderHash: PromiseOrValue<BytesLike>,
     data: PromiseOrValue<BytesLike>,
@@ -719,6 +739,11 @@ export interface NeatSwapImplementationV1 extends BaseContract {
 
     cancelOrder(
       orderHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    changeFeeDistributionAddress(
+      newFeeDistributionAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -915,6 +940,11 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    changeFeeDistributionAddress(
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     claimDutchAuction(
       orderHash: PromiseOrValue<BytesLike>,
       data: PromiseOrValue<BytesLike>,
@@ -1053,6 +1083,11 @@ export interface NeatSwapImplementationV1 extends BaseContract {
 
     cancelOrder(
       orderHash: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    changeFeeDistributionAddress(
+      newFeeDistributionAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

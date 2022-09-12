@@ -34,16 +34,20 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "PROTOCOL_ADMIN()": FunctionFragment;
     "PROTOCOL_TREASURER()": FunctionFragment;
+    "actorEarningsNumerator()": FunctionFragment;
     "dutchAuctionProtocolFeeNumerator()": FunctionFragment;
     "englishAuctionProtocolFeeNumerator()": FunctionFragment;
+    "getActorEarningsNumerator()": FunctionFragment;
     "getDutchAuctionProtocolFeeNumerator()": FunctionFragment;
     "getEnglishAuctionProtocolFeeNumerator()": FunctionFragment;
+    "getProtocolFeeDistributionNumerator()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getSellProtocolFeeNumerator()": FunctionFragment;
     "getSwapProtocolFee()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "initialize(uint256,uint256,uint256,uint256)": FunctionFragment;
+    "initialize(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
+    "protocolFeeDistributionNumerator()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "sellProtocolFee()": FunctionFragment;
@@ -63,16 +67,20 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
       | "DEFAULT_ADMIN_ROLE"
       | "PROTOCOL_ADMIN"
       | "PROTOCOL_TREASURER"
+      | "actorEarningsNumerator"
       | "dutchAuctionProtocolFeeNumerator"
       | "englishAuctionProtocolFeeNumerator"
+      | "getActorEarningsNumerator"
       | "getDutchAuctionProtocolFeeNumerator"
       | "getEnglishAuctionProtocolFeeNumerator"
+      | "getProtocolFeeDistributionNumerator"
       | "getRoleAdmin"
       | "getSellProtocolFeeNumerator"
       | "getSwapProtocolFee"
       | "grantRole"
       | "hasRole"
       | "initialize"
+      | "protocolFeeDistributionNumerator"
       | "renounceRole"
       | "revokeRole"
       | "sellProtocolFee"
@@ -103,6 +111,10 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "actorEarningsNumerator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "dutchAuctionProtocolFeeNumerator",
     values?: undefined
   ): string;
@@ -111,11 +123,19 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getActorEarningsNumerator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getDutchAuctionProtocolFeeNumerator",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getEnglishAuctionProtocolFeeNumerator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getProtocolFeeDistributionNumerator",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -144,8 +164,13 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "protocolFeeDistributionNumerator",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -209,6 +234,10 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "actorEarningsNumerator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "dutchAuctionProtocolFeeNumerator",
     data: BytesLike
   ): Result;
@@ -217,11 +246,19 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getActorEarningsNumerator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getDutchAuctionProtocolFeeNumerator",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "getEnglishAuctionProtocolFeeNumerator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getProtocolFeeDistributionNumerator",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -239,6 +276,10 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "protocolFeeDistributionNumerator",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -395,6 +436,8 @@ export interface ProtocolSettingsV1 extends BaseContract {
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<[string]>;
 
+    actorEarningsNumerator(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     dutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
@@ -403,6 +446,8 @@ export interface ProtocolSettingsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    getActorEarningsNumerator(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { dutchAuctionFeeNumerator: BigNumber }>;
@@ -410,6 +455,10 @@ export interface ProtocolSettingsV1 extends BaseContract {
     getEnglishAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { englishAuctionFeeNumerator: BigNumber }>;
+
+    getProtocolFeeDistributionNumerator(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -439,8 +488,13 @@ export interface ProtocolSettingsV1 extends BaseContract {
       newSellProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newEnglishAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
+      newActorEarningsNumerator: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    protocolFeeDistributionNumerator(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -503,6 +557,8 @@ export interface ProtocolSettingsV1 extends BaseContract {
 
   PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
 
+  actorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
   dutchAuctionProtocolFeeNumerator(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -511,11 +567,17 @@ export interface ProtocolSettingsV1 extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getActorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
   getDutchAuctionProtocolFeeNumerator(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   getEnglishAuctionProtocolFeeNumerator(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getProtocolFeeDistributionNumerator(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -545,8 +607,13 @@ export interface ProtocolSettingsV1 extends BaseContract {
     newSellProtocolFeeValue: PromiseOrValue<BigNumberish>,
     newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
     newEnglishAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
+    newActorEarningsNumerator: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  protocolFeeDistributionNumerator(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   renounceRole(
     role: PromiseOrValue<BytesLike>,
@@ -609,6 +676,8 @@ export interface ProtocolSettingsV1 extends BaseContract {
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
 
+    actorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
     dutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -617,11 +686,17 @@ export interface ProtocolSettingsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getActorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getEnglishAuctionProtocolFeeNumerator(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProtocolFeeDistributionNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -651,8 +726,13 @@ export interface ProtocolSettingsV1 extends BaseContract {
       newSellProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newEnglishAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
+      newActorEarningsNumerator: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    protocolFeeDistributionNumerator(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -774,6 +854,8 @@ export interface ProtocolSettingsV1 extends BaseContract {
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<BigNumber>;
 
+    actorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
     dutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -782,11 +864,17 @@ export interface ProtocolSettingsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getActorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getEnglishAuctionProtocolFeeNumerator(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProtocolFeeDistributionNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -816,7 +904,12 @@ export interface ProtocolSettingsV1 extends BaseContract {
       newSellProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newEnglishAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
+      newActorEarningsNumerator: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    protocolFeeDistributionNumerator(
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     renounceRole(
@@ -887,6 +980,10 @@ export interface ProtocolSettingsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    actorEarningsNumerator(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     dutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -895,11 +992,19 @@ export interface ProtocolSettingsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getActorEarningsNumerator(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getEnglishAuctionProtocolFeeNumerator(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getProtocolFeeDistributionNumerator(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -933,7 +1038,12 @@ export interface ProtocolSettingsV1 extends BaseContract {
       newSellProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newEnglishAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
+      newActorEarningsNumerator: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    protocolFeeDistributionNumerator(
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     renounceRole(

@@ -28,41 +28,113 @@ import type {
   PromiseOrValue,
 } from "../../common";
 
+export declare namespace ProtocolTreasuryStorageUpgradeable {
+  export type LockerStruct = {
+    tokenHolder: PromiseOrValue<string>;
+    lockedTokenAmount: PromiseOrValue<BigNumberish>;
+    lockedAt: PromiseOrValue<BigNumberish>;
+    availableToUnlockAt: PromiseOrValue<BigNumberish>;
+    lockerStatus: PromiseOrValue<BigNumberish>;
+  };
+
+  export type LockerStructOutput = [
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number
+  ] & {
+    tokenHolder: string;
+    lockedTokenAmount: BigNumber;
+    lockedAt: BigNumber;
+    availableToUnlockAt: BigNumber;
+    lockerStatus: number;
+  };
+}
+
 export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
   functions: {
     "AUTHORIZED_OPERATOR()": FunctionFragment;
+    "DAY()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "PROTOCOL_ADMIN()": FunctionFragment;
     "PROTOCOL_TREASURER()": FunctionFragment;
+    "claimYield()": FunctionFragment;
+    "currentFeeDistributionPool()": FunctionFragment;
+    "extendLockPeriod(bytes32,uint256)": FunctionFragment;
+    "generateDistributionPool()": FunctionFragment;
+    "getActiveLockersByAddress()": FunctionFragment;
+    "getAllLockersByAddress()": FunctionFragment;
     "getBalance()": FunctionFragment;
+    "getLocker(bytes32)": FunctionFragment;
+    "getNeatTokenBalance()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
+    "getTotlaLockedNeats()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "initialize()": FunctionFragment;
+    "initialize(address,address)": FunctionFragment;
+    "lastClaimedTimestamp(address)": FunctionFragment;
+    "lastPoolGenerationTimestamp()": FunctionFragment;
+    "lockNeatTokens(uint256,uint256)": FunctionFragment;
+    "lockedNeatsByAddress(address)": FunctionFragment;
+    "lockerInfo(bytes32)": FunctionFragment;
+    "lockersByAddress(address,uint256)": FunctionFragment;
+    "neatTokenAddress()": FunctionFragment;
+    "protocolSettingsAddress()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "totalLockedNeats()": FunctionFragment;
+    "unlockNeatTokens(bytes32)": FunctionFragment;
+    "updateProtocolSettingsAddress(address)": FunctionFragment;
+    "updateVestingEscrowAddress(address)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
+    "vestNeatTokens(address,uint256,uint256,uint256,uint256)": FunctionFragment;
+    "vestingEscrowAddress()": FunctionFragment;
     "withdraw(address,uint256)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "AUTHORIZED_OPERATOR"
+      | "DAY"
       | "DEFAULT_ADMIN_ROLE"
       | "PROTOCOL_ADMIN"
       | "PROTOCOL_TREASURER"
+      | "claimYield"
+      | "currentFeeDistributionPool"
+      | "extendLockPeriod"
+      | "generateDistributionPool"
+      | "getActiveLockersByAddress"
+      | "getAllLockersByAddress"
       | "getBalance"
+      | "getLocker"
+      | "getNeatTokenBalance"
       | "getRoleAdmin"
+      | "getTotlaLockedNeats"
       | "grantRole"
       | "hasRole"
       | "initialize"
+      | "lastClaimedTimestamp"
+      | "lastPoolGenerationTimestamp"
+      | "lockNeatTokens"
+      | "lockedNeatsByAddress"
+      | "lockerInfo"
+      | "lockersByAddress"
+      | "neatTokenAddress"
+      | "protocolSettingsAddress"
       | "renounceRole"
       | "revokeRole"
       | "supportsInterface"
+      | "totalLockedNeats"
+      | "unlockNeatTokens"
+      | "updateProtocolSettingsAddress"
+      | "updateVestingEscrowAddress"
       | "upgradeTo"
       | "upgradeToAndCall"
+      | "vestNeatTokens"
+      | "vestingEscrowAddress"
       | "withdraw"
   ): FunctionFragment;
 
@@ -70,6 +142,7 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     functionFragment: "AUTHORIZED_OPERATOR",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "DAY", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
@@ -83,12 +156,48 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "claimYield",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "currentFeeDistributionPool",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "extendLockPeriod",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "generateDistributionPool",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getActiveLockersByAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllLockersByAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getBalance",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getLocker",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getNeatTokenBalance",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTotlaLockedNeats",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "grantRole",
@@ -100,6 +209,38 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastClaimedTimestamp",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastPoolGenerationTimestamp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockNeatTokens",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockedNeatsByAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockerInfo",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockersByAddress",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "neatTokenAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "protocolSettingsAddress",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -115,12 +256,42 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
+    functionFragment: "totalLockedNeats",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "unlockNeatTokens",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateProtocolSettingsAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateVestingEscrowAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "upgradeTo",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeToAndCall",
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "vestNeatTokens",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "vestingEscrowAddress",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "withdraw",
@@ -131,6 +302,7 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     functionFragment: "AUTHORIZED_OPERATOR",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "DAY", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
@@ -143,14 +315,73 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     functionFragment: "PROTOCOL_TREASURER",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "claimYield", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "currentFeeDistributionPool",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "extendLockPeriod",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "generateDistributionPool",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getActiveLockersByAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllLockersByAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getBalance", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getLocker", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getNeatTokenBalance",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTotlaLockedNeats",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "lastClaimedTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lastPoolGenerationTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lockNeatTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lockedNeatsByAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "lockerInfo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "lockersByAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "neatTokenAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "protocolSettingsAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -160,9 +391,33 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "totalLockedNeats",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "unlockNeatTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateProtocolSettingsAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateVestingEscrowAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "upgradeToAndCall",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "vestNeatTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "vestingEscrowAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -170,18 +425,24 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
   events: {
     "AdminChanged(address,address)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
+    "LockerCreated(tuple,bytes32)": EventFragment;
+    "LockerUnlocked(tuple,bytes32)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "Upgraded(address)": EventFragment;
+    "YieldClaimed(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LockerCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LockerUnlocked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "YieldClaimed"): EventFragment;
 }
 
 export interface AdminChangedEventObject {
@@ -204,6 +465,28 @@ export type BeaconUpgradedEvent = TypedEvent<
 >;
 
 export type BeaconUpgradedEventFilter = TypedEventFilter<BeaconUpgradedEvent>;
+
+export interface LockerCreatedEventObject {
+  locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
+  lockerHash: string;
+}
+export type LockerCreatedEvent = TypedEvent<
+  [ProtocolTreasuryStorageUpgradeable.LockerStructOutput, string],
+  LockerCreatedEventObject
+>;
+
+export type LockerCreatedEventFilter = TypedEventFilter<LockerCreatedEvent>;
+
+export interface LockerUnlockedEventObject {
+  locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
+  lockerHash: string;
+}
+export type LockerUnlockedEvent = TypedEvent<
+  [ProtocolTreasuryStorageUpgradeable.LockerStructOutput, string],
+  LockerUnlockedEventObject
+>;
+
+export type LockerUnlockedEventFilter = TypedEventFilter<LockerUnlockedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -249,6 +532,17 @@ export type UpgradedEvent = TypedEvent<[string], UpgradedEventObject>;
 
 export type UpgradedEventFilter = TypedEventFilter<UpgradedEvent>;
 
+export interface YieldClaimedEventObject {
+  tokenHolder: string;
+  yield: BigNumber;
+}
+export type YieldClaimedEvent = TypedEvent<
+  [string, BigNumber],
+  YieldClaimedEventObject
+>;
+
+export type YieldClaimedEventFilter = TypedEventFilter<YieldClaimedEvent>;
+
 export interface NeatFiProtocolTreasuryV1 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -278,20 +572,61 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
   functions: {
     AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<[string]>;
 
+    DAY(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<[string]>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<[string]>;
 
+    claimYield(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    currentFeeDistributionPool(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    extendLockPeriod(
+      lockerHash: PromiseOrValue<BytesLike>,
+      extensionPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    generateDistributionPool(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    getActiveLockersByAddress(overrides?: CallOverrides): Promise<[string[]]>;
+
+    getAllLockersByAddress(
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { allLockersByAddress: string[] }>;
+
     getBalance(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { contractBalance: BigNumber }>;
+
+    getLocker(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [ProtocolTreasuryStorageUpgradeable.LockerStructOutput] & {
+        locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
+      }
+    >;
+
+    getNeatTokenBalance(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    getTotlaLockedNeats(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { totalLockedNeats: BigNumber }>;
 
     grantRole(
       role: PromiseOrValue<BytesLike>,
@@ -306,8 +641,53 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     ): Promise<[boolean]>;
 
     initialize(
+      _neatTokenAddress: PromiseOrValue<string>,
+      _vestingEscrowAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    lastPoolGenerationTimestamp(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    lockNeatTokens(
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      lockPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber, BigNumber, BigNumber, number] & {
+        tokenHolder: string;
+        lockedTokenAmount: BigNumber;
+        lockedAt: BigNumber;
+        availableToUnlockAt: BigNumber;
+        lockerStatus: number;
+      }
+    >;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<[string]>;
+
+    protocolSettingsAddress(overrides?: CallOverrides): Promise<[string]>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -326,6 +706,23 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    totalLockedNeats(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    unlockNeatTokens(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    updateProtocolSettingsAddress(
+      newProtocolSettings: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    updateVestingEscrowAddress(
+      newVestingEscrow: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     upgradeTo(
       newImplementation: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -337,6 +734,17 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    vestNeatTokens(
+      vestee: PromiseOrValue<string>,
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      cliffDays: PromiseOrValue<BigNumberish>,
+      initiallyAvailableTokens: PromiseOrValue<BigNumberish>,
+      periodMonths: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    vestingEscrowAddress(overrides?: CallOverrides): Promise<[string]>;
+
     withdraw(
       withdrawalAddress: PromiseOrValue<string>,
       withdrawalAmount: PromiseOrValue<BigNumberish>,
@@ -346,18 +754,51 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
 
   AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<string>;
 
+  DAY(overrides?: CallOverrides): Promise<BigNumber>;
+
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
   PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<string>;
 
   PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
 
+  claimYield(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  currentFeeDistributionPool(overrides?: CallOverrides): Promise<BigNumber>;
+
+  extendLockPeriod(
+    lockerHash: PromiseOrValue<BytesLike>,
+    extensionPeriod: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  generateDistributionPool(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  getActiveLockersByAddress(overrides?: CallOverrides): Promise<string[]>;
+
+  getAllLockersByAddress(overrides?: CallOverrides): Promise<string[]>;
+
   getBalance(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getLocker(
+    lockerHash: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<ProtocolTreasuryStorageUpgradeable.LockerStructOutput>;
+
+  getNeatTokenBalance(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  getTotlaLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
 
   grantRole(
     role: PromiseOrValue<BytesLike>,
@@ -372,8 +813,51 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
   ): Promise<boolean>;
 
   initialize(
+    _neatTokenAddress: PromiseOrValue<string>,
+    _vestingEscrowAddress: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  lastClaimedTimestamp(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  lastPoolGenerationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+  lockNeatTokens(
+    tokenAmount: PromiseOrValue<BigNumberish>,
+    lockPeriod: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  lockedNeatsByAddress(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  lockerInfo(
+    arg0: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, BigNumber, BigNumber, BigNumber, number] & {
+      tokenHolder: string;
+      lockedTokenAmount: BigNumber;
+      lockedAt: BigNumber;
+      availableToUnlockAt: BigNumber;
+      lockerStatus: number;
+    }
+  >;
+
+  lockersByAddress(
+    arg0: PromiseOrValue<string>,
+    arg1: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  neatTokenAddress(overrides?: CallOverrides): Promise<string>;
+
+  protocolSettingsAddress(overrides?: CallOverrides): Promise<string>;
 
   renounceRole(
     role: PromiseOrValue<BytesLike>,
@@ -392,6 +876,23 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  totalLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
+
+  unlockNeatTokens(
+    lockerHash: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  updateProtocolSettingsAddress(
+    newProtocolSettings: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  updateVestingEscrowAddress(
+    newVestingEscrow: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   upgradeTo(
     newImplementation: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -403,6 +904,17 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  vestNeatTokens(
+    vestee: PromiseOrValue<string>,
+    tokenAmount: PromiseOrValue<BigNumberish>,
+    cliffDays: PromiseOrValue<BigNumberish>,
+    initiallyAvailableTokens: PromiseOrValue<BigNumberish>,
+    periodMonths: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  vestingEscrowAddress(overrides?: CallOverrides): Promise<string>;
+
   withdraw(
     withdrawalAddress: PromiseOrValue<string>,
     withdrawalAmount: PromiseOrValue<BigNumberish>,
@@ -412,18 +924,45 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
   callStatic: {
     AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<string>;
 
+    DAY(overrides?: CallOverrides): Promise<BigNumber>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<string>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
 
+    claimYield(overrides?: CallOverrides): Promise<void>;
+
+    currentFeeDistributionPool(overrides?: CallOverrides): Promise<BigNumber>;
+
+    extendLockPeriod(
+      lockerHash: PromiseOrValue<BytesLike>,
+      extensionPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    generateDistributionPool(overrides?: CallOverrides): Promise<void>;
+
+    getActiveLockersByAddress(overrides?: CallOverrides): Promise<string[]>;
+
+    getAllLockersByAddress(overrides?: CallOverrides): Promise<string[]>;
+
     getBalance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getLocker(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<ProtocolTreasuryStorageUpgradeable.LockerStructOutput>;
+
+    getNeatTokenBalance(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    getTotlaLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
 
     grantRole(
       role: PromiseOrValue<BytesLike>,
@@ -437,7 +976,52 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    initialize(overrides?: CallOverrides): Promise<void>;
+    initialize(
+      _neatTokenAddress: PromiseOrValue<string>,
+      _vestingEscrowAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lastPoolGenerationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+    lockNeatTokens(
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      lockPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber, BigNumber, BigNumber, number] & {
+        tokenHolder: string;
+        lockedTokenAmount: BigNumber;
+        lockedAt: BigNumber;
+        availableToUnlockAt: BigNumber;
+        lockerStatus: number;
+      }
+    >;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<string>;
+
+    protocolSettingsAddress(overrides?: CallOverrides): Promise<string>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -456,6 +1040,23 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    totalLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
+
+    unlockNeatTokens(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateProtocolSettingsAddress(
+      newProtocolSettings: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateVestingEscrowAddress(
+      newVestingEscrow: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     upgradeTo(
       newImplementation: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -466,6 +1067,17 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    vestNeatTokens(
+      vestee: PromiseOrValue<string>,
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      cliffDays: PromiseOrValue<BigNumberish>,
+      initiallyAvailableTokens: PromiseOrValue<BigNumberish>,
+      periodMonths: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    vestingEscrowAddress(overrides?: CallOverrides): Promise<string>;
 
     withdraw(
       withdrawalAddress: PromiseOrValue<string>,
@@ -490,6 +1102,18 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     BeaconUpgraded(
       beacon?: PromiseOrValue<string> | null
     ): BeaconUpgradedEventFilter;
+
+    "LockerCreated(tuple,bytes32)"(
+      locker?: null,
+      lockerHash?: null
+    ): LockerCreatedEventFilter;
+    LockerCreated(locker?: null, lockerHash?: null): LockerCreatedEventFilter;
+
+    "LockerUnlocked(tuple,bytes32)"(
+      locker?: null,
+      lockerHash?: null
+    ): LockerUnlockedEventFilter;
+    LockerUnlocked(locker?: null, lockerHash?: null): LockerUnlockedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,
@@ -530,10 +1154,18 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     Upgraded(
       implementation?: PromiseOrValue<string> | null
     ): UpgradedEventFilter;
+
+    "YieldClaimed(address,uint256)"(
+      tokenHolder?: null,
+      _yield?: null
+    ): YieldClaimedEventFilter;
+    YieldClaimed(tokenHolder?: null, _yield?: null): YieldClaimedEventFilter;
   };
 
   estimateGas: {
     AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<BigNumber>;
+
+    DAY(overrides?: CallOverrides): Promise<BigNumber>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -541,12 +1173,43 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<BigNumber>;
 
+    claimYield(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    currentFeeDistributionPool(overrides?: CallOverrides): Promise<BigNumber>;
+
+    extendLockPeriod(
+      lockerHash: PromiseOrValue<BytesLike>,
+      extensionPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    generateDistributionPool(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    getActiveLockersByAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAllLockersByAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
     getBalance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getLocker(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getNeatTokenBalance(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getTotlaLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
 
     grantRole(
       role: PromiseOrValue<BytesLike>,
@@ -561,8 +1224,43 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     ): Promise<BigNumber>;
 
     initialize(
+      _neatTokenAddress: PromiseOrValue<string>,
+      _vestingEscrowAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lastPoolGenerationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+    lockNeatTokens(
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      lockPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
+    protocolSettingsAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
       role: PromiseOrValue<BytesLike>,
@@ -581,6 +1279,23 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    totalLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
+
+    unlockNeatTokens(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    updateProtocolSettingsAddress(
+      newProtocolSettings: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    updateVestingEscrowAddress(
+      newVestingEscrow: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     upgradeTo(
       newImplementation: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -591,6 +1306,17 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    vestNeatTokens(
+      vestee: PromiseOrValue<string>,
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      cliffDays: PromiseOrValue<BigNumberish>,
+      initiallyAvailableTokens: PromiseOrValue<BigNumberish>,
+      periodMonths: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    vestingEscrowAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     withdraw(
       withdrawalAddress: PromiseOrValue<string>,
@@ -604,6 +1330,8 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    DAY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     DEFAULT_ADMIN_ROLE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -614,10 +1342,49 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    claimYield(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    currentFeeDistributionPool(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    extendLockPeriod(
+      lockerHash: PromiseOrValue<BytesLike>,
+      extensionPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    generateDistributionPool(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getActiveLockersByAddress(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAllLockersByAddress(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getBalance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getLocker(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getNeatTokenBalance(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getTotlaLockedNeats(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -634,7 +1401,46 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
+      _neatTokenAddress: PromiseOrValue<string>,
+      _vestingEscrowAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lastPoolGenerationTimestamp(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lockNeatTokens(
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      lockPeriod: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    protocolSettingsAddress(
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     renounceRole(
@@ -654,6 +1460,23 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    totalLockedNeats(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    unlockNeatTokens(
+      lockerHash: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateProtocolSettingsAddress(
+      newProtocolSettings: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateVestingEscrowAddress(
+      newVestingEscrow: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     upgradeTo(
       newImplementation: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -663,6 +1486,19 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
       newImplementation: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    vestNeatTokens(
+      vestee: PromiseOrValue<string>,
+      tokenAmount: PromiseOrValue<BigNumberish>,
+      cliffDays: PromiseOrValue<BigNumberish>,
+      initiallyAvailableTokens: PromiseOrValue<BigNumberish>,
+      periodMonths: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    vestingEscrowAddress(
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     withdraw(

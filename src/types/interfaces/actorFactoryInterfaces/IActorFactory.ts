@@ -24,16 +24,30 @@ import type {
 
 export interface IActorFactoryInterface extends utils.Interface {
   functions: {
+    "changeFeeDistributionAddress(address,address)": FunctionFragment;
     "getActorKey(address)": FunctionFragment;
+    "getFeeDistributionAddress(address)": FunctionFragment;
     "requestActorKey(address)": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic: "getActorKey" | "requestActorKey"
+    nameOrSignatureOrTopic:
+      | "changeFeeDistributionAddress"
+      | "getActorKey"
+      | "getFeeDistributionAddress"
+      | "requestActorKey"
   ): FunctionFragment;
 
   encodeFunctionData(
+    functionFragment: "changeFeeDistributionAddress",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getActorKey",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getFeeDistributionAddress",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -42,7 +56,15 @@ export interface IActorFactoryInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "changeFeeDistributionAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getActorKey",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -80,10 +102,21 @@ export interface IActorFactory extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getActorKey(
       actor: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string] & { actorKey: string }>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { feeDistributionAddress: string }>;
 
     requestActorKey(
       actorAddress: PromiseOrValue<string>,
@@ -91,8 +124,19 @@ export interface IActorFactory extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  changeFeeDistributionAddress(
+    actorAddress: PromiseOrValue<string>,
+    newFeeDistributionAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getActorKey(
     actor: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getFeeDistributionAddress(
+    actorAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -102,8 +146,19 @@ export interface IActorFactory extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getActorKey(
       actor: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -116,8 +171,19 @@ export interface IActorFactory extends BaseContract {
   filters: {};
 
   estimateGas: {
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getActorKey(
       actor: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -128,8 +194,19 @@ export interface IActorFactory extends BaseContract {
   };
 
   populateTransaction: {
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getActorKey(
       actor: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

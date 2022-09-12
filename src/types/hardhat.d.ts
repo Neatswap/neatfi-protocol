@@ -41,6 +41,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAssetSwap__factory>;
     getContractFactory(
+      name: "INeatToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.INeatToken__factory>;
+    getContractFactory(
       name: "IPaymentsResolver",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPaymentsResolver__factory>;
@@ -72,6 +76,10 @@ declare module "hardhat/types/runtime" {
       name: "IERC165Upgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165Upgradeable__factory>;
+    getContractFactory(
+      name: "IVestingEscrow",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IVestingEscrow__factory>;
     getContractFactory(
       name: "AccessControlUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -185,6 +193,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NeatFiProtocolTreasuryV1__factory>;
     getContractFactory(
+      name: "ProtocolTreasuryOperationsUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ProtocolTreasuryOperationsUpgradeable__factory>;
+    getContractFactory(
+      name: "ProtocolTreasuryStorageUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ProtocolTreasuryStorageUpgradeable__factory>;
+    getContractFactory(
       name: "ERC1967UpgradeUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1967UpgradeUpgradeable__factory>;
@@ -249,6 +265,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAssetSwap>;
     getContractAt(
+      name: "INeatToken",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.INeatToken>;
+    getContractAt(
       name: "IPaymentsResolver",
       address: string,
       signer?: ethers.Signer
@@ -288,6 +309,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165Upgradeable>;
+    getContractAt(
+      name: "IVestingEscrow",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IVestingEscrow>;
     getContractAt(
       name: "AccessControlUpgradeable",
       address: string,
@@ -428,6 +454,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.NeatFiProtocolTreasuryV1>;
+    getContractAt(
+      name: "ProtocolTreasuryOperationsUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ProtocolTreasuryOperationsUpgradeable>;
+    getContractAt(
+      name: "ProtocolTreasuryStorageUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ProtocolTreasuryStorageUpgradeable>;
     getContractAt(
       name: "ERC1967UpgradeUpgradeable",
       address: string,

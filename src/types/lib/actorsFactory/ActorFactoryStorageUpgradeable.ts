@@ -69,8 +69,9 @@ export interface ActorFactoryStorageUpgradeable extends BaseContract {
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<
-      [string, number, string] & {
+      [string, string, number, string] & {
         actorContract: string;
+        feeDistributionAddress: string;
         actorStatus: number;
         actorKey: string;
       }
@@ -81,8 +82,9 @@ export interface ActorFactoryStorageUpgradeable extends BaseContract {
     arg0: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<
-    [string, number, string] & {
+    [string, string, number, string] & {
       actorContract: string;
+      feeDistributionAddress: string;
       actorStatus: number;
       actorKey: string;
     }
@@ -93,8 +95,9 @@ export interface ActorFactoryStorageUpgradeable extends BaseContract {
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<
-      [string, number, string] & {
+      [string, string, number, string] & {
         actorContract: string;
+        feeDistributionAddress: string;
         actorStatus: number;
         actorKey: string;
       }

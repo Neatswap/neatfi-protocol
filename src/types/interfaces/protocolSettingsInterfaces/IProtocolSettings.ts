@@ -22,26 +22,38 @@ import type {
 
 export interface IProtocolSettingsInterface extends utils.Interface {
   functions: {
+    "getActorEarningsNumerator()": FunctionFragment;
     "getDutchAuctionProtocolFeeNumerator()": FunctionFragment;
     "getEnglishAuctionProtocolFeeNumerator()": FunctionFragment;
+    "getProtocolFeeDistributionNumerator()": FunctionFragment;
     "getSellProtocolFeeNumerator()": FunctionFragment;
     "getSwapProtocolFee()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "getActorEarningsNumerator"
       | "getDutchAuctionProtocolFeeNumerator"
       | "getEnglishAuctionProtocolFeeNumerator"
+      | "getProtocolFeeDistributionNumerator"
       | "getSellProtocolFeeNumerator"
       | "getSwapProtocolFee"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "getActorEarningsNumerator",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getDutchAuctionProtocolFeeNumerator",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getEnglishAuctionProtocolFeeNumerator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getProtocolFeeDistributionNumerator",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -54,11 +66,19 @@ export interface IProtocolSettingsInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "getActorEarningsNumerator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getDutchAuctionProtocolFeeNumerator",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "getEnglishAuctionProtocolFeeNumerator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getProtocolFeeDistributionNumerator",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -100,6 +120,10 @@ export interface IProtocolSettings extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    getActorEarningsNumerator(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { actorEarningsNumerator: BigNumber }>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { dutchAuctionFeeNumerator: BigNumber }>;
@@ -108,12 +132,20 @@ export interface IProtocolSettings extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { englishAuctionFeeNumerator: BigNumber }>;
 
+    getProtocolFeeDistributionNumerator(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { protocolFeeDistributionNumerator: BigNumber }>;
+
     getSellProtocolFeeNumerator(
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[BigNumber] & { sellProtocolFeeNumerator: BigNumber }>;
 
-    getSwapProtocolFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getSwapProtocolFee(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { swapProtocolFee: BigNumber }>;
   };
+
+  getActorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
 
   getDutchAuctionProtocolFeeNumerator(
     overrides?: CallOverrides
@@ -123,16 +155,26 @@ export interface IProtocolSettings extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getProtocolFeeDistributionNumerator(
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   getSellProtocolFeeNumerator(overrides?: CallOverrides): Promise<BigNumber>;
 
   getSwapProtocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
+    getActorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getEnglishAuctionProtocolFeeNumerator(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProtocolFeeDistributionNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -144,11 +186,17 @@ export interface IProtocolSettings extends BaseContract {
   filters: {};
 
   estimateGas: {
+    getActorEarningsNumerator(overrides?: CallOverrides): Promise<BigNumber>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getEnglishAuctionProtocolFeeNumerator(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProtocolFeeDistributionNumerator(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -158,11 +206,19 @@ export interface IProtocolSettings extends BaseContract {
   };
 
   populateTransaction: {
+    getActorEarningsNumerator(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getDutchAuctionProtocolFeeNumerator(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getEnglishAuctionProtocolFeeNumerator(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getProtocolFeeDistributionNumerator(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

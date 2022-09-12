@@ -12,6 +12,19 @@ import type {
 const _abi = [
   {
     inputs: [],
+    name: "getActorEarningsNumerator",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "actorEarningsNumerator",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "getDutchAuctionProtocolFeeNumerator",
     outputs: [
       {
@@ -38,11 +51,24 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "getProtocolFeeDistributionNumerator",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "protocolFeeDistributionNumerator",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "getSellProtocolFeeNumerator",
     outputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "sellProtocolFeeNumerator",
         type: "uint256",
       },
     ],
@@ -55,7 +81,7 @@ const _abi = [
     outputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "swapProtocolFee",
         type: "uint256",
       },
     ],
