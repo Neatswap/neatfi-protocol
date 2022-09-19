@@ -238,50 +238,75 @@ const main = async () => {
   const PROTOCOL_TREASURER_ROLE = neatFiV1.PROTOCOL_TREASURER();
 
   // NeatFi receives AUTHORIZED_OPERATOR role in protocol modules
-  console.log("neatFiV1 receives AUTHORIZED_OPERATOR role in actorFactoryV1");
-  await actorFactoryV1.grantRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address);
+  console.log(
+    "neatFiV1 receives AUTHORIZED_OPERATOR role in actorFactoryV1..."
+  );
+  const tx1 = await actorFactoryV1.grantRole(
+    AUTHORIZED_OPERATOR_ROLE,
+    neatFiV1.address
+  );
+  await tx1.wait();
   console.log(
     await actorFactoryV1.hasRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address)
   );
 
   console.log(
-    "neatFiV1 receives AUTHORIZED_OPERATOR role in neatFiProtocolStorageV1"
+    "neatFiV1 receives AUTHORIZED_OPERATOR role in neatFiProtocolStorageV1..."
   );
-  await neatFiProtocolStorageV1.grantRole(
+  const tx2 = await neatFiProtocolStorageV1.grantRole(
     AUTHORIZED_OPERATOR_ROLE,
     neatFiV1.address
   );
+  await tx2.wait();
   console.log(
     await neatFiProtocolStorageV1.hasRole(
       AUTHORIZED_OPERATOR_ROLE,
       neatFiV1.address
     )
   );
-  console.log("neatFiV1 receives AUTHORIZED_OPERATOR role in assetTransferV1");
-  await assetTransferV1.grantRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address);
+
+  console.log(
+    "neatFiV1 receives AUTHORIZED_OPERATOR role in assetTransferV1..."
+  );
+  const tx3 = await assetTransferV1.grantRole(
+    AUTHORIZED_OPERATOR_ROLE,
+    neatFiV1.address
+  );
+  await tx3.wait();
   console.log(
     await assetTransferV1.hasRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address)
   );
 
-  console.log("neatFiV1 receives AUTHORIZED_OPERATOR role in assetAuctionV1");
-  await assetAuctionV1.grantRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address);
+  console.log(
+    "neatFiV1 receives AUTHORIZED_OPERATOR role in assetAuctionV1..."
+  );
+  const tx4 = await assetAuctionV1.grantRole(
+    AUTHORIZED_OPERATOR_ROLE,
+    neatFiV1.address
+  );
+  await tx4.wait();
   console.log(
     await assetAuctionV1.hasRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address)
   );
 
-  console.log("neatFiV1 receives AUTHORIZED_OPERATOR role in assetSellV1");
-  await assetSellV1.grantRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address);
+  console.log("neatFiV1 receives AUTHORIZED_OPERATOR role in assetSellV1...");
+  const tx5 = await assetSellV1.grantRole(
+    AUTHORIZED_OPERATOR_ROLE,
+    neatFiV1.address
+  );
+  await tx5.wait();
   console.log(
     await assetSellV1.hasRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address)
   );
 
   console.log(
-    "neatFiV1 receives AUTHORIZED_OPERATOR role in paymentsResolverOperationsV1"
+    "neatFiV1 receives AUTHORIZED_OPERATOR role in paymentsResolverOperationsV1..."
   );
-  await paymentsResolverOperationsV1.grantRole(
+  const tx6 = await paymentsResolverOperationsV1.grantRole(
     AUTHORIZED_OPERATOR_ROLE,
     neatFiV1.address
   );
+  await tx6.wait();
   console.log(
     await paymentsResolverOperationsV1.hasRole(
       AUTHORIZED_OPERATOR_ROLE,
@@ -290,22 +315,24 @@ const main = async () => {
   );
 
   console.log(
-    "neatFiV1 receives AUTHORIZED_OPERATOR role in protocolSettingsV1"
+    "neatFiV1 receives AUTHORIZED_OPERATOR role in protocolSettingsV1..."
   );
-  await protocolSettingsV1.grantRole(
+  const tx7 = await protocolSettingsV1.grantRole(
     AUTHORIZED_OPERATOR_ROLE,
     neatFiV1.address
   );
+  await tx7.wait();
   console.log(
     await protocolSettingsV1.hasRole(AUTHORIZED_OPERATOR_ROLE, neatFiV1.address)
   );
 
   // CEO receives the PROTOCOL_TREASURER role
-  console.log("CEO receives the PROTOCOL_TREASURER role");
-  await neatFiProtocolTreasuryV1.grantRole(
+  console.log("CEO receives the PROTOCOL_TREASURER role...");
+  const tx8 = await neatFiProtocolTreasuryV1.grantRole(
     PROTOCOL_TREASURER_ROLE,
     deployer.address
   );
+  await tx8.wait();
   console.log(
     await neatFiProtocolTreasuryV1.hasRole(
       PROTOCOL_TREASURER_ROLE,
@@ -316,50 +343,72 @@ const main = async () => {
   // CTO receives PROTOCOL_ADMIN role in protocol modules
   // TODO change ALL of the deployer.address below to the address of the CTO
 
-  console.log("CTO receives the PROTOCOL_ADMIN role in actorFactoryV1");
-  await actorFactoryV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  console.log("CTO receives the PROTOCOL_ADMIN role in actorFactoryV1...");
+  const tx9 = await actorFactoryV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    deployer.address
+  );
+  await tx9.wait();
   console.log(
     await actorFactoryV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
   );
 
   console.log(
-    'CTO receives the PROTOCOL_ADMIN role in neatFiProtocolStorageV1"'
+    "CTO receives the PROTOCOL_ADMIN role in neatFiProtocolStorageV1..."
   );
-  await neatFiProtocolStorageV1.grantRole(
+  const tx10 = await neatFiProtocolStorageV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
     deployer.address
   );
+  await tx10.wait();
   console.log(
     await neatFiProtocolStorageV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
   );
 
-  console.log('CTO receives the PROTOCOL_ADMIN role in assetTransferV1"');
-  await assetTransferV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  console.log("CTO receives the PROTOCOL_ADMIN role in assetTransferV1...");
+  const tx11 = await assetTransferV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    deployer.address
+  );
+  await tx11.wait();
   console.log(
     await assetTransferV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
   );
 
-  console.log('CTO receives the PROTOCOL_ADMIN role in assetAuctionV1"');
-  await assetAuctionV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  console.log("CTO receives the PROTOCOL_ADMIN role in assetAuctionV1...");
+  const tx12 = await assetAuctionV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    deployer.address
+  );
+  await tx12.wait();
   console.log(
     await assetAuctionV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
   );
 
-  console.log('CTO receives the PROTOCOL_ADMIN role in assetSellV1"');
-  await assetSellV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
-  console.log(await assetSellV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
-
-  console.log('CTO receives the PROTOCOL_ADMIN role in assetSwapV1"');
-  await assetSwapV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
-  console.log(await assetSwapV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
-
-  console.log(
-    'CTO receives the PROTOCOL_ADMIN role in paymentsResolverOperationsV1"'
-  );
-  await paymentsResolverOperationsV1.grantRole(
+  console.log("CTO receives the PROTOCOL_ADMIN role in assetSellV1...");
+  const tx13 = await assetSellV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
     deployer.address
   );
+  await tx13.wait();
+  console.log(await assetSellV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
+
+  console.log("CTO receives the PROTOCOL_ADMIN role in assetSwapV1...");
+  const tx14 = await assetSwapV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    deployer.address
+  );
+  await tx14.wait();
+  console.log(await assetSwapV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
+
+  console.log(
+    "CTO receives the PROTOCOL_ADMIN role in paymentsResolverOperationsV1..."
+  );
+  const tx15 = await paymentsResolverOperationsV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    deployer.address
+  );
+  await tx15.wait();
   console.log(
     await paymentsResolverOperationsV1.hasRole(
       PROTOCOL_ADMIN_ROLE,
@@ -367,19 +416,24 @@ const main = async () => {
     )
   );
 
-  console.log('CTO receives the PROTOCOL_ADMIN role in protocolSettingsV1"');
-  await protocolSettingsV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  console.log("CTO receives the PROTOCOL_ADMIN role in protocolSettingsV1...");
+  const tx16 = await protocolSettingsV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    deployer.address
+  );
+  await tx16.wait();
   console.log(
     await protocolSettingsV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
   );
 
   console.log(
-    'CTO receives the PROTOCOL_ADMIN role in neatFiProtocolTreasuryV1"'
+    "CTO receives the PROTOCOL_ADMIN role in neatFiProtocolTreasuryV1..."
   );
-  await neatFiProtocolTreasuryV1.grantRole(
+  const tx17 = await neatFiProtocolTreasuryV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
     deployer.address
   );
+  await tx17.wait();
   console.log(
     await neatFiProtocolTreasuryV1.hasRole(
       PROTOCOL_ADMIN_ROLE,
@@ -387,8 +441,9 @@ const main = async () => {
     )
   );
 
-  console.log('CTO receives the PROTOCOL_ADMIN role in neatFiV1"');
-  await neatFiV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  console.log("CTO receives the PROTOCOL_ADMIN role in neatFiV1...");
+  const tx18 = await neatFiV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  await tx18.wait();
   console.log(await neatFiV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
 };
 
