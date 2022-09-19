@@ -36,7 +36,9 @@ export interface ActorFactoryV1Interface extends utils.Interface {
     "activateActor(address)": FunctionFragment;
     "actorInfo(address)": FunctionFragment;
     "approveAndGenerateActorKey(address)": FunctionFragment;
+    "changeFeeDistributionAddress(address,address)": FunctionFragment;
     "getActorKey(address)": FunctionFragment;
+    "getFeeDistributionAddress(address)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
@@ -59,7 +61,9 @@ export interface ActorFactoryV1Interface extends utils.Interface {
       | "activateActor"
       | "actorInfo"
       | "approveAndGenerateActorKey"
+      | "changeFeeDistributionAddress"
       | "getActorKey"
+      | "getFeeDistributionAddress"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
@@ -102,7 +106,15 @@ export interface ActorFactoryV1Interface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "changeFeeDistributionAddress",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getActorKey",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getFeeDistributionAddress",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -176,7 +188,15 @@ export interface ActorFactoryV1Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "changeFeeDistributionAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getActorKey",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -386,8 +406,9 @@ export interface ActorFactoryV1 extends BaseContract {
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<
-      [string, number, string] & {
+      [string, string, number, string] & {
         actorContract: string;
+        feeDistributionAddress: string;
         actorStatus: number;
         actorKey: string;
       }
@@ -398,10 +419,21 @@ export interface ActorFactoryV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getActorKey(
       actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string] & { actorKey: string }>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { feeDistributionAddress: string }>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -480,8 +512,9 @@ export interface ActorFactoryV1 extends BaseContract {
     arg0: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<
-    [string, number, string] & {
+    [string, string, number, string] & {
       actorContract: string;
+      feeDistributionAddress: string;
       actorStatus: number;
       actorKey: string;
     }
@@ -492,7 +525,18 @@ export interface ActorFactoryV1 extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  changeFeeDistributionAddress(
+    actorAddress: PromiseOrValue<string>,
+    newFeeDistributionAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getActorKey(
+    actorAddress: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getFeeDistributionAddress(
     actorAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -574,8 +618,9 @@ export interface ActorFactoryV1 extends BaseContract {
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<
-      [string, number, string] & {
+      [string, string, number, string] & {
         actorContract: string;
+        feeDistributionAddress: string;
         actorStatus: number;
         actorKey: string;
       }
@@ -586,7 +631,18 @@ export interface ActorFactoryV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getActorKey(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getFeeDistributionAddress(
       actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -753,7 +809,18 @@ export interface ActorFactoryV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getActorKey(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getFeeDistributionAddress(
       actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -848,7 +915,18 @@ export interface ActorFactoryV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getActorKey(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getFeeDistributionAddress(
       actorAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

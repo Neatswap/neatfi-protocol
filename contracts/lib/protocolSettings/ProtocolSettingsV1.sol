@@ -108,16 +108,6 @@ contract ProtocolSettingsV1 is
         sellProtocolFee = newSellProtocolFee;
     }
 
-    /**
-     * @dev An internal function to get the protocol fee numerator
-     *      for English auction.
-     */
-    function _setVersion(string memory newVersion)
-        internal
-    {
-        currentVersion = newVersion;
-    }
-
     function getEnglishAuctionProtocolFeeNumerator()
         external
         view

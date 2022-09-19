@@ -2,3 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { NeatFiProtocolTreasuryV1 } from "./NeatFiProtocolTreasuryV1";
+export type { ProtocolTreasuryOperationsUpgradeable } from "./ProtocolTreasuryOperationsUpgradeable";
+export type { ProtocolTreasuryStorageUpgradeable } from "./ProtocolTreasuryStorageUpgradeable";

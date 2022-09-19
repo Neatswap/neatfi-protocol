@@ -48,6 +48,7 @@ export interface INeatFiInterface extends utils.Interface {
     "bidForEnglishAuction(address,bytes32,uint256)": FunctionFragment;
     "buyItNow(address,bytes32,bytes)": FunctionFragment;
     "cancelOrder(address,bytes32)": FunctionFragment;
+    "changeFeeDistributionAddress(address,address)": FunctionFragment;
     "claimDutchAuction(address,bytes32,bytes)": FunctionFragment;
     "claimEnglishAuction(address,bytes32,bytes)": FunctionFragment;
     "decreaseDucthAuctionPrice(address,bytes32,uint256)": FunctionFragment;
@@ -66,6 +67,7 @@ export interface INeatFiInterface extends utils.Interface {
       | "bidForEnglishAuction"
       | "buyItNow"
       | "cancelOrder"
+      | "changeFeeDistributionAddress"
       | "claimDutchAuction"
       | "claimEnglishAuction"
       | "decreaseDucthAuctionPrice"
@@ -117,6 +119,10 @@ export interface INeatFiInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "cancelOrder",
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "changeFeeDistributionAddress",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "claimDutchAuction",
@@ -200,6 +206,10 @@ export interface INeatFiInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "buyItNow", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "cancelOrder",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "changeFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -298,6 +308,12 @@ export interface INeatFi extends BaseContract {
     cancelOrder(
       maker: PromiseOrValue<string>,
       orderHash: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -401,6 +417,12 @@ export interface INeatFi extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  changeFeeDistributionAddress(
+    actorAddress: PromiseOrValue<string>,
+    newFeeDistributionAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   claimDutchAuction(
     bidder: PromiseOrValue<string>,
     orderHash: PromiseOrValue<BytesLike>,
@@ -496,6 +518,12 @@ export interface INeatFi extends BaseContract {
     cancelOrder(
       maker: PromiseOrValue<string>,
       orderHash: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -600,6 +628,12 @@ export interface INeatFi extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     claimDutchAuction(
       bidder: PromiseOrValue<string>,
       orderHash: PromiseOrValue<BytesLike>,
@@ -696,6 +730,12 @@ export interface INeatFi extends BaseContract {
     cancelOrder(
       maker: PromiseOrValue<string>,
       orderHash: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    changeFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      newFeeDistributionAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -14,6 +14,24 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "actorAddress",
+        type: "address",
+      },
+      {
+        internalType: "address payable",
+        name: "newFeeDistributionAddress",
+        type: "address",
+      },
+    ],
+    name: "changeFeeDistributionAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "actor",
         type: "address",
       },
@@ -24,6 +42,25 @@ const _abi = [
         internalType: "bytes32",
         name: "actorKey",
         type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "actorAddress",
+        type: "address",
+      },
+    ],
+    name: "getFeeDistributionAddress",
+    outputs: [
+      {
+        internalType: "address payable",
+        name: "feeDistributionAddress",
+        type: "address",
       },
     ],
     stateMutability: "view",

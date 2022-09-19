@@ -4,6 +4,7 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -26,41 +27,86 @@ import type {
   PromiseOrValue,
 } from "../../common";
 
-export interface ActorFactoryOperationsUpgradeableInterface
+export declare namespace ProtocolTreasuryStorageUpgradeable {
+  export type LockerStruct = {
+    tokenHolder: PromiseOrValue<string>;
+    lockedTokenAmount: PromiseOrValue<BigNumberish>;
+    lockedAt: PromiseOrValue<BigNumberish>;
+    availableToUnlockAt: PromiseOrValue<BigNumberish>;
+    lockerStatus: PromiseOrValue<BigNumberish>;
+  };
+
+  export type LockerStructOutput = [
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number
+  ] & {
+    tokenHolder: string;
+    lockedTokenAmount: BigNumber;
+    lockedAt: BigNumber;
+    availableToUnlockAt: BigNumber;
+    lockerStatus: number;
+  };
+}
+
+export interface ProtocolTreasuryOperationsUpgradeableInterface
   extends utils.Interface {
   functions: {
     "AUTHORIZED_OPERATOR()": FunctionFragment;
+    "DAY()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "PROTOCOL_ADMIN()": FunctionFragment;
     "PROTOCOL_TREASURER()": FunctionFragment;
-    "actorInfo(address)": FunctionFragment;
+    "currentFeeDistributionPool()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
+    "lastClaimedTimestamp(address)": FunctionFragment;
+    "lastPoolGenerationTimestamp()": FunctionFragment;
+    "lockedNeatsByAddress(address)": FunctionFragment;
+    "lockerInfo(bytes32)": FunctionFragment;
+    "lockersByAddress(address,uint256)": FunctionFragment;
+    "neatTokenAddress()": FunctionFragment;
+    "protocolSettingsAddress()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "totalLockedNeats()": FunctionFragment;
+    "vestingEscrowAddress()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "AUTHORIZED_OPERATOR"
+      | "DAY"
       | "DEFAULT_ADMIN_ROLE"
       | "PROTOCOL_ADMIN"
       | "PROTOCOL_TREASURER"
-      | "actorInfo"
+      | "currentFeeDistributionPool"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
+      | "lastClaimedTimestamp"
+      | "lastPoolGenerationTimestamp"
+      | "lockedNeatsByAddress"
+      | "lockerInfo"
+      | "lockersByAddress"
+      | "neatTokenAddress"
+      | "protocolSettingsAddress"
       | "renounceRole"
       | "revokeRole"
       | "supportsInterface"
+      | "totalLockedNeats"
+      | "vestingEscrowAddress"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "AUTHORIZED_OPERATOR",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "DAY", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
@@ -74,8 +120,8 @@ export interface ActorFactoryOperationsUpgradeableInterface
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "actorInfo",
-    values: [PromiseOrValue<string>]
+    functionFragment: "currentFeeDistributionPool",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -90,6 +136,34 @@ export interface ActorFactoryOperationsUpgradeableInterface
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "lastClaimedTimestamp",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastPoolGenerationTimestamp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockedNeatsByAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockerInfo",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lockersByAddress",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "neatTokenAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "protocolSettingsAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceRole",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
@@ -101,11 +175,20 @@ export interface ActorFactoryOperationsUpgradeableInterface
     functionFragment: "supportsInterface",
     values: [PromiseOrValue<BytesLike>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "totalLockedNeats",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "vestingEscrowAddress",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "AUTHORIZED_OPERATOR",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "DAY", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
@@ -118,13 +201,41 @@ export interface ActorFactoryOperationsUpgradeableInterface
     functionFragment: "PROTOCOL_TREASURER",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "actorInfo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "currentFeeDistributionPool",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "lastClaimedTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lastPoolGenerationTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lockedNeatsByAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "lockerInfo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "lockersByAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "neatTokenAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "protocolSettingsAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -134,68 +245,53 @@ export interface ActorFactoryOperationsUpgradeableInterface
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "totalLockedNeats",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "vestingEscrowAddress",
+    data: BytesLike
+  ): Result;
 
   events: {
-    "ActorActivated(address)": EventFragment;
-    "ActorInactivated(address)": EventFragment;
-    "ActorKeyCreated(address,bytes32)": EventFragment;
-    "ActorKeyRequested(address)": EventFragment;
+    "LockerCreated(tuple,bytes32)": EventFragment;
+    "LockerUnlocked(tuple,bytes32)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
+    "YieldClaimed(address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "ActorActivated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ActorInactivated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ActorKeyCreated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ActorKeyRequested"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LockerCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LockerUnlocked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "YieldClaimed"): EventFragment;
 }
 
-export interface ActorActivatedEventObject {
-  actorAddress: string;
+export interface LockerCreatedEventObject {
+  locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
+  lockerHash: string;
 }
-export type ActorActivatedEvent = TypedEvent<
-  [string],
-  ActorActivatedEventObject
+export type LockerCreatedEvent = TypedEvent<
+  [ProtocolTreasuryStorageUpgradeable.LockerStructOutput, string],
+  LockerCreatedEventObject
 >;
 
-export type ActorActivatedEventFilter = TypedEventFilter<ActorActivatedEvent>;
+export type LockerCreatedEventFilter = TypedEventFilter<LockerCreatedEvent>;
 
-export interface ActorInactivatedEventObject {
-  actorAddress: string;
+export interface LockerUnlockedEventObject {
+  locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
+  lockerHash: string;
 }
-export type ActorInactivatedEvent = TypedEvent<
-  [string],
-  ActorInactivatedEventObject
+export type LockerUnlockedEvent = TypedEvent<
+  [ProtocolTreasuryStorageUpgradeable.LockerStructOutput, string],
+  LockerUnlockedEventObject
 >;
 
-export type ActorInactivatedEventFilter =
-  TypedEventFilter<ActorInactivatedEvent>;
-
-export interface ActorKeyCreatedEventObject {
-  actorAddress: string;
-  actorKey: string;
-}
-export type ActorKeyCreatedEvent = TypedEvent<
-  [string, string],
-  ActorKeyCreatedEventObject
->;
-
-export type ActorKeyCreatedEventFilter = TypedEventFilter<ActorKeyCreatedEvent>;
-
-export interface ActorKeyRequestedEventObject {
-  actorAddress: string;
-}
-export type ActorKeyRequestedEvent = TypedEvent<
-  [string],
-  ActorKeyRequestedEventObject
->;
-
-export type ActorKeyRequestedEventFilter =
-  TypedEventFilter<ActorKeyRequestedEvent>;
+export type LockerUnlockedEventFilter = TypedEventFilter<LockerUnlockedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -234,12 +330,23 @@ export type RoleRevokedEvent = TypedEvent<
 
 export type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
 
-export interface ActorFactoryOperationsUpgradeable extends BaseContract {
+export interface YieldClaimedEventObject {
+  tokenHolder: string;
+  yield: BigNumber;
+}
+export type YieldClaimedEvent = TypedEvent<
+  [string, BigNumber],
+  YieldClaimedEventObject
+>;
+
+export type YieldClaimedEventFilter = TypedEventFilter<YieldClaimedEvent>;
+
+export interface ProtocolTreasuryOperationsUpgradeable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: ActorFactoryOperationsUpgradeableInterface;
+  interface: ProtocolTreasuryOperationsUpgradeableInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -263,23 +370,15 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
   functions: {
     AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<[string]>;
 
+    DAY(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<[string]>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<[string]>;
 
-    actorInfo(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, string, number, string] & {
-        actorContract: string;
-        feeDistributionAddress: string;
-        actorStatus: number;
-        actorKey: string;
-      }
-    >;
+    currentFeeDistributionPool(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -298,6 +397,43 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    lastPoolGenerationTimestamp(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber, BigNumber, BigNumber, number] & {
+        tokenHolder: string;
+        lockedTokenAmount: BigNumber;
+        lockedAt: BigNumber;
+        availableToUnlockAt: BigNumber;
+        lockerStatus: number;
+      }
+    >;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<[string]>;
+
+    protocolSettingsAddress(overrides?: CallOverrides): Promise<[string]>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -314,9 +450,15 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    totalLockedNeats(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    vestingEscrowAddress(overrides?: CallOverrides): Promise<[string]>;
   };
 
   AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<string>;
+
+  DAY(overrides?: CallOverrides): Promise<BigNumber>;
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -324,17 +466,7 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
 
   PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
 
-  actorInfo(
-    arg0: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<
-    [string, string, number, string] & {
-      actorContract: string;
-      feeDistributionAddress: string;
-      actorStatus: number;
-      actorKey: string;
-    }
-  >;
+  currentFeeDistributionPool(overrides?: CallOverrides): Promise<BigNumber>;
 
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
@@ -353,6 +485,41 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  lastClaimedTimestamp(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  lastPoolGenerationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+  lockedNeatsByAddress(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  lockerInfo(
+    arg0: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, BigNumber, BigNumber, BigNumber, number] & {
+      tokenHolder: string;
+      lockedTokenAmount: BigNumber;
+      lockedAt: BigNumber;
+      availableToUnlockAt: BigNumber;
+      lockerStatus: number;
+    }
+  >;
+
+  lockersByAddress(
+    arg0: PromiseOrValue<string>,
+    arg1: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  neatTokenAddress(overrides?: CallOverrides): Promise<string>;
+
+  protocolSettingsAddress(overrides?: CallOverrides): Promise<string>;
+
   renounceRole(
     role: PromiseOrValue<BytesLike>,
     account: PromiseOrValue<string>,
@@ -370,8 +537,14 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  totalLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
+
+  vestingEscrowAddress(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<string>;
+
+    DAY(overrides?: CallOverrides): Promise<BigNumber>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -379,17 +552,7 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
 
-    actorInfo(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, string, number, string] & {
-        actorContract: string;
-        feeDistributionAddress: string;
-        actorStatus: number;
-        actorKey: string;
-      }
-    >;
+    currentFeeDistributionPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -408,6 +571,41 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lastPoolGenerationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber, BigNumber, BigNumber, number] & {
+        tokenHolder: string;
+        lockedTokenAmount: BigNumber;
+        lockedAt: BigNumber;
+        availableToUnlockAt: BigNumber;
+        lockerStatus: number;
+      }
+    >;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<string>;
+
+    protocolSettingsAddress(overrides?: CallOverrides): Promise<string>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -424,30 +622,24 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    totalLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
+
+    vestingEscrowAddress(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "ActorActivated(address)"(actorAddress?: null): ActorActivatedEventFilter;
-    ActorActivated(actorAddress?: null): ActorActivatedEventFilter;
+    "LockerCreated(tuple,bytes32)"(
+      locker?: null,
+      lockerHash?: null
+    ): LockerCreatedEventFilter;
+    LockerCreated(locker?: null, lockerHash?: null): LockerCreatedEventFilter;
 
-    "ActorInactivated(address)"(
-      actorAddress?: null
-    ): ActorInactivatedEventFilter;
-    ActorInactivated(actorAddress?: null): ActorInactivatedEventFilter;
-
-    "ActorKeyCreated(address,bytes32)"(
-      actorAddress?: null,
-      actorKey?: null
-    ): ActorKeyCreatedEventFilter;
-    ActorKeyCreated(
-      actorAddress?: null,
-      actorKey?: null
-    ): ActorKeyCreatedEventFilter;
-
-    "ActorKeyRequested(address)"(
-      actorAddress?: null
-    ): ActorKeyRequestedEventFilter;
-    ActorKeyRequested(actorAddress?: null): ActorKeyRequestedEventFilter;
+    "LockerUnlocked(tuple,bytes32)"(
+      locker?: null,
+      lockerHash?: null
+    ): LockerUnlockedEventFilter;
+    LockerUnlocked(locker?: null, lockerHash?: null): LockerUnlockedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,
@@ -481,10 +673,18 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       account?: PromiseOrValue<string> | null,
       sender?: PromiseOrValue<string> | null
     ): RoleRevokedEventFilter;
+
+    "YieldClaimed(address,uint256)"(
+      tokenHolder?: null,
+      _yield?: null
+    ): YieldClaimedEventFilter;
+    YieldClaimed(tokenHolder?: null, _yield?: null): YieldClaimedEventFilter;
   };
 
   estimateGas: {
     AUTHORIZED_OPERATOR(overrides?: CallOverrides): Promise<BigNumber>;
+
+    DAY(overrides?: CallOverrides): Promise<BigNumber>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -492,10 +692,7 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<BigNumber>;
 
-    actorInfo(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    currentFeeDistributionPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -514,6 +711,33 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lastPoolGenerationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
+    protocolSettingsAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -530,12 +754,18 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    totalLockedNeats(overrides?: CallOverrides): Promise<BigNumber>;
+
+    vestingEscrowAddress(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     AUTHORIZED_OPERATOR(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    DAY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     DEFAULT_ADMIN_ROLE(
       overrides?: CallOverrides
@@ -547,8 +777,7 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    actorInfo(
-      arg0: PromiseOrValue<string>,
+    currentFeeDistributionPool(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -569,6 +798,37 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    lastClaimedTimestamp(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lastPoolGenerationTimestamp(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lockedNeatsByAddress(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lockerInfo(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lockersByAddress(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    neatTokenAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    protocolSettingsAddress(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     renounceRole(
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
@@ -583,6 +843,12 @@ export interface ActorFactoryOperationsUpgradeable extends BaseContract {
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    totalLockedNeats(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    vestingEscrowAddress(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
