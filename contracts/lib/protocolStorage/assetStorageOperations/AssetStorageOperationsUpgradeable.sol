@@ -63,7 +63,7 @@ contract AssetStorageOperationsUpgradeable is
         for (uint256 i = 0; i < tokens.length; i++) {
             require(
                 isValidContractAddress(tokens[i].tokenContract),
-                "AssetStorageOperations:_tokenHash: one of the Token contracts in the batch does not exist."
+                "AssetStorageOperationsUpgradeable:_tokenHash: one of the Token contracts in the batch does not exist."
             );
 
             tokenHashes[i] = _hashSingleToken(
@@ -136,12 +136,12 @@ contract AssetStorageOperationsUpgradeable is
     ) internal returns (bytes32 orderHash) {
         require(
             tokens.length >= 1 && tokens.length <= maxTokenNumber,
-            "AssetStorageOperations::_makeOrder: asset number increases the maximum allowed."
+            "AssetStorageOperationsUpgradeable::_makeOrder: asset number increases the maximum allowed."
         );
 
         require(
             listingTime >= block.timestamp,
-            "AssetStorageOperations::_makeOrder: wrong listing time."
+            "AssetStorageOperationsUpgradeable::_makeOrder: wrong listing time."
         );
 
         bytes32[] memory tokenHashes = _hashTokens(tokens);

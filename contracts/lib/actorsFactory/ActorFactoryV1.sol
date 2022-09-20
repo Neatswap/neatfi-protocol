@@ -107,10 +107,7 @@ contract ActorFactoryV1 is ActorFactoryOperationsUpgradeable, UUPSUpgradeable {
 
     /** Initializers */
 
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-    {}
+    function _authorizeUpgrade(address newImplementation) internal override {}
 
     function initialize() public initializer onlyProxy {
         __UUPSUpgradeable_init();

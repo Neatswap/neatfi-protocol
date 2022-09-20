@@ -9,6 +9,9 @@ import {AssetStructsUpgradeable} from "./lib/protocolStorage/assetStorage/AssetS
 import {AssetEnumsUpgradeable} from "./lib/protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
 import {ContextUpgradeable} from "./lib/utils/ContextUpgradeable.sol";
 
+// TODO need an approve function in NeatFi and here, for all 3
+// types of tokens, can be a helper contract
+
 /**
  * @title NeatSwapImplementationV1
  * @author NeatFi
@@ -59,6 +62,22 @@ contract NeatSwapImplementationV1 is
             address(this),
             newFeeDistributionAddress
         );
+    }
+
+    /**
+     * @dev An external function to retrieve the fee distribution
+     *      address of an Actor.
+     * @return feeDistributionAddress - The address of fee distribution.
+     */
+    function getFeeDistributionAddress()
+        external
+        view
+        returns (address payable feeDistributionAddress)
+    {
+        return
+            INeatFi(neatFiProtocolAddress).getFeeDistributionAddress(
+                address(this)
+            );
     }
 
     /**
@@ -290,13 +309,19 @@ contract NeatSwapImplementationV1 is
         onlyRole(DEFAULT_ADMIN_ROLE)
     {}
 
-    function initialize() public initializer onlyProxy {
+    function initialize(address _neatFiProtocolAddress)
+        public
+        initializer
+        onlyProxy
+    {
         __UUPSUpgradeable_init();
         __AccessControl_init();
         __ReentrancyGuard_init();
 
+        neatFiProtocolAddress = _neatFiProtocolAddress;
+
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        name = "NeatFi Protocol";
+        name = "NeatFi Protocol Implementation Contract";
         _setVersion("1.0.0");
     }
 }

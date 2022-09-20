@@ -233,6 +233,25 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "actorAddress",
+        type: "address",
+      },
+    ],
+    name: "getFeeDistributionAddress",
+    outputs: [
+      {
+        internalType: "address payable",
+        name: "feeDistributionAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getSwapProtocolFee",
     outputs: [

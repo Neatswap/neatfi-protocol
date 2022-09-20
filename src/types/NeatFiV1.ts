@@ -62,6 +62,7 @@ export interface NeatFiV1Interface extends utils.Interface {
     "claimDutchAuction(address,bytes32,bytes)": FunctionFragment;
     "claimEnglishAuction(address,bytes32,bytes)": FunctionFragment;
     "decreaseDucthAuctionPrice(address,bytes32,uint256)": FunctionFragment;
+    "getFeeDistributionAddress(address)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getSwapProtocolFee()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
@@ -110,6 +111,7 @@ export interface NeatFiV1Interface extends utils.Interface {
       | "claimDutchAuction"
       | "claimEnglishAuction"
       | "decreaseDucthAuctionPrice"
+      | "getFeeDistributionAddress"
       | "getRoleAdmin"
       | "getSwapProtocolFee"
       | "grantRole"
@@ -233,6 +235,10 @@ export interface NeatFiV1Interface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BigNumberish>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getFeeDistributionAddress",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -433,6 +439,10 @@ export interface NeatFiV1Interface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "decreaseDucthAuctionPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -711,6 +721,11 @@ export interface NeatFiV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { feeDistributionAddress: string }>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -938,6 +953,11 @@ export interface NeatFiV1 extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getFeeDistributionAddress(
+    actorAddress: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -1164,6 +1184,11 @@ export interface NeatFiV1 extends BaseContract {
       newPrice: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -1449,6 +1474,11 @@ export interface NeatFiV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1681,6 +1711,11 @@ export interface NeatFiV1 extends BaseContract {
       orderHash: PromiseOrValue<BytesLike>,
       newPrice: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getRoleAdmin(

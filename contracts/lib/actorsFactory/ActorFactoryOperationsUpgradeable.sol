@@ -57,7 +57,9 @@ contract ActorFactoryOperationsUpgradeable is
             "ActorFactoryOperationsUpgradeable::_approveAndGenerateActorKey: actor key already generated."
         );
 
-        actorInfo[actorAddress].actorKey = keccak256(abi.encode(ACTORKEY_TYPEHASH, actorAddress));
+        actorInfo[actorAddress].actorKey = keccak256(
+            abi.encode(ACTORKEY_TYPEHASH, actorAddress)
+        );
         actorInfo[actorAddress].actorStatus = ActorStatus.ACTIVE;
 
         emit ActorKeyCreated(actorAddress, actorInfo[actorAddress].actorKey);

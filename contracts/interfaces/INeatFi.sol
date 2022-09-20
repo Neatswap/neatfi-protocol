@@ -30,6 +30,16 @@ interface INeatFi {
     ) external;
 
     /**
+     * @notice Retrieves the fee distribution address of an Actor.
+     * @param actorAddress - The address of the Actor.
+     * @return feeDistributionAddress - The address of fee distribution.
+     */
+    function getFeeDistributionAddress(address actorAddress)
+        external
+        view
+        returns (address payable feeDistributionAddress);
+
+    /**
      * @dev Retrieves the protocol fee numerator for Swap Order creation.
      * @return sellProtocolFee - The protocol fee numerator for
      *                           a Swap Order creation.

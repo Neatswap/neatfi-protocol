@@ -52,6 +52,7 @@ export interface INeatFiInterface extends utils.Interface {
     "claimDutchAuction(address,bytes32,bytes)": FunctionFragment;
     "claimEnglishAuction(address,bytes32,bytes)": FunctionFragment;
     "decreaseDucthAuctionPrice(address,bytes32,uint256)": FunctionFragment;
+    "getFeeDistributionAddress(address)": FunctionFragment;
     "getSwapProtocolFee()": FunctionFragment;
     "increaseEnglishAuctionPrice(address,bytes32,uint256)": FunctionFragment;
     "makeBid((address,uint256,uint256,uint8)[],address,uint256,bytes32,bytes32)": FunctionFragment;
@@ -71,6 +72,7 @@ export interface INeatFiInterface extends utils.Interface {
       | "claimDutchAuction"
       | "claimEnglishAuction"
       | "decreaseDucthAuctionPrice"
+      | "getFeeDistributionAddress"
       | "getSwapProtocolFee"
       | "increaseEnglishAuctionPrice"
       | "makeBid"
@@ -149,6 +151,10 @@ export interface INeatFiInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "getFeeDistributionAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getSwapProtocolFee",
     values?: undefined
   ): string;
@@ -222,6 +228,10 @@ export interface INeatFiInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "decreaseDucthAuctionPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -338,6 +348,11 @@ export interface INeatFi extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { feeDistributionAddress: string }>;
+
     getSwapProtocolFee(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { sellProtocolFee: BigNumber }>;
@@ -444,6 +459,11 @@ export interface INeatFi extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getFeeDistributionAddress(
+    actorAddress: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   getSwapProtocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   increaseEnglishAuctionPrice(
@@ -547,6 +567,11 @@ export interface INeatFi extends BaseContract {
       newPrice: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     getSwapProtocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -655,6 +680,11 @@ export interface INeatFi extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getSwapProtocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     increaseEnglishAuctionPrice(
@@ -758,6 +788,11 @@ export interface INeatFi extends BaseContract {
       orderHash: PromiseOrValue<BytesLike>,
       newPrice: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getFeeDistributionAddress(
+      actorAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getSwapProtocolFee(

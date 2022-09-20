@@ -168,7 +168,10 @@ const main = async () => {
   const neatFiProtocolTreasuryV1 = await upgrades.deployProxy(
     NeatFiProtocolTreasuryV1,
     // TODO: Change the params to neatToken.address and vestingEscrowV1.address
-    [deployer.address, deployer.address],
+    [
+      "0x38790eEc6f999D6D1801e2999b5CD1BF19e2adEe",
+      "0x3cE8a7aB0Aac95B9a582A4a9D335Da6bA4D302A5",
+    ],
     {
       kind: "uups",
       timeout: 120000,
@@ -216,7 +219,7 @@ const main = async () => {
   );
   const neatSwapImplementationV1 = await upgrades.deployProxy(
     NeatSwapImplementationV1,
-
+    [neatFiV1.address],
     {
       kind: "uups",
       timeout: 120000,
@@ -346,11 +349,14 @@ const main = async () => {
   console.log("CTO receives the PROTOCOL_ADMIN role in actorFactoryV1...");
   const tx9 = await actorFactoryV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx9.wait();
   console.log(
-    await actorFactoryV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
+    await actorFactoryV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
   );
 
   console.log(
@@ -358,72 +364,94 @@ const main = async () => {
   );
   const tx10 = await neatFiProtocolStorageV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx10.wait();
   console.log(
-    await neatFiProtocolStorageV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
+    await neatFiProtocolStorageV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
   );
 
   console.log("CTO receives the PROTOCOL_ADMIN role in assetTransferV1...");
   const tx11 = await assetTransferV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx11.wait();
   console.log(
-    await assetTransferV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
+    await assetTransferV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
   );
 
   console.log("CTO receives the PROTOCOL_ADMIN role in assetAuctionV1...");
   const tx12 = await assetAuctionV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx12.wait();
   console.log(
-    await assetAuctionV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
+    await assetAuctionV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
   );
 
   console.log("CTO receives the PROTOCOL_ADMIN role in assetSellV1...");
   const tx13 = await assetSellV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx13.wait();
-  console.log(await assetSellV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
+  console.log(
+    await assetSellV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
+  );
 
   console.log("CTO receives the PROTOCOL_ADMIN role in assetSwapV1...");
   const tx14 = await assetSwapV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx14.wait();
-  console.log(await assetSwapV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
+  console.log(
+    await assetSwapV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
+  );
 
   console.log(
     "CTO receives the PROTOCOL_ADMIN role in paymentsResolverOperationsV1..."
   );
   const tx15 = await paymentsResolverOperationsV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx15.wait();
   console.log(
     await paymentsResolverOperationsV1.hasRole(
       PROTOCOL_ADMIN_ROLE,
-      deployer.address
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
     )
   );
 
   console.log("CTO receives the PROTOCOL_ADMIN role in protocolSettingsV1...");
   const tx16 = await protocolSettingsV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx16.wait();
   console.log(
-    await protocolSettingsV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address)
+    await protocolSettingsV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
   );
 
   console.log(
@@ -431,20 +459,28 @@ const main = async () => {
   );
   const tx17 = await neatFiProtocolTreasuryV1.grantRole(
     PROTOCOL_ADMIN_ROLE,
-    deployer.address
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
   );
   await tx17.wait();
   console.log(
     await neatFiProtocolTreasuryV1.hasRole(
       PROTOCOL_ADMIN_ROLE,
-      deployer.address
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
     )
   );
 
   console.log("CTO receives the PROTOCOL_ADMIN role in neatFiV1...");
-  const tx18 = await neatFiV1.grantRole(PROTOCOL_ADMIN_ROLE, deployer.address);
+  const tx18 = await neatFiV1.grantRole(
+    PROTOCOL_ADMIN_ROLE,
+    "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+  );
   await tx18.wait();
-  console.log(await neatFiV1.hasRole(PROTOCOL_ADMIN_ROLE, deployer.address));
+  console.log(
+    await neatFiV1.hasRole(
+      PROTOCOL_ADMIN_ROLE,
+      "0xE312fC1E85D20a860309066b359c2AF9407762FB"
+    )
+  );
 };
 
 main()

@@ -15,7 +15,6 @@ import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
  */
 
 contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
-
     string internal name;
     string internal currentVersion;
 
@@ -168,7 +167,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      *      order to interact with the NeatFi contract.
      * @param actorAddress - The address of the Actor contract.
      */
-    function requestActorKey(address actorAddress) external nonReentrant {
+    function requestActorKey(address actorAddress) external {
         _requestActorKey(actorAddress);
     }
 
@@ -182,8 +181,22 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
     function changeFeeDistributionAddress(
         address actorAddress,
         address payable newFeeDistributionAddress
-    ) external nonReentrant {
+    ) external {
         _changeFeeDistributionAddress(actorAddress, newFeeDistributionAddress);
+    }
+
+    /**
+     * @dev An external function to retrieve the fee distribution
+     *      address of an Actor.
+     * @param actorAddress - The address of the Actor.
+     * @return feeDistributionAddress - The address of fee distribution.
+     */
+    function getFeeDistributionAddress(address actorAddress)
+        external
+        view
+        returns (address payable feeDistributionAddress)
+    {
+        return _getFeeDistributionAddress(actorAddress);
     }
 
     /**
@@ -217,13 +230,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         uint256 expirationTime,
         uint256 startPrice,
         bytes32 actorKey
-    )
-        external
-        payable
-        nonReentrant
-        onlyActor(msg.sender)
-        returns (bytes32 orderHash)
-    {
+    ) external payable onlyActor(msg.sender) returns (bytes32 orderHash) {
         return
             _makeOrder(
                 msg.sender,
@@ -254,7 +261,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         uint256 listingTime,
         bytes32 orderHash,
         bytes32 actorKey
-    ) external nonReentrant onlyActor(msg.sender) returns (bytes32 bidHash) {
+    ) external onlyActor(msg.sender) returns (bytes32 bidHash) {
         return _makeBid(bidder, tokens, listingTime, orderHash, actorKey);
     }
 
@@ -266,7 +273,6 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      */
     function cancelOrder(address maker, bytes32 orderHash)
         external
-        nonReentrant
         onlyActor(msg.sender)
     {
         _cancelOrder(msg.sender, maker, orderHash);
@@ -288,7 +294,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) external nonReentrant onlyActor(msg.sender) {
+    ) external onlyActor(msg.sender) {
         _approveAndResolveSwap(
             msg.sender,
             maker,
@@ -311,7 +317,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address buyer,
         bytes32 orderHash,
         bytes calldata data
-    ) external payable nonReentrant onlyActor(msg.sender) {
+    ) external payable onlyActor(msg.sender) {
         _buyItNow(msg.sender, orderHash, msg.value, buyer, data);
     }
 
@@ -326,7 +332,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) external nonReentrant onlyActor(msg.sender) {
+    ) external onlyActor(msg.sender) {
         _decreaseDucthAuctionPrice(msg.sender, maker, orderHash, newPrice);
     }
 
@@ -341,7 +347,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) external nonReentrant onlyActor(msg.sender) {
+    ) external onlyActor(msg.sender) {
         _increaseEnglishAuctionPrice(msg.sender, maker, orderHash, newPrice);
     }
 
@@ -357,7 +363,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) external nonReentrant onlyActor(msg.sender) {
+    ) external onlyActor(msg.sender) {
         _bidForEnglishAuction(msg.sender, bidder, orderHash, bidValue);
     }
 
@@ -373,7 +379,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) external nonReentrant onlyActor(msg.sender) {
+    ) external onlyActor(msg.sender) {
         _bidForDutchAuction(msg.sender, bidder, orderHash, bidValue);
     }
 
@@ -385,7 +391,6 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      */
     function approveLastBid(address maker, bytes32 orderHash)
         external
-        nonReentrant
         onlyActor(msg.sender)
     {
         _approveLastBid(msg.sender, maker, orderHash);
@@ -402,7 +407,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         bytes calldata data
-    ) external payable nonReentrant onlyActor(msg.sender) {
+    ) external payable onlyActor(msg.sender) {
         _claimEnglishAuction(msg.sender, bidder, orderHash, msg.value, data);
     }
 
@@ -417,7 +422,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         bytes calldata data
-    ) external payable nonReentrant onlyActor(msg.sender) {
+    ) external payable onlyActor(msg.sender) {
         _claimDutchAuction(msg.sender, bidder, orderHash, msg.value, data);
     }
 

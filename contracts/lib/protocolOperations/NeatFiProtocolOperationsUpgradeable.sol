@@ -194,6 +194,21 @@ contract NeatFiProtocolOperationsUpgradeable is
     }
 
     /**
+     * @dev An internal function to retrieve the fee distribution
+     *      address of an Actor.
+     * @param actorAddress - The address of the Actor.
+     * @return feeDistributionAddress - The address of fee distribution.
+     */
+    function _getFeeDistributionAddress(address actorAddress)
+        internal
+        view
+        returns (address payable feeDistributionAddress)
+    {
+        return
+            IActorFactory(actorFactory).getFeeDistributionAddress(actorAddress);
+    }
+
+    /**
      * Protocol Settings operations implementation
      */
 
@@ -288,7 +303,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         if (orderType == AssetOrderType.SWAP) {
             require(
                 value == _getSwapProtocolFee(),
-                "NeatFiV1::makeOrder: wrong value for SWAP protocol fee."
+                "NeatFiProtocolOperationsUpgradeable::_makeOrder: wrong value for SWAP protocol fee."
             );
 
             // Actor earnings distribution
@@ -310,7 +325,7 @@ contract NeatFiProtocolOperationsUpgradeable is
 
             require(
                 actorEarningsSent,
-                "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
+                "NeatFiProtocolOperationsUpgradeable::_makeOrder: failed to actor earnings."
             );
 
             // Protocol fee distribution
@@ -319,9 +334,15 @@ contract NeatFiProtocolOperationsUpgradeable is
 
             bool sent = protocolTreasury.send(netProtocolFee);
 
-            require(sent, "NeatFiV1::makeOrder: failed to send protocol fee.");
+            require(
+                sent,
+                "NeatFiProtocolOperationsUpgradeable::_makeOrder: failed to send protocol fee."
+            );
         } else {
-            require(value == 0, "NeatFiV1::makeOrder: value should be 0.");
+            require(
+                value == 0,
+                "NeatFiProtocolOperationsUpgradeable::_makeOrder: value should be 0."
+            );
         }
 
         return

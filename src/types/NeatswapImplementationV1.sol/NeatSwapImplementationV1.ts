@@ -58,11 +58,12 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
     "claimEnglishAuction(bytes32,bytes)": FunctionFragment;
     "currentVersion()": FunctionFragment;
     "decreaseDucthAuctionPrice(bytes32,uint256)": FunctionFragment;
+    "getFeeDistributionAddress()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "increaseEnglishAuctionPrice(bytes32,uint256)": FunctionFragment;
-    "initialize()": FunctionFragment;
+    "initialize(address)": FunctionFragment;
     "makeBid((address,uint256,uint256,uint8)[],bytes32,bytes32)": FunctionFragment;
     "makeOrder((address,uint256,uint256,uint8)[],uint8,uint256,uint256,bytes32)": FunctionFragment;
     "name()": FunctionFragment;
@@ -89,6 +90,7 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
       | "claimEnglishAuction"
       | "currentVersion"
       | "decreaseDucthAuctionPrice"
+      | "getFeeDistributionAddress"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
@@ -160,6 +162,10 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
+    functionFragment: "getFeeDistributionAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [PromiseOrValue<BytesLike>]
   ): string;
@@ -177,7 +183,7 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values?: undefined
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "makeBid",
@@ -270,6 +276,10 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "decreaseDucthAuctionPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getFeeDistributionAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -481,6 +491,10 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getFeeDistributionAddress(
+      overrides?: CallOverrides
+    ): Promise<[string] & { feeDistributionAddress: string }>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -505,6 +519,7 @@ export interface NeatSwapImplementationV1 extends BaseContract {
     ): Promise<ContractTransaction>;
 
     initialize(
+      _neatFiProtocolAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -624,6 +639,8 @@ export interface NeatSwapImplementationV1 extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getFeeDistributionAddress(overrides?: CallOverrides): Promise<string>;
+
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -648,6 +665,7 @@ export interface NeatSwapImplementationV1 extends BaseContract {
   ): Promise<ContractTransaction>;
 
   initialize(
+    _neatFiProtocolAddress: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -767,6 +785,8 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    getFeeDistributionAddress(overrides?: CallOverrides): Promise<string>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -790,7 +810,10 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    initialize(overrides?: CallOverrides): Promise<void>;
+    initialize(
+      _neatFiProtocolAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     makeBid(
       tokens: AssetStructsUpgradeable.TokenStruct[],
@@ -965,6 +988,8 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getFeeDistributionAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -989,6 +1014,7 @@ export interface NeatSwapImplementationV1 extends BaseContract {
     ): Promise<BigNumber>;
 
     initialize(
+      _neatFiProtocolAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1111,6 +1137,10 @@ export interface NeatSwapImplementationV1 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    getFeeDistributionAddress(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1135,6 +1165,7 @@ export interface NeatSwapImplementationV1 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
+      _neatFiProtocolAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -26,11 +26,17 @@ export default {
   networks: {
     localhost: {
       url: "HTTP://127.0.0.1:8545",
+      gas: 2100000,
+      gasPrice: 3600000000,
+      allowUnlimitedContractSize: true,
     },
     hardhat: {},
     goerli: {
       url: `https://eth-goerli.g.alchemy.com/v2/BesWi0TOAU58fx9xjhKPpl27dSPng155`,
       accounts: [""],
+      gas: 2100000,
+      gasPrice: 8000000000,
+      allowUnlimitedContractSize: true,
     },
   },
 };
