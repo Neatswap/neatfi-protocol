@@ -119,7 +119,7 @@ describe('NeatSwapImplementationV1', () => {
   };
 
   describe('buyItNow', () => {
-    context.only('when the order is valid', () => {
+    context('when the order is valid', () => {
       it('changes the order status to CLOSED', async () => {
         const {
           data,
