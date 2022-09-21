@@ -1,13 +1,13 @@
-import "@typechain/hardhat";
-import "@nomiclabs/hardhat-ethers";
-import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-ganache";
-import "@openzeppelin/hardhat-upgrades";
-import "hardhat-contract-sizer";
+import '@typechain/hardhat';
+import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-waffle';
+import '@nomiclabs/hardhat-ganache';
+import '@openzeppelin/hardhat-upgrades';
+import 'hardhat-contract-sizer';
 
 export default {
   solidity: {
-    version: "0.8.15",
+    version: '0.8.15',
     settings: {
       viaIR: true,
       optimizer: {
@@ -17,23 +17,25 @@ export default {
     },
   },
   typechain: {
-    outDir: "src/types",
-    target: "ethers-v5",
+    outDir: 'src/types',
+    target: 'ethers-v5',
     alwaysGenerateOverloads: false,
-    externalArtifacts: ["externalArtifacts/*.json"],
+    externalArtifacts: ['externalArtifacts/*.json'],
   },
-  defaultNetwork: "localhost",
+  defaultNetwork: 'localhost',
   networks: {
     localhost: {
-      url: "HTTP://127.0.0.1:8545",
+      url: 'HTTP://127.0.0.1:8545',
       gas: 2100000,
       gasPrice: 3600000000,
       allowUnlimitedContractSize: true,
     },
     hardhat: {},
     goerli: {
-      url: `https://eth-goerli.g.alchemy.com/v2/BesWi0TOAU58fx9xjhKPpl27dSPng155`,
-      accounts: [""],
+      url: 'https://eth-goerli.g.alchemy.com/v2/BesWi0TOAU58fx9xjhKPpl27dSPng155',
+      accounts: [
+        'e9a672c74bf8f72f728626249e013e2add90955906fed7ef7b17912270e2efdb',
+      ],
       gas: 2100000,
       gasPrice: 8000000000,
       allowUnlimitedContractSize: true,
