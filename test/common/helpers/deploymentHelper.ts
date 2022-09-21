@@ -67,7 +67,7 @@ export const deployAssetTransferV1 = async (
 export const deployAssetAuctionV1 = async (
   neatFiProtocolStorageV1: NeatFiProtocolStorageV1,
   assetTransferV1: AssetTransferV1,
-): Promise<AssetTransferV1> => {
+): Promise<AssetAuctionV1> => {
   const assetAuctionV1Factory = await ethers.getContractFactory('AssetAuctionV1') as AssetAuctionV1Factory;
 
   const assetAuctionV1 = await upgrades.deployProxy(
@@ -78,7 +78,7 @@ export const deployAssetAuctionV1 = async (
       timeout: 120000,
       pollingInterval: 10000,
     },
-  ) as AssetTransferV1;
+  ) as AssetAuctionV1;
 
   await assetAuctionV1.deployed();
 
@@ -183,7 +183,7 @@ export const deployNeatFiV1 = async (
   assetAuctionV1: AssetAuctionV1,
   paymentsResolverOperationsV1: PaymentsResolverOperationsV1,
   protocolSettingsV1: ProtocolSettingsV1,
-  neatFiProtocolStorageV1: NeatFiProtocolTreasuryV1,
+  neatFiProtocolStorageV1: NeatFiProtocolStorageV1,
   actorFactoryV1: ActorFactoryV1,
   neatFiProtocolTreasuryV1: NeatFiProtocolTreasuryV1,
 ): Promise<NeatFiV1> => {
@@ -227,6 +227,37 @@ export const deployNeatswapImplementationV1 = async (
   await neatSwapImplementationV1.deployed();
 
   return neatSwapImplementationV1;
+};
+
+export const deployNeatSwap = async (): Promise<NeatSwapImplementationV1> => {
+  const protocolStorageV1 = await deployNeatFiProtocolStorageV1(10);
+
+  const assetTransferV1 = await deployAssetTransferV1(protocolStorageV1);
+
+  const assetSwapV1 = await deployAssetSwapV1(protocolStorageV1, assetTransferV1);
+  const assetSellV1 = await deployAssetSellV1(protocolStorageV1, assetTransferV1);
+  const assetAuctionV1 = await deployAssetAuctionV1(protocolStorageV1, assetTransferV1);
+
+  const paymentsResolverOperationsV1 = await deployPaymentsResolverOperationsV1(assetTransferV1);
+
+  const protocolSettingsV1 = await deployProtocolSettingsV1();
+
+  const actorFactoryV1 = await deployActorFactorV1();
+
+  const neatFiProtocolTreasuryV1 = await deployNeatFiProtocolTreasuryV1();
+
+  const neatFiV1 = await deployNeatFiV1(
+    assetSwapV1,
+    assetSellV1,
+    assetAuctionV1,
+    paymentsResolverOperationsV1,
+    protocolSettingsV1,
+    protocolStorageV1,
+    actorFactoryV1,
+    neatFiProtocolTreasuryV1,
+  );
+
+  return deployNeatswapImplementationV1(neatFiV1);
 };
 
 export const deployERC20Mock = async (

@@ -22,9 +22,11 @@ const grantRoles = async (
   await actorFactoryV1.connect(deployer).grantRole(authorizedOperatorRole, deployerAddress);
   await neatFiProtocolStorageV1.connect(deployer)
     .grantRole(authorizedOperatorRole, deployerAddress);
+
   await neatFiProtocolStorageV1.grantRole(authorizedOperatorRole, assetSellV1.address);
   await neatFiProtocolStorageV1.grantRole(authorizedOperatorRole, assetTransferV1.address);
   await assetTransferV1.grantRole(authorizedOperatorRole, assetSellV1.address);
+
   await assetSellV1.grantRole(authorizedOperatorRole, deployerAddress);
   await assetSellV1.grantRole(protocolAdminRole, protocolAdminRoleAddress);
   await assetSellV1.grantRole(authorizedOperatorRole, nonAdminAddress);
