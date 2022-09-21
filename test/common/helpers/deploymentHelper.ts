@@ -1,3 +1,4 @@
+import { BaseContract } from 'ethers';
 import { ethers, upgrades } from 'hardhat';
 import {
   ActorFactoryV1,
@@ -186,6 +187,7 @@ export const deployNeatFiV1 = async (
   neatFiProtocolStorageV1: NeatFiProtocolStorageV1,
   actorFactoryV1: ActorFactoryV1,
   neatFiProtocolTreasuryV1: NeatFiProtocolTreasuryV1,
+  grantRole: boolean = false,
 ): Promise<NeatFiV1> => {
   const neatFiV1Factory = await ethers.getContractFactory('NeatFiV1') as NeatFiV1Factory;
 
@@ -209,6 +211,24 @@ export const deployNeatFiV1 = async (
   ) as NeatFiV1;
 
   await neatFiV1.deployed();
+
+  const grantAuthorizedOperator = async (neatFi: NeatFiV1, contract: any) => {
+    const authorizedOperatorRole = await contract.AUTHORIZED_OPERATOR();
+    contract.grantRole(authorizedOperatorRole, neatFi.address);
+  };
+
+  if (grantRole) {
+    [
+      assetSwapV1,
+      assetSellV1,
+      assetAuctionV1,
+      paymentsResolverOperationsV1,
+      protocolSettingsV1,
+      neatFiProtocolStorageV1,
+      actorFactoryV1,
+      neatFiProtocolTreasuryV1,
+    ].forEach((contract) => grantAuthorizedOperator(neatFiV1, contract));
+  }
 
   return neatFiV1;
 };
