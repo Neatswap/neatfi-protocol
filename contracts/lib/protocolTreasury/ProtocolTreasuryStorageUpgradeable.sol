@@ -105,6 +105,11 @@ contract ProtocolTreasuryStorageUpgradeable is Initializable {
      */
     event YieldClaimed(address tokenHolder, uint256 yield);
 
+    /**
+     * @dev Fired when this contract receives Ether.
+     */
+    event EtherReceived(address sender, uint256 amount);
+
     /** Initializers */
 
     function __ProtocolTreasuryStorage_init() internal initializer {

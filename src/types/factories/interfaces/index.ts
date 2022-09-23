@@ -11,6 +11,7 @@ export * as protocolSettingsInterfaces from "./protocolSettingsInterfaces";
 export * as proxyInterfaces from "./proxyInterfaces";
 export * as storageInterfaces from "./storageInterfaces";
 export * as tokenInterfaces from "./tokenInterfaces";
+export * as treasuryInterfaces from "./treasuryInterfaces";
 export * as utilInterfaces from "./utilInterfaces";
 export * as vestingEscrowInterfaces from "./vestingEscrowInterfaces";
 export { INeatFi__factory } from "./INeatFi__factory";

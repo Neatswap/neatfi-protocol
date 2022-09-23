@@ -41,6 +41,8 @@ export type { IERC20 } from "./interfaces/tokenInterfaces/IERC20";
 export { IERC20__factory } from "./factories/interfaces/tokenInterfaces/IERC20__factory";
 export type { IERC721 } from "./interfaces/tokenInterfaces/IERC721";
 export { IERC721__factory } from "./factories/interfaces/tokenInterfaces/IERC721__factory";
+export type { IProtocolTreasury } from "./interfaces/treasuryInterfaces/IProtocolTreasury";
+export { IProtocolTreasury__factory } from "./factories/interfaces/treasuryInterfaces/IProtocolTreasury__factory";
 export type { IERC165Upgradeable } from "./interfaces/utilInterfaces/IERC165Upgradeable";
 export { IERC165Upgradeable__factory } from "./factories/interfaces/utilInterfaces/IERC165Upgradeable__factory";
 export type { IVestingEscrow } from "./interfaces/vestingEscrowInterfaces/IVestingEscrow";

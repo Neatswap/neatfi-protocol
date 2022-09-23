@@ -273,6 +273,20 @@ contract NeatFiProtocolOperationsUpgradeable is
         return IProtocolSettings(protocolSettings).getSwapProtocolFee();
     }
 
+    function _transferHelper(
+        address payable to,
+        uint256 amount,
+        string memory errorMessage
+    ) internal {
+        require(
+            address(this).balance >= amount,
+            "NeatFiProtocolOperationsUpgradeable::_transferHelper: not enought Ether on the contract balance."
+        );
+
+        (bool sent, bytes memory data) = to.call{value: amount}("");
+        require(sent, errorMessage);
+    }
+
     /**
      * Protocol Storage operations implementation
      */
@@ -319,12 +333,9 @@ contract NeatFiProtocolOperationsUpgradeable is
                 actorFactory
             ).getFeeDistributionAddress(actorAddress);
 
-            bool actorEarningsSent = actorFeeDistributionAddress.send(
-                actorEarnings
-            );
-
-            require(
-                actorEarningsSent,
+            _transferHelper(
+                actorFeeDistributionAddress,
+                actorEarnings,
                 "NeatFiProtocolOperationsUpgradeable::_makeOrder: failed to actor earnings."
             );
 
@@ -332,10 +343,9 @@ contract NeatFiProtocolOperationsUpgradeable is
 
             uint256 netProtocolFee = value - actorEarnings;
 
-            bool sent = protocolTreasury.send(netProtocolFee);
-
-            require(
-                sent,
+            _transferHelper(
+                protocolTreasury,
+                netProtocolFee,
                 "NeatFiProtocolOperationsUpgradeable::_makeOrder: failed to send protocol fee."
             );
         } else {
@@ -462,7 +472,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 purchaseValue,
         address bidder,
         bytes calldata data
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         // Maker earnings distribution
@@ -473,12 +483,6 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 makerEarnings = IPaymentsResolver(paymentsResolver)
             .sellFeeResolver(purchaseValue);
 
-        bool makerEarningsSent = maker.send(makerEarnings);
-        require(
-            makerEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
-        );
-
         // Actor earnings distribution
 
         uint256 grossProtocolFee = purchaseValue - makerEarnings;
@@ -486,30 +490,34 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 actorEarningsNumerator = IProtocolSettings(protocolSettings)
             .getActorEarningsNumerator();
 
-        uint256 actorEarnings = grossProtocolFee -
-            (grossProtocolFee * actorEarningsNumerator) /
-            1000;
+        uint256 actorEarnings = (grossProtocolFee * actorEarningsNumerator) /
+            (1000);
 
         address payable actorFeeDistributionAddress = IActorFactory(
             actorFactory
         ).getFeeDistributionAddress(actorAddress);
 
-        bool actorEarningsSent = actorFeeDistributionAddress.send(
-            actorEarnings
-        );
-
-        require(
-            actorEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to actor earnings."
-        );
-
         // Protocol fee distribution
 
         uint256 netProtocolFee = grossProtocolFee - actorEarnings;
 
-        bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
-        require(
-            protocolFeeSent,
+        // Resolving fee transfers
+
+        _transferHelper(
+            maker,
+            makerEarnings,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings."
+        );
+
+        _transferHelper(
+            actorFeeDistributionAddress,
+            actorEarnings,
+            "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send actor earnings."
+        );
+
+        _transferHelper(
+            protocolTreasury,
+            netProtocolFee,
             "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee."
         );
 
@@ -812,3 +820,58 @@ contract NeatFiProtocolOperationsUpgradeable is
         _setProtocolTreasury(newProtocolTreasury);
     }
 }
+
+/*
+function _transferHelper(
+        address payable[] memory receivers,
+        uint256[] memory amounts,
+        string[] memory errorMessages
+    ) internal {
+        for (uint256 i = 0; i < receivers.length; i++) {
+            require(
+                address(this).balance >= amounts[i],
+                "NeatFiProtocolOperationsUpgradeable::_transferHelper: not enought Ether on the contract balance."
+            );
+
+            (bool sent, bytes memory data) = receivers[i].call{
+                value: amounts[i]
+            }("");
+            require(sent, errorMessages[i]);
+        }
+    }
+
+
+    address[] memory addresses = new address[](3);
+        uint256[] memory amounts = new uint256[](3);
+        string[] memory errors = new string[](3);
+
+        addresses[0] = maker;
+        addresses[1] = actorFeeDistributionAddress;
+        addresses[2] = protocolTreasury;
+
+        amounts[0] = makerEarnings;
+        amounts[1] = actorEarnings;
+        amounts[2] = netProtocolFee;
+
+        errors[
+            0
+        ] = "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings.";
+        errors[
+            1
+        ] = "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send actor earnings.";
+        errors[
+            2
+        ] = "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee.";
+
+        for (uint256 i = 0; i < addresses.length; i++) {
+            require(
+                address(this).balance >= amounts[i],
+                "NeatFiProtocolOperationsUpgradeable::_transferHelper: not enought Ether on the contract balance."
+            );
+
+            (bool sent, bytes memory data) = addresses[i].call{
+                value: amounts[i]
+            }("");
+            require(sent, errors[i]);
+        }
+*/

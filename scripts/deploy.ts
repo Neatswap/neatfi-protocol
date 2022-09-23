@@ -109,28 +109,6 @@ const main = async () => {
 
   console.log("AssetSwapV1 deployed to:", assetSwapV1.address);
 
-  // Deployng PaymentsResolverOperationsV1
-  console.log("Deploying PaymentsResolverOperationsV1...");
-  const PaymentsResolverOperationsV1 = await ethers.getContractFactory(
-    "PaymentsResolverOperationsV1"
-  );
-  const paymentsResolverOperationsV1 = await upgrades.deployProxy(
-    PaymentsResolverOperationsV1,
-    [assetTransferV1.address],
-    {
-      kind: "uups",
-      timeout: 120000,
-      pollingInterval: 10000,
-    }
-  );
-
-  await paymentsResolverOperationsV1.deployed();
-
-  console.log(
-    "PaymentsResolverOperationsV1 deployed to:",
-    paymentsResolverOperationsV1.address
-  );
-
   /**
    * Deployng ProtocolSettingsV1
    *
@@ -148,7 +126,7 @@ const main = async () => {
   );
   const protocolSettingsV1 = await upgrades.deployProxy(
     ProtocolSettingsV1,
-    [3000000000000000, 3000000000000000, 15, 15, 700],
+    [3000000000000000, 15, 15, 15, 700],
     {
       kind: "uups",
       timeout: 120000,
@@ -159,6 +137,28 @@ const main = async () => {
   await protocolSettingsV1.deployed();
 
   console.log("ProtocolSettingsV1 deployed to:", protocolSettingsV1.address);
+
+  // Deployng PaymentsResolverOperationsV1
+  console.log("Deploying PaymentsResolverOperationsV1...");
+  const PaymentsResolverOperationsV1 = await ethers.getContractFactory(
+    "PaymentsResolverOperationsV1"
+  );
+  const paymentsResolverOperationsV1 = await upgrades.deployProxy(
+    PaymentsResolverOperationsV1,
+    [protocolSettingsV1.address],
+    {
+      kind: "uups",
+      timeout: 120000,
+      pollingInterval: 10000,
+    }
+  );
+
+  await paymentsResolverOperationsV1.deployed();
+
+  console.log(
+    "PaymentsResolverOperationsV1 deployed to:",
+    paymentsResolverOperationsV1.address
+  );
 
   // Deployng NeatFiProtocolTreasuryV1
   console.log("Deploying NeatFiProtocolTreasuryV1...");

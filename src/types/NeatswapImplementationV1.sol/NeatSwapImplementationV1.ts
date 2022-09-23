@@ -322,6 +322,7 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
   events: {
     "AdminChanged(address,address)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
+    "EtherReceived(address,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
@@ -330,6 +331,7 @@ export interface NeatSwapImplementationV1Interface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EtherReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
@@ -356,6 +358,17 @@ export type BeaconUpgradedEvent = TypedEvent<
 >;
 
 export type BeaconUpgradedEventFilter = TypedEventFilter<BeaconUpgradedEvent>;
+
+export interface EtherReceivedEventObject {
+  sender: string;
+  amount: BigNumber;
+}
+export type EtherReceivedEvent = TypedEvent<
+  [string, BigNumber],
+  EtherReceivedEventObject
+>;
+
+export type EtherReceivedEventFilter = TypedEventFilter<EtherReceivedEvent>;
 
 export interface RoleAdminChangedEventObject {
   role: string;
@@ -882,6 +895,12 @@ export interface NeatSwapImplementationV1 extends BaseContract {
     BeaconUpgraded(
       beacon?: PromiseOrValue<string> | null
     ): BeaconUpgradedEventFilter;
+
+    "EtherReceived(address,uint256)"(
+      sender?: null,
+      amount?: null
+    ): EtherReceivedEventFilter;
+    EtherReceived(sender?: null, amount?: null): EtherReceivedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
       role?: PromiseOrValue<BytesLike> | null,

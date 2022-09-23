@@ -21,6 +21,14 @@ contract NeatFiProtocolTreasuryV1 is
     /** Administration */
 
     /**
+     * @notice An external function to allow this contract to receive
+     *         protocol fees in Ether.
+     */
+    receive() external payable {
+        emit EtherReceived(msg.sender, msg.value);
+    }
+
+    /**
      * @notice An external function to update the address of the
      *      current implementation of the NeatFi vesting escrow contract.
      * @dev Can be executed by a protocol admin only.

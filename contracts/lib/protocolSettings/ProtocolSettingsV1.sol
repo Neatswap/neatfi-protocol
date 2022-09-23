@@ -28,7 +28,7 @@ contract ProtocolSettingsV1 is
     uint256 public dutchAuctionProtocolFeeNumerator;
 
     // Protocol fee numerator for SELL.
-    uint256 public sellProtocolFee;
+    uint256 public sellProtocolFeeNumerator;
 
     // Protocol fee for SWAP creation.
     uint256 public swapProtocolFee;
@@ -99,13 +99,12 @@ contract ProtocolSettingsV1 is
 
     /**
      * @dev An internal function to set a new sellProtocolFee.
-     * @param newSellProtocolFee - new simpleSellProtocolFee.
+     * @param newSellProtocolFeeNumerator - new simpleSellProtocolFee.
      */
-    function _setSellProtocolFee(uint256 newSellProtocolFee)
+    function _setSellProtocolFeeNumerator(uint256 newSellProtocolFeeNumerator)
         internal
-        isWithinLimits(newSellProtocolFee)
     {
-        sellProtocolFee = newSellProtocolFee;
+        sellProtocolFeeNumerator = newSellProtocolFeeNumerator;
     }
 
     function getEnglishAuctionProtocolFeeNumerator()
@@ -133,7 +132,7 @@ contract ProtocolSettingsV1 is
      *      for Sell order.
      */
     function getSellProtocolFeeNumerator() external view returns (uint256) {
-        return sellProtocolFee;
+        return sellProtocolFeeNumerator;
     }
 
     /**
@@ -209,14 +208,13 @@ contract ProtocolSettingsV1 is
 
     /**
      * @dev An external function to set a new setSellProtocolFee.
-     * @param newSellProtocolFee - new newSellProtocolFee.
+     * @param newSellProtocolFeeNumerator - new newSellProtocolFeeNumerator.
      */
-    function setSellProtocolFee(uint256 newSellProtocolFee)
+    function setSellProtocolFeeNumerator(uint256 newSellProtocolFeeNumerator)
         external
         onlyRole(PROTOCOL_ADMIN)
-        isWithinLimits(newSellProtocolFee)
     {
-        _setSellProtocolFee(newSellProtocolFee);
+        _setSellProtocolFeeNumerator(newSellProtocolFeeNumerator);
     }
 
     /** Initializers */
@@ -229,7 +227,7 @@ contract ProtocolSettingsV1 is
 
     function initialize(
         uint256 newSwapProtocolFeeValue,
-        uint256 newSellProtocolFeeValue,
+        uint256 newSellProtocolFeeNumeratorValue,
         uint256 newDutchAuctionProtocolFeeNumeratorValue,
         uint256 newEnglishAuctionProtocolFeeNumeratorValue,
         uint256 newActorEarningsNumerator
@@ -239,7 +237,7 @@ contract ProtocolSettingsV1 is
         __AccessControl_init();
 
         _setSwapProtocolFee(newSwapProtocolFeeValue);
-        _setSellProtocolFee(newSellProtocolFeeValue);
+        _setSellProtocolFeeNumerator(newSellProtocolFeeNumeratorValue);
         _setEnglishAuctionProtocolFeeNumerator(
             newDutchAuctionProtocolFeeNumeratorValue
         );

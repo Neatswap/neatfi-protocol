@@ -78,14 +78,12 @@ contract PaymentsResolverOperationsUpgradeable is
      */
     function _sellFeeResolver(uint256 value)
         internal
-        nonReentrant
+        view
         returns (uint256 makerEarnings)
     {
-        return
-            value -
-            ((value *
-                IProtocolSettings(protocolSettings)
-                    .getSellProtocolFeeNumerator()) / 1000);
+        uint256 sellProtocolFeeNumerator = IProtocolSettings(protocolSettings)
+            .getSellProtocolFeeNumerator();
+        return value - ((value * sellProtocolFeeNumerator) / 1000);
     }
 
     /**
@@ -103,7 +101,7 @@ contract PaymentsResolverOperationsUpgradeable is
 
     /** Initializers */
 
-    function __AssetSwapOperations_init(address newProtocolSettings)
+    function __PaymentsResolverOperations_init(address _protocolSettings)
         internal
         initializer
     {
@@ -112,6 +110,6 @@ contract PaymentsResolverOperationsUpgradeable is
         __AccessControl_init();
         __ReentrancyGuard_init();
 
-        _updateProtocolSettingsAddress(newProtocolSettings);
+        _updateProtocolSettingsAddress(_protocolSettings);
     }
 }
