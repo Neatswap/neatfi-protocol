@@ -1,9 +1,12 @@
-import { expect } from 'chai';
-import { BigNumberish, Signer } from 'ethers';
-import { ethers, upgrades } from 'hardhat';
-import { ProtocolSettingsV1, ProtocolSettingsV1__factory as ProtocolSettingsV1Factory } from 'src/types';
+import { expect } from "chai";
+import { BigNumberish, Signer } from "ethers";
+import { ethers, upgrades } from "hardhat";
+import {
+  ProtocolSettingsV1,
+  ProtocolSettingsV1__factory as ProtocolSettingsV1Factory,
+} from "src/types";
 
-describe('ProtocolSettingsV1', () => {
+describe("ProtocolSettingsV1", () => {
   let deployer: Signer;
   let deployerAddress: string;
 
@@ -28,9 +31,11 @@ describe('ProtocolSettingsV1', () => {
     protocolAdminAddress = await protocolAdmin.getAddress();
     nonAdminAddress = await nonAdmin.getAddress();
 
-    protocolSettingsV1Factory = (await ethers.getContractFactory('ProtocolSettingsV1'));
+    protocolSettingsV1Factory = await ethers.getContractFactory(
+      "ProtocolSettingsV1"
+    );
 
-    protocolSettingsV1 = await upgrades.deployProxy(
+    protocolSettingsV1 = (await upgrades.deployProxy(
       protocolSettingsV1Factory,
       [
         swapProtocolFeeValue,
@@ -38,99 +43,122 @@ describe('ProtocolSettingsV1', () => {
         dutchAuctiouProtocolFeeNumeratorValue,
         englishAuctionProtocolFeeNumeratorValue,
       ],
-      { kind: 'uups' },
-    ) as ProtocolSettingsV1;
+      { kind: "uups" }
+    )) as ProtocolSettingsV1;
 
     const protocolAdminRole = await protocolSettingsV1.PROTOCOL_ADMIN();
-    const authorizedOperatorRole = await protocolSettingsV1.AUTHORIZED_OPERATOR();
+    const authorizedOperatorRole =
+      await protocolSettingsV1.AUTHORIZED_OPERATOR();
 
-    await protocolSettingsV1.connect(deployer).grantRole(protocolAdminRole, protocolAdminAddress);
-    await protocolSettingsV1.connect(deployer).grantRole(authorizedOperatorRole, deployerAddress);
+    await protocolSettingsV1
+      .connect(deployer)
+      .grantRole(protocolAdminRole, protocolAdminAddress);
+    await protocolSettingsV1
+      .connect(deployer)
+      .grantRole(authorizedOperatorRole, deployerAddress);
   });
 
-  describe('getEnglishAuctionProtocolFeeNumerator', () => {
-    it('returns the english auction protocol fee numerator', async () => {
-      expect(await protocolSettingsV1.getEnglishAuctionProtocolFeeNumerator())
-        .to.eq(englishAuctionProtocolFeeNumeratorValue);
+  describe("getEnglishAuctionProtocolFeeNumerator", () => {
+    it("returns the english auction protocol fee numerator", async () => {
+      expect(
+        await protocolSettingsV1.getEnglishAuctionProtocolFeeNumerator()
+      ).to.eq(englishAuctionProtocolFeeNumeratorValue);
     });
   });
 
-  describe('getDutchAuctionProtocolFeeNumerator', () => {
-    it('returns the dutch auction protocol fee numerator', async () => {
-      expect(await protocolSettingsV1.getDutchAuctionProtocolFeeNumerator())
-        .to.eq(dutchAuctiouProtocolFeeNumeratorValue);
+  describe("getDutchAuctionProtocolFeeNumerator", () => {
+    it("returns the dutch auction protocol fee numerator", async () => {
+      expect(
+        await protocolSettingsV1.getDutchAuctionProtocolFeeNumerator()
+      ).to.eq(dutchAuctiouProtocolFeeNumeratorValue);
     });
   });
 
-  describe('getSellProtocolFeeNumerator', () => {
-    it('returns the sell protocol fee numerator', async () => {
-      expect(await protocolSettingsV1.getSellProtocolFeeNumerator())
-        .to.eq(sellProtocolFeeValue);
+  describe("getSellProtocolFeeNumerator", () => {
+    it("returns the sell protocol fee numerator", async () => {
+      expect(await protocolSettingsV1.getSellProtocolFeeNumerator()).to.eq(
+        sellProtocolFeeValue
+      );
     });
   });
 
-  describe('getSwapProtocolFee', () => {
-    it('returns the swap protocol fee', async () => {
-      expect(await protocolSettingsV1.getSwapProtocolFee())
-        .to.eq(swapProtocolFeeValue);
+  describe("getSwapProtocolFee", () => {
+    it("returns the swap protocol fee", async () => {
+      expect(await protocolSettingsV1.getSwapProtocolFee()).to.eq(
+        swapProtocolFeeValue
+      );
     });
   });
 
-  describe('setEnglishAuctionProtocolFeeNumerator', () => {
+  describe("setEnglishAuctionProtocolFeeNumerator", () => {
     const newEnglishAuctionProtocolFeeNumerator = 2;
 
-    context('when the caller is a protocol admin', () => {
-      it('sets the english auction protocol fee numerator', async () => {
+    context("when the caller is a protocol admin", () => {
+      it("sets the english auction protocol fee numerator", async () => {
         await protocolSettingsV1
           .connect(protocolAdmin)
-          .setEnglishAuctionProtocolFeeNumerator(newEnglishAuctionProtocolFeeNumerator);
+          .setEnglishAuctionProtocolFeeNumerator(
+            newEnglishAuctionProtocolFeeNumerator
+          );
 
-        expect(await protocolSettingsV1.getEnglishAuctionProtocolFeeNumerator())
-          .to.eq(newEnglishAuctionProtocolFeeNumerator);
+        expect(
+          await protocolSettingsV1.getEnglishAuctionProtocolFeeNumerator()
+        ).to.eq(newEnglishAuctionProtocolFeeNumerator);
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
-      it('returns an error', async () => {
+    context("when the caller is not a protocol admin", () => {
+      it("returns an error", async () => {
         const protocolAdminRole = await protocolSettingsV1.PROTOCOL_ADMIN();
 
         await expect(
-          protocolSettingsV1.connect(nonAdmin)
-            .setEnglishAuctionProtocolFeeNumerator(newEnglishAuctionProtocolFeeNumerator),
-        )
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+          protocolSettingsV1
+            .connect(nonAdmin)
+            .setEnglishAuctionProtocolFeeNumerator(
+              newEnglishAuctionProtocolFeeNumerator
+            )
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });
 
-  describe('setDutchAuctionProtocolFeeNumerator', () => {
+  describe("setDutchAuctionProtocolFeeNumerator", () => {
     const newDutchAuctionProtocolFeeNumerator = 2;
 
-    context('when the caller is a protocol admin', () => {
-      it('sets the dutch auction protocol fee numerator', async () => {
+    context("when the caller is a protocol admin", () => {
+      it("sets the dutch auction protocol fee numerator", async () => {
         await protocolSettingsV1
           .connect(protocolAdmin)
-          .setDutchAuctionProtocolFeeNumerator(newDutchAuctionProtocolFeeNumerator);
+          .setDutchAuctionProtocolFeeNumerator(
+            newDutchAuctionProtocolFeeNumerator
+          );
 
-        expect(await protocolSettingsV1.getDutchAuctionProtocolFeeNumerator())
-          .to.eq(newDutchAuctionProtocolFeeNumerator);
+        expect(
+          await protocolSettingsV1.getDutchAuctionProtocolFeeNumerator()
+        ).to.eq(newDutchAuctionProtocolFeeNumerator);
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
-      it('returns an error', async () => {
+    context("when the caller is not a protocol admin", () => {
+      it("returns an error", async () => {
         const protocolAdminRole = await protocolSettingsV1.PROTOCOL_ADMIN();
 
         await expect(
-          protocolSettingsV1.connect(nonAdmin)
-            .setDutchAuctionProtocolFeeNumerator(newDutchAuctionProtocolFeeNumerator),
-        )
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+          protocolSettingsV1
+            .connect(nonAdmin)
+            .setDutchAuctionProtocolFeeNumerator(
+              newDutchAuctionProtocolFeeNumerator
+            )
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });
 
-  describe('setSwapProtocolFee', () => {
+  describe("setSwapProtocolFee", () => {
     let newSwapProtocolFee: BigNumberish;
     let belowLimitSwapProtocolFee: BigNumberish;
     let aboveLimitSwapProtocolFee: BigNumberish;
@@ -138,58 +166,63 @@ describe('ProtocolSettingsV1', () => {
     before(() => {
       newSwapProtocolFee = 6000000000;
       belowLimitSwapProtocolFee = 10;
-      aboveLimitSwapProtocolFee = '10000000000000000000000000001';
+      aboveLimitSwapProtocolFee = "10000000000000000000000000001";
     });
 
-    context('when the caller is a protocol admin', () => {
-      context('when the value is within limits', () => {
-        it('sets the swap protocol fee', async () => {
+    context("when the caller is a protocol admin", () => {
+      context("when the value is within limits", () => {
+        it("sets the swap protocol fee", async () => {
           await protocolSettingsV1
             .connect(protocolAdmin)
             .setSwapProtocolFee(newSwapProtocolFee);
 
-          expect(await protocolSettingsV1.getSwapProtocolFee())
-            .to.eq(newSwapProtocolFee);
+          expect(await protocolSettingsV1.getSwapProtocolFee()).to.eq(
+            newSwapProtocolFee
+          );
         });
       });
 
-      context('when the value is below limits', () => {
-        it('reverts with a limit too low error', async () => {
+      context("when the value is below limits", () => {
+        it("reverts with a limit too low error", async () => {
           await expect(
             protocolSettingsV1
               .connect(protocolAdmin)
-              .setSwapProtocolFee(belowLimitSwapProtocolFee),
-          )
-            .to.be.revertedWith('LimitsCheck:isWithinLimits: value is too small.');
+              .setSwapProtocolFee(belowLimitSwapProtocolFee)
+          ).to.be.revertedWith(
+            "LimitsCheck:isWithinLimits: value is too small."
+          );
         });
       });
 
-      context('when the value is above limits', () => {
-        it('reverts with the limit too high error', async () => {
+      context("when the value is above limits", () => {
+        it("reverts with the limit too high error", async () => {
           await expect(
             protocolSettingsV1
               .connect(protocolAdmin)
-              .setSwapProtocolFee(aboveLimitSwapProtocolFee),
-          )
-            .to.be.revertedWith('LimitsCheck:isWithinLimits: value is too large.');
+              .setSwapProtocolFee(aboveLimitSwapProtocolFee)
+          ).to.be.revertedWith(
+            "LimitsCheck:isWithinLimits: value is too large."
+          );
         });
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
-      it('returns an error', async () => {
+    context("when the caller is not a protocol admin", () => {
+      it("returns an error", async () => {
         const protocolAdminRole = await protocolSettingsV1.PROTOCOL_ADMIN();
 
         await expect(
-          protocolSettingsV1.connect(nonAdmin)
-            .setSwapProtocolFee(newSwapProtocolFee),
-        )
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+          protocolSettingsV1
+            .connect(nonAdmin)
+            .setSwapProtocolFee(newSwapProtocolFee)
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });
 
-  describe('setSellProtocolFee', () => {
+  describe("setSellProtocolFee", () => {
     let newSellProtocolFee: BigNumberish;
     let belowLimitSellProtocolFee: BigNumberish;
     let aboveLimitSellProtocolFee: BigNumberish;
@@ -197,53 +230,58 @@ describe('ProtocolSettingsV1', () => {
     before(() => {
       newSellProtocolFee = 6000000000;
       belowLimitSellProtocolFee = 10;
-      aboveLimitSellProtocolFee = '10000000000000000000000000001';
+      aboveLimitSellProtocolFee = "10000000000000000000000000001";
     });
 
-    context('when the caller is a protocol admin', () => {
-      context('when the value is within limits', () => {
-        it('sets the swap protocol fee', async () => {
+    context("when the caller is a protocol admin", () => {
+      context("when the value is within limits", () => {
+        it("sets the swap protocol fee", async () => {
           await protocolSettingsV1
             .connect(protocolAdmin)
-            .setSellProtocolFee(newSellProtocolFee);
+            .setSellProtocolFeeNumerator(newSellProtocolFee);
 
-          expect(await protocolSettingsV1.getSellProtocolFeeNumerator())
-            .to.eq(newSellProtocolFee);
+          expect(await protocolSettingsV1.getSellProtocolFeeNumerator()).to.eq(
+            newSellProtocolFee
+          );
         });
       });
 
-      context('when the value is below limits', () => {
-        it('reverts with limit too low error', async () => {
+      context("when the value is below limits", () => {
+        it("reverts with limit too low error", async () => {
           await expect(
             protocolSettingsV1
               .connect(protocolAdmin)
-              .setSellProtocolFee(belowLimitSellProtocolFee),
-          )
-            .to.be.revertedWith('LimitsCheck:isWithinLimits: value is too small.');
+              .setSellProtocolFeeNumerator(belowLimitSellProtocolFee)
+          ).to.be.revertedWith(
+            "LimitsCheck:isWithinLimits: value is too small."
+          );
         });
       });
 
-      context('when the value is above limits', () => {
-        it('reverts with limit too large error', async () => {
+      context("when the value is above limits", () => {
+        it("reverts with limit too large error", async () => {
           await expect(
             protocolSettingsV1
               .connect(protocolAdmin)
-              .setSellProtocolFee(aboveLimitSellProtocolFee),
-          )
-            .to.be.revertedWith('LimitsCheck:isWithinLimits: value is too large.');
+              .setSellProtocolFeeNumerator(aboveLimitSellProtocolFee)
+          ).to.be.revertedWith(
+            "LimitsCheck:isWithinLimits: value is too large."
+          );
         });
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
-      it('returns an error', async () => {
+    context("when the caller is not a protocol admin", () => {
+      it("returns an error", async () => {
         const protocolAdminRole = await protocolSettingsV1.PROTOCOL_ADMIN();
 
         await expect(
-          protocolSettingsV1.connect(nonAdmin)
-            .setSellProtocolFee(newSellProtocolFee),
-        )
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+          protocolSettingsV1
+            .connect(nonAdmin)
+            .setSellProtocolFeeNumerator(newSellProtocolFee)
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });

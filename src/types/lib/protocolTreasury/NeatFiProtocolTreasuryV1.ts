@@ -425,6 +425,7 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
   events: {
     "AdminChanged(address,address)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
+    "EtherReceived(address,uint256)": EventFragment;
     "LockerCreated(tuple,bytes32)": EventFragment;
     "LockerUnlocked(tuple,bytes32)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
@@ -436,6 +437,7 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EtherReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockerCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockerUnlocked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
@@ -465,6 +467,17 @@ export type BeaconUpgradedEvent = TypedEvent<
 >;
 
 export type BeaconUpgradedEventFilter = TypedEventFilter<BeaconUpgradedEvent>;
+
+export interface EtherReceivedEventObject {
+  sender: string;
+  amount: BigNumber;
+}
+export type EtherReceivedEvent = TypedEvent<
+  [string, BigNumber],
+  EtherReceivedEventObject
+>;
+
+export type EtherReceivedEventFilter = TypedEventFilter<EtherReceivedEvent>;
 
 export interface LockerCreatedEventObject {
   locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
@@ -1102,6 +1115,12 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     BeaconUpgraded(
       beacon?: PromiseOrValue<string> | null
     ): BeaconUpgradedEventFilter;
+
+    "EtherReceived(address,uint256)"(
+      sender?: null,
+      amount?: null
+    ): EtherReceivedEventFilter;
+    EtherReceived(sender?: null, amount?: null): EtherReceivedEventFilter;
 
     "LockerCreated(tuple,bytes32)"(
       locker?: null,

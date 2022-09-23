@@ -77,7 +77,8 @@ contract PaymentsResolverOperationsV1 is
      *         native tokens.
      */
     function sellFeeResolver(uint256 value)
-        internal
+        external
+        view
         onlyRole(AUTHORIZED_OPERATOR)
         returns (uint256 makerEarnings)
     {
@@ -106,9 +107,9 @@ contract PaymentsResolverOperationsV1 is
         onlyRole(PROTOCOL_ADMIN)
     {}
 
-    function initialize(address transferResolver) public initializer {
+    function initialize(address protocolSettings) public initializer {
         __UUPSUpgradeable_init();
-        __AssetSwapOperations_init(transferResolver);
+        __PaymentsResolverOperations_init(protocolSettings);
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
 

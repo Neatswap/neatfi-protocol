@@ -162,15 +162,28 @@ export interface ProtocolTreasuryStorageUpgradeableInterface
   ): Result;
 
   events: {
+    "EtherReceived(address,uint256)": EventFragment;
     "LockerCreated(tuple,bytes32)": EventFragment;
     "LockerUnlocked(tuple,bytes32)": EventFragment;
     "YieldClaimed(address,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "EtherReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockerCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockerUnlocked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "YieldClaimed"): EventFragment;
 }
+
+export interface EtherReceivedEventObject {
+  sender: string;
+  amount: BigNumber;
+}
+export type EtherReceivedEvent = TypedEvent<
+  [string, BigNumber],
+  EtherReceivedEventObject
+>;
+
+export type EtherReceivedEventFilter = TypedEventFilter<EtherReceivedEvent>;
 
 export interface LockerCreatedEventObject {
   locker: ProtocolTreasuryStorageUpgradeable.LockerStructOutput;
@@ -367,6 +380,12 @@ export interface ProtocolTreasuryStorageUpgradeable extends BaseContract {
   };
 
   filters: {
+    "EtherReceived(address,uint256)"(
+      sender?: null,
+      amount?: null
+    ): EtherReceivedEventFilter;
+    EtherReceived(sender?: null, amount?: null): EtherReceivedEventFilter;
+
     "LockerCreated(tuple,bytes32)"(
       locker?: null,
       lockerHash?: null

@@ -42,6 +42,7 @@ export interface PaymentsResolverOperationsV1Interface extends utils.Interface {
     "initialize(address)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
+    "sellFeeResolver(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "swapFeeResolver()": FunctionFragment;
     "updateProtocolSettingsAddress(address)": FunctionFragment;
@@ -63,6 +64,7 @@ export interface PaymentsResolverOperationsV1Interface extends utils.Interface {
       | "initialize"
       | "renounceRole"
       | "revokeRole"
+      | "sellFeeResolver"
       | "supportsInterface"
       | "swapFeeResolver"
       | "updateProtocolSettingsAddress"
@@ -117,6 +119,10 @@ export interface PaymentsResolverOperationsV1Interface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "revokeRole",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sellFeeResolver",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -175,6 +181,10 @@ export interface PaymentsResolverOperationsV1Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "sellFeeResolver",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -338,7 +348,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     ): Promise<[boolean]>;
 
     initialize(
-      transferResolver: PromiseOrValue<string>,
+      protocolSettings: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -353,6 +363,11 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    sellFeeResolver(
+      value: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { makerEarnings: BigNumber }>;
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
@@ -416,7 +431,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
   ): Promise<boolean>;
 
   initialize(
-    transferResolver: PromiseOrValue<string>,
+    protocolSettings: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -431,6 +446,11 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     account: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  sellFeeResolver(
+    value: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   supportsInterface(
     interfaceId: PromiseOrValue<BytesLike>,
@@ -494,7 +514,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     ): Promise<boolean>;
 
     initialize(
-      transferResolver: PromiseOrValue<string>,
+      protocolSettings: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -509,6 +529,11 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    sellFeeResolver(
+      value: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
@@ -629,7 +654,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     ): Promise<BigNumber>;
 
     initialize(
-      transferResolver: PromiseOrValue<string>,
+      protocolSettings: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -643,6 +668,11 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    sellFeeResolver(
+      value: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     supportsInterface(
@@ -714,7 +744,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
-      transferResolver: PromiseOrValue<string>,
+      protocolSettings: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -728,6 +758,11 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    sellFeeResolver(
+      value: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     supportsInterface(

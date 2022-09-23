@@ -35,10 +35,25 @@ contract NeatSwapImplementationV1 is
     string public currentVersion;
 
     /**
+     * @dev Fired when this contract receives Ether.
+     */
+    event EtherReceived(address sender, uint256 amount);
+
+    /**
      * @dev Sets the version for the current implementation of this contract.
      */
     function _setVersion(string memory newVersion) internal {
         currentVersion = newVersion;
+    }
+
+    /**
+     * @dev An external function to allow this contract to receive
+     *         protocol fees in Ether.
+     * @notice This function is a MUST for the implementation contract
+     *         to be able to receive protocol fees.
+     */
+    receive() external payable {
+        emit EtherReceived(msg.sender, msg.value);
     }
 
     /**

@@ -1,6 +1,6 @@
-import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { expect } from "chai";
+import { ethers } from "hardhat";
+import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import {
   deployERC20Mock,
@@ -15,17 +15,17 @@ import {
   deployNeatFiProtocolTreasuryV1,
   deployNeatFiV1,
   deployNeatswapImplementationV1,
-} from './common/helpers/deploymentHelper';
+} from "./common/helpers/deploymentHelper";
 
-import grantRoles from './common/helpers/assetSellHelper';
-import requestActorKey from './common/helpers/actorFactoryHelper';
-import buildToken from './common/helpers/tokenHelper';
-import buildMakeOrder from './common/helpers/neatFiProtocolStorageHelper';
-import ONE_DAY_IN_MILLI_SECS from './common/constants/time';
-import AssetOrderStatus from './common/enums/assetOrderStatus';
-import AssetOrderType from './common/enums/assetOrderType';
+import grantRoles from "./common/helpers/assetSellHelper";
+import requestActorKey from "./common/helpers/actorFactoryHelper";
+import buildToken from "./common/helpers/tokenHelper";
+import buildMakeOrder from "./common/helpers/neatFiProtocolStorageHelper";
+import ONE_DAY_IN_MILLI_SECS from "./common/constants/time";
+import AssetOrderStatus from "./common/enums/assetOrderStatus";
+import AssetOrderType from "./common/enums/assetOrderType";
 
-describe('NeatSwapImplementationV1', () => {
+describe("NeatSwapImplementationV1", () => {
   const deployNeatSwapImplementationV1 = async () => {
     const [deployer, protocolAdmin, nonAdmin] = await ethers.getSigners();
 
@@ -35,15 +35,27 @@ describe('NeatSwapImplementationV1', () => {
 
     const neatFiProtocolStorageV1 = await deployNeatFiProtocolStorageV1(10);
 
-    const assetTransferV1 = await deployAssetTransferV1(neatFiProtocolStorageV1);
+    const assetTransferV1 = await deployAssetTransferV1(
+      neatFiProtocolStorageV1
+    );
 
-    const assetSwapV1 = await deployAssetSwapV1(neatFiProtocolStorageV1, assetTransferV1);
-    const assetSellV1 = await deployAssetSellV1(neatFiProtocolStorageV1, assetTransferV1);
-    const assetAuctionV1 = await deployAssetAuctionV1(neatFiProtocolStorageV1, assetTransferV1);
-
-    const paymentsResolverOperationsV1 = await deployPaymentsResolverOperationsV1(assetTransferV1);
+    const assetSwapV1 = await deployAssetSwapV1(
+      neatFiProtocolStorageV1,
+      assetTransferV1
+    );
+    const assetSellV1 = await deployAssetSellV1(
+      neatFiProtocolStorageV1,
+      assetTransferV1
+    );
+    const assetAuctionV1 = await deployAssetAuctionV1(
+      neatFiProtocolStorageV1,
+      assetTransferV1
+    );
 
     const protocolSettingsV1 = await deployProtocolSettingsV1();
+
+    const paymentsResolverOperationsV1 =
+      await deployPaymentsResolverOperationsV1(protocolSettingsV1);
 
     const actorFactoryV1 = await deployActorFactorV1();
 
@@ -58,7 +70,7 @@ describe('NeatSwapImplementationV1', () => {
       neatFiProtocolStorageV1,
       actorFactoryV1,
       neatFiProtocolTreasuryV1,
-      true,
+      true
     );
 
     const neatSwap = await deployNeatswapImplementationV1(neatFiV1);
@@ -67,24 +79,40 @@ describe('NeatSwapImplementationV1', () => {
     const authorizedOperatorRole = await assetSellV1.AUTHORIZED_OPERATOR();
     const protocolAdminRole = await assetSellV1.PROTOCOL_ADMIN();
 
-    await actorFactoryV1.connect(deployer).grantRole(authorizedOperatorRole, deployerAddress);
-    await actorFactoryV1.connect(deployer).grantRole(protocolAdminRole, protocolAdmin.address);
+    await actorFactoryV1
+      .connect(deployer)
+      .grantRole(authorizedOperatorRole, deployerAddress);
+    await actorFactoryV1
+      .connect(deployer)
+      .grantRole(protocolAdminRole, protocolAdmin.address);
 
-    await neatFiProtocolStorageV1.connect(deployer)
+    await neatFiProtocolStorageV1
+      .connect(deployer)
       .grantRole(authorizedOperatorRole, deployerAddress);
 
-    await neatFiProtocolStorageV1.grantRole(authorizedOperatorRole, assetSellV1.address);
-    await neatFiProtocolStorageV1.grantRole(authorizedOperatorRole, assetTransferV1.address);
-    await assetTransferV1.grantRole(authorizedOperatorRole, assetSellV1.address);
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
+      assetSellV1.address
+    );
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
+      assetTransferV1.address
+    );
+    await assetTransferV1.grantRole(
+      authorizedOperatorRole,
+      assetSellV1.address
+    );
 
     await assetSellV1.grantRole(authorizedOperatorRole, deployerAddress);
     await assetSellV1.grantRole(protocolAdminRole, protocolAdmin.address);
     await assetSellV1.grantRole(authorizedOperatorRole, nonAdminAddress);
 
-    await erc20Mock.connect(protocolAdmin).approve(assetTransferV1.address, 128);
+    await erc20Mock.connect(nonAdmin).approve(assetTransferV1.address, 1000000);
 
     await actorFactoryV1.connect(deployer).requestActorKey(neatSwap.address);
-    await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(neatSwap.address);
+    await actorFactoryV1
+      .connect(protocolAdmin)
+      .approveAndGenerateActorKey(neatSwap.address);
 
     const actorInfo = await actorFactoryV1.actorInfo(neatSwap.address);
 
@@ -94,11 +122,11 @@ describe('NeatSwapImplementationV1', () => {
       actorInfo.actorKey,
       [token],
       neatFiProtocolStorageV1,
-      nonAdminAddress,
+      nonAdminAddress
     );
 
     const buyer = deployerAddress;
-    const data = '0x6f72646572';
+    const data = "0x6f72646572";
 
     return {
       deployer,
@@ -118,9 +146,9 @@ describe('NeatSwapImplementationV1', () => {
     };
   };
 
-  describe('buyItNow', () => {
-    context('when the order is valid', () => {
-      it('changes the order status to CLOSED', async () => {
+  describe("buyItNow", () => {
+    context.only("when the order is valid", () => {
+      it("changes the order status to CLOSED", async () => {
         const {
           data,
           neatFiProtocolStorageV1,
@@ -129,11 +157,15 @@ describe('NeatSwapImplementationV1', () => {
           neatSwap,
         } = await loadFixture(deployNeatSwapImplementationV1);
 
-        const { orderHash, listingTime } = await makeOrder(AssetOrderType.SWAP);
+        const { orderHash, purchaseValue, listingTime } = await makeOrder(
+          AssetOrderType.SELL
+        );
 
         await time.increaseTo(listingTime + 5 * ONE_DAY_IN_MILLI_SECS);
 
-        await neatSwap.connect(protocolAdmin).buyItNow(orderHash, data);
+        await neatSwap
+          .connect(protocolAdmin)
+          .buyItNow(orderHash, data, { value: purchaseValue });
 
         const order = await neatFiProtocolStorageV1.getOrder(orderHash);
 

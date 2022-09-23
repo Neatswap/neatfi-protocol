@@ -21,6 +21,8 @@ import type * as storageInterfaces from "./storageInterfaces";
 export type { storageInterfaces };
 import type * as tokenInterfaces from "./tokenInterfaces";
 export type { tokenInterfaces };
+import type * as treasuryInterfaces from "./treasuryInterfaces";
+export type { treasuryInterfaces };
 import type * as utilInterfaces from "./utilInterfaces";
 export type { utilInterfaces };
 import type * as vestingEscrowInterfaces from "./vestingEscrowInterfaces";
