@@ -73,10 +73,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721__factory>;
     getContractFactory(
-      name: "IProtocolTreasury",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IProtocolTreasury__factory>;
-    getContractFactory(
       name: "IERC165Upgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165Upgradeable__factory>;
@@ -308,11 +304,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC721>;
-    getContractAt(
-      name: "IProtocolTreasury",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IProtocolTreasury>;
     getContractAt(
       name: "IERC165Upgradeable",
       address: string,
