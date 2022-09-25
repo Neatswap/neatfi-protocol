@@ -4,3 +4,4 @@
 export type { AssetEventsUpgradeable } from "./AssetEventsUpgradeable";
 export type { AssetMappingsUpgradeable } from "./AssetMappingsUpgradeable";
 export type { AssetStorageSettingsUpgradeable } from "./AssetStorageSettingsUpgradeable";
+export type { AssetTypehasheConstantsUpgradeable } from "./AssetTypehasheConstantsUpgradeable";

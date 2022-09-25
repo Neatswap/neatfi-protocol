@@ -181,6 +181,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AssetStorageSettingsUpgradeable__factory>;
     getContractFactory(
+      name: "AssetTypehasheConstantsUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AssetTypehasheConstantsUpgradeable__factory>;
+    getContractFactory(
       name: "AssetStorageOperationsUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AssetStorageOperationsUpgradeable__factory>;
@@ -439,6 +443,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.AssetStorageSettingsUpgradeable>;
+    getContractAt(
+      name: "AssetTypehasheConstantsUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AssetTypehasheConstantsUpgradeable>;
     getContractAt(
       name: "AssetStorageOperationsUpgradeable",
       address: string,
