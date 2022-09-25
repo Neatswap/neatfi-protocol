@@ -48,11 +48,11 @@ describe("AssetTransferV1", () => {
 
     const token = buildToken(erc20Mock);
 
-    const actorKey =
-      "0x289ee93e07df6282d6aa058d1080e7eb2f905bd675a2071583a40b1cb3c96baa"; // MOCK_ACTOR_KEY
+    const mockActorKey =
+      "0x289ee93e07df6282d6aa058d1080e7eb2f905bd675a2071583a40b1cb3c96baa";
 
     const makeOrder = buildMakeOrder(
-      actorKey,
+      mockActorKey,
       [token],
       neatFiProtocolStorageV1,
       nonAdminAddress
