@@ -1,9 +1,12 @@
-import { expect } from 'chai';
-import { Signer } from 'ethers';
-import { ethers, upgrades } from 'hardhat';
-import { ActorFactoryV1, ActorFactoryV1__factory as ActorFactoryV1Factory } from 'src/types';
+import { expect } from "chai";
+import { Signer } from "ethers";
+import { ethers, upgrades } from "hardhat";
+import {
+  ActorFactoryV1,
+  ActorFactoryV1__factory as ActorFactoryV1Factory,
+} from "src/types";
 
-describe('ActorFactoryV1', () => {
+describe("ActorFactoryV1", () => {
   let deployer: Signer;
   let deployerAddress: string;
 
@@ -28,263 +31,337 @@ describe('ActorFactoryV1', () => {
     protocolAdminAddress = await protocolAdmin.getAddress();
     nonAdminAddress = await nonAdmin.getAddress();
 
-    actorFactoryV1Factory = (await ethers.getContractFactory('ActorFactoryV1'));
+    actorFactoryV1Factory = await ethers.getContractFactory("ActorFactoryV1");
 
-    actorFactoryV1 = await upgrades.deployProxy(
-      actorFactoryV1Factory,
-      { kind: 'uups' },
-    ) as ActorFactoryV1;
+    actorFactoryV1 = (await upgrades.deployProxy(actorFactoryV1Factory, {
+      kind: "uups",
+    })) as ActorFactoryV1;
 
-    actor = await upgrades.deployProxy(
-      actorFactoryV1Factory,
-      { kind: 'uups' },
-    ) as ActorFactoryV1;
+    actor = (await upgrades.deployProxy(actorFactoryV1Factory, {
+      kind: "uups",
+    })) as ActorFactoryV1;
 
     actorAddress = actor.address;
 
     const protocolAdminRole = await actorFactoryV1.PROTOCOL_ADMIN();
     const authorizedOperatorRole = await actorFactoryV1.AUTHORIZED_OPERATOR();
 
-    await actorFactoryV1.connect(deployer).grantRole(protocolAdminRole, protocolAdminAddress);
-    await actorFactoryV1.connect(deployer).grantRole(authorizedOperatorRole, deployerAddress);
+    await actorFactoryV1
+      .connect(deployer)
+      .grantRole(protocolAdminRole, protocolAdminAddress);
+    await actorFactoryV1
+      .connect(deployer)
+      .grantRole(authorizedOperatorRole, deployerAddress);
   });
 
-  describe('requestActorKey', () => {
-    context('when the address is valid', () => {
-      it('creates the actor with the correct status', async () => {
+  describe("requestActorKey", () => {
+    context("when the address is valid", () => {
+      it("creates the actor with the correct status", async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
         expect(actorInfo.actorStatus).to.eq(0);
       });
 
-      it('creates the actor with the correct address', async () => {
+      it("creates the actor with the correct address", async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
         expect(actorInfo.actorContract).to.eq(actorAddress);
       });
 
-      it('creates the actor with the correct key', async () => {
+      it("creates the actor with the correct key", async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
-        expect(actorInfo.actorKey).to.include('0x0');
+        expect(actorInfo.actorKey).to.include("0x0");
       });
 
-      it('emits an ActorKeyRequested event', async () => {
-        await expect(actorFactoryV1.requestActorKey(actorAddress)).to.emit(actorFactoryV1, 'ActorKeyRequested').withArgs(actorAddress);
+      it("emits an ActorKeyRequested event", async () => {
+        await expect(actorFactoryV1.requestActorKey(actorAddress))
+          .to.emit(actorFactoryV1, "ActorKeyRequested")
+          .withArgs(actorAddress);
       });
     });
 
-    context('when the address is not a smart contract', () => {
-      it('returns an error', async () => {
-        await expect(actorFactoryV1.connect(deployer).requestActorKey(protocolAdminAddress))
-          .to.be.revertedWith('ActorFactoryOperationsUpgradeable::_requestActorKey: actor address is not a smart contract.');
+    context("when the address is not a smart contract", () => {
+      it("returns an error", async () => {
+        await expect(
+          actorFactoryV1.connect(deployer).requestActorKey(protocolAdminAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_requestActorKey: actor address is not a smart contract."
+        );
       });
     });
   });
 
-  describe('approveAndGenerateActorKey', () => {
-    context('when the address is valid', () => {
+  describe("approveAndGenerateActorKey", () => {
+    context("when the address is valid", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
       });
 
-      it('changes the actor status to active', async () => {
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
+      it("changes the actor status to active", async () => {
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
         expect(actorInfo.actorStatus).to.eq(1);
       });
 
-      it('generates a key for the actor', async () => {
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
+      it("generates a key for the actor", async () => {
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
-        expect(actorInfo.actorKey).to.not.include('0x0');
+        expect(actorInfo.actorKey).to.not.include("0x0");
       });
 
-      it('returns the actor key', async () => {
-        const res = await actorFactoryV1.connect(protocolAdmin)
+      it("returns the actor key", async () => {
+        const res = await actorFactoryV1
+          .connect(protocolAdmin)
           .approveAndGenerateActorKey(actorAddress);
 
-        expect(res.data).to.be.a('string');
+        expect(res.data).to.be.a("string");
       });
 
-      it('emits an actor key created event', async () => {
-        await expect(actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress)).to.emit(actorFactoryV1, 'ActorKeyCreated');
+      it("emits an actor key created event", async () => {
+        await expect(
+          actorFactoryV1
+            .connect(protocolAdmin)
+            .approveAndGenerateActorKey(actorAddress)
+        ).to.emit(actorFactoryV1, "ActorKeyCreated");
       });
     });
 
-    context('when the key was already generated', () => {
+    context("when the key was already generated", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
       });
 
-      it('returns an error', async () => {
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
+      it("returns an error", async () => {
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
 
-        await expect(actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress))
-          .to.be.revertedWith('ActorFactoryOperationsUpgradeable::_approveAndGenerateActorKey: actor key already generated.');
+        await expect(
+          actorFactoryV1
+            .connect(protocolAdmin)
+            .approveAndGenerateActorKey(actorAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_approveAndGenerateActorKey: actor key already generated."
+        );
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
+    context("when the caller is not a protocol admin", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
       });
 
-      it('returns an error', async () => {
+      it("returns an error", async () => {
         const protocolAdminRole = await actorFactoryV1.PROTOCOL_ADMIN();
 
-        await expect(actorFactoryV1.connect(nonAdmin).approveAndGenerateActorKey(actorAddress))
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+        await expect(
+          actorFactoryV1
+            .connect(nonAdmin)
+            .approveAndGenerateActorKey(actorAddress)
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });
 
-  describe('inactivateActor', () => {
-    context('when the address is valid and the actor vas active', () => {
+  describe("inactivateActor", () => {
+    context("when the address is valid and the actor vas active", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
       });
 
-      it('deactivates the actor', async () => {
-        await actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress);
+      it("deactivates the actor", async () => {
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .inactivateActor(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
         expect(actorInfo.actorStatus).to.eq(2);
       });
 
-      it('emits an actor inactivated event', async () => {
-        await expect(actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress)).to.emit(actorFactoryV1, 'ActorInactivated').withArgs(actorAddress);
-      });
-    });
-
-    context('when actor was already inactive', () => {
-      beforeEach(async () => {
-        await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress);
-      });
-
-      it('returns an error', async () => {
+      it("emits an actor inactivated event", async () => {
         await expect(
-          actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_inactivateActor: actor is already inactive');
+          actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress)
+        )
+          .to.emit(actorFactoryV1, "ActorInactivated")
+          .withArgs(actorAddress);
       });
     });
 
-    context('when actor has not been approved yet', () => {
+    context("when actor was already inactive", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .inactivateActor(actorAddress);
       });
 
-      it('returns an error', async () => {
+      it("returns an error", async () => {
         await expect(
-          actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_inactivateActor: actor is not approved yet');
+          actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_inactivateActor: actor is already inactive"
+        );
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
+    context("when actor has not been approved yet", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
       });
 
-      it('returns an error', async () => {
+      it("returns an error", async () => {
+        await expect(
+          actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_inactivateActor: actor is not approved yet"
+        );
+      });
+    });
+
+    context("when the caller is not a protocol admin", () => {
+      beforeEach(async () => {
+        await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
+      });
+
+      it("returns an error", async () => {
         const protocolAdminRole = await actorFactoryV1.PROTOCOL_ADMIN();
 
-        await expect(actorFactoryV1.connect(nonAdmin).approveAndGenerateActorKey(actorAddress))
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+        await expect(
+          actorFactoryV1
+            .connect(nonAdmin)
+            .approveAndGenerateActorKey(actorAddress)
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });
 
-  describe('activateActor', () => {
-    context('when the address is valid and the actor was inactive', () => {
+  describe("activateActor", () => {
+    context("when the address is valid and the actor was inactive", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).inactivateActor(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .inactivateActor(actorAddress);
       });
 
-      it('activates the actor', async () => {
+      it("activates the actor", async () => {
         await actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress);
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
         expect(actorInfo.actorStatus).to.eq(1);
       });
 
-      it('emits an actor activated event', async () => {
-        await expect(actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress)).to.emit(actorFactoryV1, 'ActorActivated').withArgs(actorAddress);
-      });
-    });
-
-    context('when actor was already active', () => {
-      beforeEach(async () => {
-        await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
-      });
-
-      it('returns an error', async () => {
+      it("emits an actor activated event", async () => {
         await expect(
-          actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_activateActor: actor is already active');
+          actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress)
+        )
+          .to.emit(actorFactoryV1, "ActorActivated")
+          .withArgs(actorAddress);
       });
     });
 
-    context('when actor has not been approved yet', () => {
+    context("when actor was already active", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
       });
 
-      it('returns an error', async () => {
+      it("returns an error", async () => {
         await expect(
-          actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_activateActor: actor is not approved yet');
+          actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_activateActor: actor is already active"
+        );
       });
     });
 
-    context('when the caller is not a protocol admin', () => {
+    context("when actor has not been approved yet", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
       });
 
-      it('returns an error', async () => {
+      it("returns an error", async () => {
+        await expect(
+          actorFactoryV1.connect(protocolAdmin).activateActor(actorAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_activateActor: actor is not approved yet"
+        );
+      });
+    });
+
+    context("when the caller is not a protocol admin", () => {
+      beforeEach(async () => {
+        await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
+      });
+
+      it("returns an error", async () => {
         const protocolAdminRole = await actorFactoryV1.PROTOCOL_ADMIN();
 
-        await expect(actorFactoryV1.connect(nonAdmin).approveAndGenerateActorKey(actorAddress))
-          .to.be.revertedWith(`'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`);
+        await expect(
+          actorFactoryV1
+            .connect(nonAdmin)
+            .approveAndGenerateActorKey(actorAddress)
+        ).to.be.revertedWith(
+          `'AccessControl: account ${nonAdminAddress.toLowerCase()} is missing role ${protocolAdminRole}`
+        );
       });
     });
   });
 
-  describe('getActorKey', () => {
-    context('when the address is valid and the actor exists', () => {
+  describe("getActorKey", () => {
+    context("when the address is valid and the actor exists", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
-        await actorFactoryV1.connect(protocolAdmin).approveAndGenerateActorKey(actorAddress);
+        await actorFactoryV1
+          .connect(protocolAdmin)
+          .approveAndGenerateActorKey(actorAddress);
       });
 
-      it('returns the actor key', async () => {
+      it("returns the actor key", async () => {
         const actorInfo = await actorFactoryV1.actorInfo(actorAddress);
 
-        expect(await actorFactoryV1.getActorKey(actorAddress)).to.eq(actorInfo.actorKey);
+        expect(await actorFactoryV1.getActorKey(actorAddress)).to.eq(
+          actorInfo.actorKey
+        );
       });
     });
 
-    context('when actor was not approved', () => {
+    context("when actor was not approved", () => {
       beforeEach(async () => {
         await actorFactoryV1.connect(deployer).requestActorKey(actorAddress);
       });
 
-      it('returns an error', async () => {
+      it("returns an error", async () => {
         await expect(
-          actorFactoryV1.connect(protocolAdmin).getActorKey(actorAddress),
-        ).to.be.revertedWith('ActorFactoryOperationsUpgradeable::_getActorKey: actor key is 0x0.');
+          actorFactoryV1.connect(protocolAdmin).getActorKey(actorAddress)
+        ).to.be.revertedWith(
+          "ActorFactoryOperationsUpgradeable::_getActorKey: actor key is 0x0."
+        );
       });
     });
   });
