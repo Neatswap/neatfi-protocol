@@ -1,12 +1,12 @@
 import { time } from "@nomicfoundation/hardhat-network-helpers";
-
-import { NeatFiProtocolStorageV1 } from "src/types";
+import { Signer } from "ethers";
+import { ActorFactoryV1, NeatFiProtocolStorageV1 } from "src/types";
 import { AssetStructsUpgradeable } from "src/types/NeatFiV1";
 
 import ONE_DAY_IN_MILLI_SECS from "../constants/time";
 import AssetOrderType from "../enums/assetOrderType";
 
-const buildMakeOrder =
+export const buildMakeOrder =
   (
     actorKey: string,
     tokens: AssetStructsUpgradeable.TokenStruct[],
@@ -42,4 +42,21 @@ const buildMakeOrder =
     return { orderHash, purchaseValue: endPrice, listingTime };
   };
 
-export default buildMakeOrder;
+export const grantRoles = async (
+  neatFiProtocolStorageV1: NeatFiProtocolStorageV1,
+  deployer: Signer,
+  deployerAddress: string,
+  protocolAdminAddress: string
+) => {
+  const authorizedOperatorRole =
+    await neatFiProtocolStorageV1.AUTHORIZED_OPERATOR();
+  const protocolAdminRole = await neatFiProtocolStorageV1.PROTOCOL_ADMIN();
+
+  await neatFiProtocolStorageV1
+    .connect(deployer)
+    .grantRole(authorizedOperatorRole, deployerAddress);
+
+  await neatFiProtocolStorageV1
+    .connect(deployer)
+    .grantRole(protocolAdminRole, protocolAdminAddress);
+};

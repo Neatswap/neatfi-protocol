@@ -71,8 +71,10 @@ export interface AssetStorageOperationsUpgradeableInterface
   functions: {
     "AUTHORIZED_OPERATOR()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "ORDER_TYPEHASH()": FunctionFragment;
     "PROTOCOL_ADMIN()": FunctionFragment;
     "PROTOCOL_TREASURER()": FunctionFragment;
+    "TOKEN_TYPEHASH()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
@@ -88,8 +90,10 @@ export interface AssetStorageOperationsUpgradeableInterface
     nameOrSignatureOrTopic:
       | "AUTHORIZED_OPERATOR"
       | "DEFAULT_ADMIN_ROLE"
+      | "ORDER_TYPEHASH"
       | "PROTOCOL_ADMIN"
       | "PROTOCOL_TREASURER"
+      | "TOKEN_TYPEHASH"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
@@ -110,11 +114,19 @@ export interface AssetStorageOperationsUpgradeableInterface
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "ORDER_TYPEHASH",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "PROTOCOL_ADMIN",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "PROTOCOL_TREASURER",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "TOKEN_TYPEHASH",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -163,11 +175,19 @@ export interface AssetStorageOperationsUpgradeableInterface
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "ORDER_TYPEHASH",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "PROTOCOL_ADMIN",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "PROTOCOL_TREASURER",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "TOKEN_TYPEHASH",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -336,9 +356,13 @@ export interface AssetStorageOperationsUpgradeable extends BaseContract {
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<[string]>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<[string]>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -420,9 +444,13 @@ export interface AssetStorageOperationsUpgradeable extends BaseContract {
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+  ORDER_TYPEHASH(overrides?: CallOverrides): Promise<string>;
+
   PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<string>;
 
   PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
+
+  TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
@@ -504,9 +532,13 @@ export interface AssetStorageOperationsUpgradeable extends BaseContract {
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<string>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<string>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -650,9 +682,13 @@ export interface AssetStorageOperationsUpgradeable extends BaseContract {
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<BigNumber>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<BigNumber>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -710,11 +746,15 @@ export interface AssetStorageOperationsUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PROTOCOL_TREASURER(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,

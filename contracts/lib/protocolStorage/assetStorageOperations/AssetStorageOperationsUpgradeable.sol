@@ -63,7 +63,7 @@ contract AssetStorageOperationsUpgradeable is
         for (uint256 i = 0; i < tokens.length; i++) {
             require(
                 isValidContractAddress(tokens[i].tokenContract),
-                "AssetStorageOperationsUpgradeable:_tokenHash: one of the Token contracts in the batch does not exist."
+                "AssetStorageOperationsUpgradeable:_hashTokens: one of the Token contracts in the batch does not exist."
             );
 
             tokenHashes[i] = _hashSingleToken(
@@ -181,15 +181,15 @@ contract AssetStorageOperationsUpgradeable is
     function _isValidOrder(bytes32 orderHash) internal returns (bool) {
         Order storage order = orderInfo[orderHash];
 
-        /// Order must be ready for operations.
-        if (block.timestamp < order.listingTime) {
-            return false;
-        }
+        require(
+            block.timestamp > order.listingTime,
+            "AssetStorageOperationsUpgradeable::_isValidOrder: invalid order - order is not ready for operations."
+        );
 
-        /// Order must be OPEN.
-        if (order.status != AssetOrderStatus.OPEN) {
-            return false;
-        }
+        require(
+            order.status == AssetOrderStatus.OPEN,
+            "AssetStorageOperationsUpgradeable::_isValidOrder: invalid order - order status is not OPEN"
+        );
 
         /// Order must not be EXPIRED.
         if (
@@ -238,9 +238,10 @@ contract AssetStorageOperationsUpgradeable is
         returns (bool)
     {
         Order storage order = orderInfo[orderHash];
-        if (maker != order.maker) {
-            return false;
-        }
+        require(
+            order.maker == maker,
+            "AssetStorageOperationsUpgradeable::_isValidOwner: claimant address is not the order maker."
+        );
 
         return true;
     }

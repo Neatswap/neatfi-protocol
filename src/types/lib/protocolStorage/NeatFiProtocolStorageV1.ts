@@ -85,8 +85,10 @@ export interface NeatFiProtocolStorageV1Interface extends utils.Interface {
   functions: {
     "AUTHORIZED_OPERATOR()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "ORDER_TYPEHASH()": FunctionFragment;
     "PROTOCOL_ADMIN()": FunctionFragment;
     "PROTOCOL_TREASURER()": FunctionFragment;
+    "TOKEN_TYPEHASH()": FunctionFragment;
     "changeOrderEndPrice(bytes32,uint256)": FunctionFragment;
     "changeOrderExpirationTime(bytes32,uint256)": FunctionFragment;
     "changeOrderStartPrice(bytes32,uint256)": FunctionFragment;
@@ -117,8 +119,10 @@ export interface NeatFiProtocolStorageV1Interface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "AUTHORIZED_OPERATOR"
       | "DEFAULT_ADMIN_ROLE"
+      | "ORDER_TYPEHASH"
       | "PROTOCOL_ADMIN"
       | "PROTOCOL_TREASURER"
+      | "TOKEN_TYPEHASH"
       | "changeOrderEndPrice"
       | "changeOrderExpirationTime"
       | "changeOrderStartPrice"
@@ -154,11 +158,19 @@ export interface NeatFiProtocolStorageV1Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "ORDER_TYPEHASH",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "PROTOCOL_ADMIN",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "PROTOCOL_TREASURER",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "TOKEN_TYPEHASH",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -276,11 +288,19 @@ export interface NeatFiProtocolStorageV1Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "ORDER_TYPEHASH",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "PROTOCOL_ADMIN",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "PROTOCOL_TREASURER",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "TOKEN_TYPEHASH",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -528,9 +548,13 @@ export interface NeatFiProtocolStorageV1 extends BaseContract {
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<[string]>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<[string]>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
     changeOrderEndPrice(
       orderHash: PromiseOrValue<BytesLike>,
@@ -709,9 +733,13 @@ export interface NeatFiProtocolStorageV1 extends BaseContract {
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+  ORDER_TYPEHASH(overrides?: CallOverrides): Promise<string>;
+
   PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<string>;
 
   PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
+
+  TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   changeOrderEndPrice(
     orderHash: PromiseOrValue<BytesLike>,
@@ -882,9 +910,13 @@ export interface NeatFiProtocolStorageV1 extends BaseContract {
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<string>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<string>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<string>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
     changeOrderEndPrice(
       orderHash: PromiseOrValue<BytesLike>,
@@ -1140,9 +1172,13 @@ export interface NeatFiProtocolStorageV1 extends BaseContract {
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<BigNumber>;
 
     PROTOCOL_TREASURER(overrides?: CallOverrides): Promise<BigNumber>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
     changeOrderEndPrice(
       orderHash: PromiseOrValue<BytesLike>,
@@ -1289,11 +1325,15 @@ export interface NeatFiProtocolStorageV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    ORDER_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     PROTOCOL_ADMIN(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PROTOCOL_TREASURER(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    TOKEN_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     changeOrderEndPrice(
       orderHash: PromiseOrValue<BytesLike>,

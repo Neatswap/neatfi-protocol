@@ -95,6 +95,8 @@ export type { AssetMappingsUpgradeable } from "./lib/protocolStorage/assetStorag
 export { AssetMappingsUpgradeable__factory } from "./factories/lib/protocolStorage/assetStorage/AssetMappingsUpgradeable__factory";
 export type { AssetStorageSettingsUpgradeable } from "./lib/protocolStorage/assetStorage/AssetStorageSettingsUpgradeable";
 export { AssetStorageSettingsUpgradeable__factory } from "./factories/lib/protocolStorage/assetStorage/AssetStorageSettingsUpgradeable__factory";
+export type { AssetTypehasheConstantsUpgradeable } from "./lib/protocolStorage/assetStorage/AssetTypehasheConstantsUpgradeable";
+export { AssetTypehasheConstantsUpgradeable__factory } from "./factories/lib/protocolStorage/assetStorage/AssetTypehasheConstantsUpgradeable__factory";
 export type { AssetStorageOperationsUpgradeable } from "./lib/protocolStorage/assetStorageOperations/AssetStorageOperationsUpgradeable";
 export { AssetStorageOperationsUpgradeable__factory } from "./factories/lib/protocolStorage/assetStorageOperations/AssetStorageOperationsUpgradeable__factory";
 export type { NeatFiProtocolStorageV1 } from "./lib/protocolStorage/NeatFiProtocolStorageV1";

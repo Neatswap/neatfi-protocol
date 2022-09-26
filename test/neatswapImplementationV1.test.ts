@@ -19,8 +19,8 @@ import {
 
 import grantRoles from "./common/helpers/assetSellHelper";
 import requestActorKey from "./common/helpers/actorFactoryHelper";
-import buildToken from "./common/helpers/tokenHelper";
-import buildMakeOrder from "./common/helpers/neatFiProtocolStorageHelper";
+import { buildToken } from "./common/helpers/tokenHelper";
+import { buildMakeOrder } from "./common/helpers/neatFiProtocolStorageHelper";
 import ONE_DAY_IN_MILLI_SECS from "./common/constants/time";
 import AssetOrderStatus from "./common/enums/assetOrderStatus";
 import AssetOrderType from "./common/enums/assetOrderType";

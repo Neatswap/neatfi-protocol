@@ -8,9 +8,8 @@ import {
   deployAssetTransferV1,
 } from "../../common/helpers/deploymentHelper";
 
-import buildToken from "../../common/helpers/tokenHelper";
-import buildMakeOrder from "../../common/helpers/neatFiProtocolStorageHelper";
-import AssetOrderStatus from "../../common/enums/assetOrderStatus";
+import { buildToken } from "../../common/helpers/tokenHelper";
+import { buildMakeOrder } from "../../common/helpers/neatFiProtocolStorageHelper";
 import AssetOrderType from "../../common/enums/assetOrderType";
 import ONE_DAY_IN_MILLI_SECS from "../../common/constants/time";
 
@@ -77,7 +76,7 @@ describe("AssetTransferV1", () => {
   };
 
   describe("transferResolver", () => {
-    context.only("when the order escrow is valid", () => {
+    context("when the order escrow is valid", () => {
       it("transfers the token assets of the order.", async () => {
         const {
           deployer,
