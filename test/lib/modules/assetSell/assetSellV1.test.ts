@@ -11,8 +11,10 @@ import {
 } from "../../../common/helpers/deploymentHelper";
 import grantRoles from "../../../common/helpers/assetSellHelper";
 import requestActorKey from "../../../common/helpers/actorFactoryHelper";
-import buildToken from "../../../common/helpers/tokenHelper";
-import buildMakeOrder from "../../../common/helpers/neatFiProtocolStorageHelper";
+
+import { buildToken } from "../../../common/helpers/tokenHelper";
+import { buildMakeOrder } from "../../../common/helpers/neatFiProtocolStorageHelper";
+
 import ONE_DAY_IN_MILLI_SECS from "../../../common/constants/time";
 import AssetOrderStatus from "../../../common/enums/assetOrderStatus";
 import AssetOrderType from "../../../common/enums/assetOrderType";
@@ -188,8 +190,14 @@ describe("AssetSellV1", () => {
 
     context("when the order is valid", () => {
       it("changes the order status to CLOSED", async () => {
-        const { buyer, data, neatFiProtocolStorageV1, assetSellV1, makeOrder } =
-          await loadFixture(deployAssetSellV1Fixture);
+        const {
+          nonAdmin,
+          buyer,
+          data,
+          neatFiProtocolStorageV1,
+          assetSellV1,
+          makeOrder,
+        } = await loadFixture(deployAssetSellV1Fixture);
 
         const { orderHash, purchaseValue, listingTime } = await makeOrder();
 
