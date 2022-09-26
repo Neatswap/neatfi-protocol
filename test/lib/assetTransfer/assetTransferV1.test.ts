@@ -77,7 +77,7 @@ describe("AssetTransferV1", () => {
   };
 
   describe("transferResolver", () => {
-    context.only("when the order escrow is valid", () => {
+    context("when the order escrow is valid", () => {
       it("transfers the token assets of the order.", async () => {
         const {
           deployer,
