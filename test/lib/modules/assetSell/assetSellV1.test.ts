@@ -11,8 +11,10 @@ import {
 } from "../../../common/helpers/deploymentHelper";
 import grantRoles from "../../../common/helpers/assetSellHelper";
 import requestActorKey from "../../../common/helpers/actorFactoryHelper";
+
 import { buildToken } from "../../../common/helpers/tokenHelper";
 import { buildMakeOrder } from "../../../common/helpers/neatFiProtocolStorageHelper";
+
 import ONE_DAY_IN_MILLI_SECS from "../../../common/constants/time";
 import AssetOrderStatus from "../../../common/enums/assetOrderStatus";
 import AssetOrderType from "../../../common/enums/assetOrderType";
@@ -137,7 +139,7 @@ describe("AssetSellV1", () => {
         await expect(
           assetSellV1.buyItNow(orderHash, purchaseValue, buyer, data)
         ).to.be.revertedWith(
-          "AssetStorageOperationsUpgradeable::_isValidOwner: claimant address is not the order maker."
+          "AssetSellOperationsUpgradeable::_buyItNow: invalid order."
         );
       });
     });

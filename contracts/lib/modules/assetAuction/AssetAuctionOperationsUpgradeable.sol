@@ -205,7 +205,7 @@ contract AssetAuctionOperationsUpgradeable is
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
             ),
-            "AssetAuctionOperationsUpgradeable::_bidForEnglishAuction: invalid order."
+            "AssetAuctionOperationsUpgradeable::_bidForDutchAuction: invalid order."
         );
 
         Order memory order = INeatFiProtocolStorage(neatFiProtocolStorage)
@@ -213,12 +213,12 @@ contract AssetAuctionOperationsUpgradeable is
 
         require(
             order.orderType == AssetOrderType.DUTCH_AUCTION,
-            "AssetAuctionOperationsUpgradeable::_bidForEnglishAuction: wWrong order type."
+            "AssetAuctionOperationsUpgradeable::_bidForDutchAuction: wWrong order type."
         );
 
         require(
             bidValue == order.endPrice,
-            "AssetAuctionOperations::_bidForEnglishAuction: invalid bid value."
+            "AssetAuctionOperations::_bidForDutchAuction: invalid bid value."
         );
 
         INeatFiProtocolStorage(neatFiProtocolStorage).changeOrderEndPrice(
@@ -270,7 +270,7 @@ contract AssetAuctionOperationsUpgradeable is
         require(
             order.orderType == AssetOrderType.ENGLISH_AUCTION ||
                 order.orderType == AssetOrderType.DUTCH_AUCTION,
-            "Wrong order type"
+            "AssetAuctionOperations::_approveLastBid: wrong order type."
         );
 
         address bidder = lastBidderForOrder[orderHash];
