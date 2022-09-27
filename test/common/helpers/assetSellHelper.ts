@@ -1,10 +1,10 @@
-import { Signer } from 'ethers';
+import { Signer } from "ethers";
 import {
   ActorFactoryV1,
   AssetSellV1,
   AssetTransferV1,
   NeatFiProtocolStorageV1,
-} from 'src/types';
+} from "src/types";
 
 const grantRoles = async (
   actorFactoryV1: ActorFactoryV1,
@@ -14,17 +14,26 @@ const grantRoles = async (
   deployer: Signer,
   deployerAddress: string,
   protocolAdminRoleAddress: string,
-  nonAdminAddress: string,
+  nonAdminAddress: string
 ) => {
   const authorizedOperatorRole = await assetSellV1.AUTHORIZED_OPERATOR();
   const protocolAdminRole = await assetSellV1.PROTOCOL_ADMIN();
 
-  await actorFactoryV1.connect(deployer).grantRole(authorizedOperatorRole, deployerAddress);
-  await neatFiProtocolStorageV1.connect(deployer)
+  await actorFactoryV1
+    .connect(deployer)
+    .grantRole(authorizedOperatorRole, deployerAddress);
+  await neatFiProtocolStorageV1
+    .connect(deployer)
     .grantRole(authorizedOperatorRole, deployerAddress);
 
-  await neatFiProtocolStorageV1.grantRole(authorizedOperatorRole, assetSellV1.address);
-  await neatFiProtocolStorageV1.grantRole(authorizedOperatorRole, assetTransferV1.address);
+  await neatFiProtocolStorageV1.grantRole(
+    authorizedOperatorRole,
+    assetSellV1.address
+  );
+  await neatFiProtocolStorageV1.grantRole(
+    authorizedOperatorRole,
+    assetTransferV1.address
+  );
   await assetTransferV1.grantRole(authorizedOperatorRole, assetSellV1.address);
 
   await assetSellV1.grantRole(authorizedOperatorRole, deployerAddress);

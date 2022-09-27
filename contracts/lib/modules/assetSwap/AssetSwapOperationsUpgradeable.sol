@@ -74,6 +74,11 @@ contract AssetSwapOperationsUpgradeable is
             .getOrder(orderHash);
 
         require(
+            order.orderType == AssetOrderType.SWAP,
+            "AssetSwapOperationsUpgradeable::_makeBid: wrong order type."
+        );
+
+        require(
             bidder != order.maker,
             "AssetSwapOperationsUpgradeable::_makeBid: self-bidding is not available."
         );
@@ -122,8 +127,7 @@ contract AssetSwapOperationsUpgradeable is
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(
                 orderHash,
                 maker
-            ),
-            "AssetSwapOperationsUpgradeable::_approveAndResolveSwap: ownership check failed."
+            )
         );
 
         require(
