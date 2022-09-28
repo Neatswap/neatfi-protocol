@@ -37,9 +37,6 @@ describe("NeatFiProtocolStorageV1", () => {
       protocolAdminAddress
     );
 
-    const mockERC20Address =
-      "0xb22a8de748a746156f0ee4c5de620dee35cb1520db7650ebb71a23f2714fb077";
-
     const mockActorKey =
       "0x289ee93e07df6282d6aa058d1080e7eb2f905bd675a2071583a40b1cb3c96baa";
 
