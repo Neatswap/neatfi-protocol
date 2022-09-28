@@ -1,6 +1,5 @@
 import { Signer } from "ethers";
 import {
-  ActorFactoryV1,
   AssetAuctionV1,
   AssetTransferV1,
   NeatFiProtocolStorageV1,

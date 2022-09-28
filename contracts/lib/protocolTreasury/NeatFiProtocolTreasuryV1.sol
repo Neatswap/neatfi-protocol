@@ -240,12 +240,14 @@ contract NeatFiProtocolTreasuryV1 is
 
     function initialize(
         address _neatTokenAddress,
-        address _vestingEscrowAddress
+        address _vestingEscrowAddress,
+        address _protocolSettingsAddress
     ) public initializer onlyProxy {
         __UUPSUpgradeable_init();
         __ProtocolTreasuryOperations_init(
             _neatTokenAddress,
-            _vestingEscrowAddress
+            _vestingEscrowAddress,
+            _protocolSettingsAddress
         );
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());

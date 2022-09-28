@@ -46,7 +46,7 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
     "getSwapProtocolFee()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "initialize(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
+    "initialize(uint256,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "protocolFeeDistributionNumerator()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
@@ -161,6 +161,7 @@ export interface ProtocolSettingsV1Interface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "initialize",
     values: [
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
@@ -484,6 +485,7 @@ export interface ProtocolSettingsV1 extends BaseContract {
     ): Promise<[boolean]>;
 
     initialize(
+      newProtocolFeeDistributionNumerator: PromiseOrValue<BigNumberish>,
       newSwapProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newSellProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
@@ -603,6 +605,7 @@ export interface ProtocolSettingsV1 extends BaseContract {
   ): Promise<boolean>;
 
   initialize(
+    newProtocolFeeDistributionNumerator: PromiseOrValue<BigNumberish>,
     newSwapProtocolFeeValue: PromiseOrValue<BigNumberish>,
     newSellProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
     newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
@@ -722,6 +725,7 @@ export interface ProtocolSettingsV1 extends BaseContract {
     ): Promise<boolean>;
 
     initialize(
+      newProtocolFeeDistributionNumerator: PromiseOrValue<BigNumberish>,
       newSwapProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newSellProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
@@ -900,6 +904,7 @@ export interface ProtocolSettingsV1 extends BaseContract {
     ): Promise<BigNumber>;
 
     initialize(
+      newProtocolFeeDistributionNumerator: PromiseOrValue<BigNumberish>,
       newSwapProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newSellProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
@@ -1034,6 +1039,7 @@ export interface ProtocolSettingsV1 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
+      newProtocolFeeDistributionNumerator: PromiseOrValue<BigNumberish>,
       newSwapProtocolFeeValue: PromiseOrValue<BigNumberish>,
       newSellProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,
       newDutchAuctionProtocolFeeNumeratorValue: PromiseOrValue<BigNumberish>,

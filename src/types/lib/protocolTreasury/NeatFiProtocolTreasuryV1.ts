@@ -72,7 +72,7 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
     "getTotlaLockedNeats()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "initialize(address,address)": FunctionFragment;
+    "initialize(address,address,address)": FunctionFragment;
     "lastClaimedTimestamp(address)": FunctionFragment;
     "lastPoolGenerationTimestamp()": FunctionFragment;
     "lockNeatTokens(uint256,uint256)": FunctionFragment;
@@ -209,7 +209,11 @@ export interface NeatFiProtocolTreasuryV1Interface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "lastClaimedTimestamp",
@@ -656,6 +660,7 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     initialize(
       _neatTokenAddress: PromiseOrValue<string>,
       _vestingEscrowAddress: PromiseOrValue<string>,
+      _protocolSettingsAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -828,6 +833,7 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
   initialize(
     _neatTokenAddress: PromiseOrValue<string>,
     _vestingEscrowAddress: PromiseOrValue<string>,
+    _protocolSettingsAddress: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -992,6 +998,7 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     initialize(
       _neatTokenAddress: PromiseOrValue<string>,
       _vestingEscrowAddress: PromiseOrValue<string>,
+      _protocolSettingsAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1245,6 +1252,7 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     initialize(
       _neatTokenAddress: PromiseOrValue<string>,
       _vestingEscrowAddress: PromiseOrValue<string>,
+      _protocolSettingsAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1422,6 +1430,7 @@ export interface NeatFiProtocolTreasuryV1 extends BaseContract {
     initialize(
       _neatTokenAddress: PromiseOrValue<string>,
       _vestingEscrowAddress: PromiseOrValue<string>,
+      _protocolSettingsAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -162,6 +162,8 @@ contract ProtocolTreasuryOperationsUpgradeable is
             "ProtocolTreasuryOperationsUpgradeable::_lockNeatTokens: wrong lock period."
         );
 
+        _adjustLockerStatuses(tokenHolder);
+
         Locker memory locker = Locker(
             tokenHolder,
             tokenAmount,
@@ -180,8 +182,6 @@ contract ProtocolTreasuryOperationsUpgradeable is
         lockedNeatsByAddress[tokenHolder] += tokenAmount;
 
         totalLockedNeats += tokenAmount;
-
-        _adjustLockerStatuses(tokenHolder);
 
         emit LockerCreated(locker, lockerHash);
 
@@ -305,17 +305,28 @@ contract ProtocolTreasuryOperationsUpgradeable is
     {
         bytes32[] storage _lockersByAddress = lockersByAddress[tokenHolder];
 
-        bytes32[] memory allActiveLockersByAddress = new bytes32[](
+        bytes32[] memory tempActiveLockersArray = new bytes32[](
             _lockersByAddress.length
         );
+
+        uint256 activeLockersArrayLength;
 
         for (uint256 i = 0; i < _lockersByAddress.length; i++) {
             if (
                 lockerInfo[_lockersByAddress[i]].lockerStatus ==
                 LockerStatus.ACTIVE
             ) {
-                allActiveLockersByAddress[i] = _lockersByAddress[i];
+                tempActiveLockersArray[i] = _lockersByAddress[i];
+                activeLockersArrayLength++;
             }
+        }
+
+        bytes32[] memory allActiveLockersByAddress = new bytes32[](
+            activeLockersArrayLength
+        );
+
+        for (uint256 i = 0; i < activeLockersArrayLength; i++) {
+            allActiveLockersByAddress[i] = tempActiveLockersArray[i];
         }
 
         return allActiveLockersByAddress;
@@ -512,12 +523,14 @@ contract ProtocolTreasuryOperationsUpgradeable is
 
     function __ProtocolTreasuryOperations_init(
         address _neatTokenAddress,
-        address _vestingEscrowAddress
+        address _vestingEscrowAddress,
+        address _protocolSettingsAddress
     ) internal initializer {
         // Can be set only once
         neatTokenAddress = _neatTokenAddress;
 
         _updateVestingEscrowAddress(_vestingEscrowAddress);
+        _updateProtocolSettingsAddress(_protocolSettingsAddress);
 
         __RoleConstants_init();
         __AccessControl_init();
