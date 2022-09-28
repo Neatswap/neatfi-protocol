@@ -10,13 +10,13 @@ import {
 } from "../../../common/helpers/deploymentHelper";
 
 import grantRoles from "../../../common/helpers/assetAuctionHelper";
-import buildToken from "../../../common/helpers/tokenHelper";
-import buildMakeOrder from "../../../common/helpers/neatFiProtocolStorageHelper";
+import { buildToken } from "../../../common/helpers/tokenHelper";
+import { buildMakeOrder } from "../../../common/helpers/neatFiProtocolStorageHelper";
 import AssetOrderType from "../../../common/enums/assetOrderType";
 import ONE_DAY_IN_MILLI_SECS from "../../../common/constants/time";
 import AssetOrderStatus from "../../../common/enums/assetOrderStatus";
 
-describe.only("AssetAuctionV1", () => {
+describe("AssetAuctionV1", () => {
   const deployAssetAuctionV1Fixture = async () => {
     const [deployer, protocolAdmin, nonAdmin, bidder] =
       await ethers.getSigners();
