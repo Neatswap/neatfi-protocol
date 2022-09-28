@@ -195,7 +195,7 @@ describe("PaymentsResolverOperationsV1", () => {
     });
   });
 
-  describe.only("swapFeeResolver", () => {
+  describe("swapFeeResolver", () => {
     context("when caller is an authorized operator", () => {
       it("returns the maker earnings for a swap order", async () => {
         const { deployer, paymentsResolverOperationsV1 } = await loadFixture(

@@ -12,7 +12,7 @@ import {
 } from "../../common/helpers/neatFiProtocolTreasuryHelper";
 import ONE_DAY_IN_MILLI_SECS from "../../common/constants/time";
 
-describe.only("NeatFiProtocolTreasuryV1", () => {
+describe("NeatFiProtocolTreasuryV1", () => {
   const deployNeatFiProtocolTreasuryV1Fixture = async () => {
     const [deployer, protocolAdmin, neatHolder, protocolTreasurer] =
       await ethers.getSigners();
@@ -629,10 +629,3 @@ describe.only("NeatFiProtocolTreasuryV1", () => {
     });
   });
 });
-
-/**
- *
- * claimYield
- * withdraw
- *
- */

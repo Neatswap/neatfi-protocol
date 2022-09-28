@@ -12,10 +12,9 @@ import grantRoles from "../../../common/helpers/assetSwapHelper";
 import { buildToken } from "../../../common/helpers/tokenHelper";
 import { buildMakeOrder } from "../../../common/helpers/neatFiProtocolStorageHelper";
 import ONE_DAY_IN_MILLI_SECS from "../../../common/constants/time";
-import AssetOrderStatus from "../../../common/enums/assetOrderStatus";
 import AssetOrderType from "../../../common/enums/assetOrderType";
 
-describe.only("AssetSwapV1", () => {
+describe("AssetSwapV1", () => {
   const deployAssetSwapV1Fixture = async () => {
     const [deployer, protocolAdmin, nonAdmin, bidder] =
       await ethers.getSigners();
