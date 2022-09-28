@@ -59,7 +59,10 @@ describe("NeatSwapImplementationV1", () => {
 
     const actorFactoryV1 = await deployActorFactorV1();
 
-    const neatFiProtocolTreasuryV1 = await deployNeatFiProtocolTreasuryV1();
+    const erc20Mock = await deployERC20Mock(nonAdminAddress);
+    const neatFiProtocolTreasuryV1 = await deployNeatFiProtocolTreasuryV1(
+      erc20Mock
+    );
 
     const neatFiV1 = await deployNeatFiV1(
       assetSwapV1,
@@ -74,7 +77,6 @@ describe("NeatSwapImplementationV1", () => {
     );
 
     const neatSwap = await deployNeatswapImplementationV1(neatFiV1);
-    const erc20Mock = await deployERC20Mock(nonAdminAddress);
 
     const authorizedOperatorRole = await assetSellV1.AUTHORIZED_OPERATOR();
     const protocolAdminRole = await assetSellV1.PROTOCOL_ADMIN();

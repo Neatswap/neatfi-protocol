@@ -155,7 +155,7 @@ export const deployProtocolSettingsV1 =
 
     const protocolSettingsV1 = (await upgrades.deployProxy(
       protocolSettingsV1Factory,
-      [3000000000000000, 15, 15, 15, 700],
+      [700, 3000000000000000, 15, 15, 15, 700],
       {
         kind: "uups",
         timeout: 120000,
@@ -168,30 +168,34 @@ export const deployProtocolSettingsV1 =
     return protocolSettingsV1;
   };
 
-export const deployNeatFiProtocolTreasuryV1 =
-  async (): Promise<NeatFiProtocolTreasuryV1> => {
-    const neatfiProtocolTreasuryV1Factory = (await ethers.getContractFactory(
-      "NeatFiProtocolTreasuryV1"
-    )) as NeatFiProtocolTreasuryV1Factory;
+export const deployNeatFiProtocolTreasuryV1 = async (
+  mockNeatToken: ERC20Mock
+): Promise<NeatFiProtocolTreasuryV1> => {
+  const neatfiProtocolTreasuryV1Factory = (await ethers.getContractFactory(
+    "NeatFiProtocolTreasuryV1"
+  )) as NeatFiProtocolTreasuryV1Factory;
 
-    const neatFiProtocolTreasuryV1 = (await upgrades.deployProxy(
-      neatfiProtocolTreasuryV1Factory,
-      // TODO: Change the params to neatToken.address and vestingEscrowV1.address
-      [
-        "0x38790eEc6f999D6D1801e2999b5CD1BF19e2adEe",
-        "0x3cE8a7aB0Aac95B9a582A4a9D335Da6bA4D302A5",
-      ],
-      {
-        kind: "uups",
-        timeout: 120000,
-        pollingInterval: 10000,
-      }
-    )) as NeatFiProtocolTreasuryV1;
+  const protocolSettingsV1 = await deployProtocolSettingsV1();
 
-    await neatFiProtocolTreasuryV1.deployed();
+  const neatFiProtocolTreasuryV1 = (await upgrades.deployProxy(
+    neatfiProtocolTreasuryV1Factory,
+    // TODO: Change the params to neatToken.address and vestingEscrowV1.address
+    [
+      mockNeatToken.address,
+      "0x3cE8a7aB0Aac95B9a582A4a9D335Da6bA4D302A5",
+      protocolSettingsV1.address,
+    ],
+    {
+      kind: "uups",
+      timeout: 120000,
+      pollingInterval: 10000,
+    }
+  )) as NeatFiProtocolTreasuryV1;
 
-    return neatFiProtocolTreasuryV1;
-  };
+  await neatFiProtocolTreasuryV1.deployed();
+
+  return neatFiProtocolTreasuryV1;
+};
 
 export const deployNeatFiV1 = async (
   assetSwapV1: AssetSwapV1,
@@ -292,9 +296,13 @@ export const deployNeatSwap = async (): Promise<NeatSwapImplementationV1> => {
     protocolSettingsV1
   );
 
+  const mockErc20 = await deployERC20Mock("mockNeat", 500000000);
+
   const actorFactoryV1 = await deployActorFactorV1();
 
-  const neatFiProtocolTreasuryV1 = await deployNeatFiProtocolTreasuryV1();
+  const neatFiProtocolTreasuryV1 = await deployNeatFiProtocolTreasuryV1(
+    mockErc20
+  );
 
   const neatFiV1 = await deployNeatFiV1(
     assetSwapV1,

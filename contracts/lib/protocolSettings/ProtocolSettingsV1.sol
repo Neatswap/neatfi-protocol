@@ -226,6 +226,7 @@ contract ProtocolSettingsV1 is
     {}
 
     function initialize(
+        uint256 newProtocolFeeDistributionNumerator,
         uint256 newSwapProtocolFeeValue,
         uint256 newSellProtocolFeeNumeratorValue,
         uint256 newDutchAuctionProtocolFeeNumeratorValue,
@@ -236,6 +237,9 @@ contract ProtocolSettingsV1 is
         __RoleConstants_init();
         __AccessControl_init();
 
+        _setProtocolFeeDistributionNumerator(
+            newProtocolFeeDistributionNumerator
+        );
         _setSwapProtocolFee(newSwapProtocolFeeValue);
         _setSellProtocolFeeNumerator(newSellProtocolFeeNumeratorValue);
         _setEnglishAuctionProtocolFeeNumerator(
