@@ -2,5 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export { IERC1155__factory } from "./IERC1155__factory";
+export { IERC1155MetadataURI__factory } from "./IERC1155MetadataURI__factory";
+export { IERC1155Receiver__factory } from "./IERC1155Receiver__factory";
 export { IERC20__factory } from "./IERC20__factory";
 export { IERC721__factory } from "./IERC721__factory";
+export { IERC721Metadata__factory } from "./IERC721Metadata__factory";
+export { IERC721Receiver__factory } from "./IERC721Receiver__factory";

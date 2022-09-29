@@ -28,7 +28,6 @@ describe("NeatFiV1", () => {
     const nonAdminAddress = await nonAdmin.getAddress();
     const bidderAddress = await bidder.getAddress();
 
-    const erc20Mock = await deployERC20Mock(nonAdminAddress);
     const mockNeatToken = await deployERC20Mock(deployerAddress);
     const actorFactoryV1 = await deployActorFactorV1();
     const neatFiProtocolStorageV1 = await deployNeatFiProtocolStorageV1();
@@ -79,10 +78,6 @@ describe("NeatFiV1", () => {
     const authorizedOperatorRole = await neatFiV1.AUTHORIZED_OPERATOR();
     const protocolAdminRole = await neatFiV1.PROTOCOL_ADMIN();
 
-    await erc20Mock
-      .connect(nonAdmin)
-      .approve(assetTransferV1.address, "1000000000000000000000000");
-
     await mockNeatToken
       .connect(deployer)
       .approve(neatFiProtocolTreasuryV1.address, "1000000000000000000000000");
@@ -96,7 +91,6 @@ describe("NeatFiV1", () => {
       protocolAdminAddress,
       nonAdminAddress,
       bidderAddress,
-      erc20Mock,
       mockNeatToken,
       neatFiV1,
       neatFiProtocolStorageV1,

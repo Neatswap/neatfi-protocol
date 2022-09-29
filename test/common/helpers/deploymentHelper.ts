@@ -10,6 +10,7 @@ import {
   AssetTransferV1,
   AssetTransferV1__factory as AssetTransferV1Factory,
   ERC20Mock,
+  ERC721Mock,
   AssetAuctionV1__factory as AssetAuctionV1Factory,
   PaymentsResolverOperationsV1__factory as PaymentsResolverOperationsV1Factory,
   ProtocolSettingsV1,
@@ -332,4 +333,12 @@ export const deployERC20Mock = async (
   await erc20Mock.deployed();
 
   return erc20Mock;
+};
+
+export const deployERC721Mock = async (): Promise<ERC721Mock> => {
+  const ERC721MockFactory = await ethers.getContractFactory("ERC721Mock");
+  const erc721Mock = await ERC721MockFactory.deploy();
+  await erc721Mock.deployed();
+
+  return erc721Mock;
 };
