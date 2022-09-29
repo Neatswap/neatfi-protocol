@@ -10,7 +10,6 @@ import {
   AssetTransferV1,
   AssetTransferV1__factory as AssetTransferV1Factory,
   ERC20Mock,
-  ERC721Mock,
   AssetAuctionV1__factory as AssetAuctionV1Factory,
   PaymentsResolverOperationsV1__factory as PaymentsResolverOperationsV1Factory,
   ProtocolSettingsV1,
@@ -26,6 +25,8 @@ import {
   NeatSwapImplementationV1,
   NeatSwapImplementationV1__factory as NeatSwapImplementationV1Factory,
 } from "src/types";
+import { ERC1155Mock } from "src/types/mocks/ERC1155Mock";
+import { ERC721Mock } from "src/types/mocks/ERC721Mock.sol/ERC721Mock";
 
 export const deployActorFactorV1 = async (): Promise<ActorFactoryV1> => {
   const actorFactoryV1Factory = (await ethers.getContractFactory(
@@ -341,4 +342,12 @@ export const deployERC721Mock = async (): Promise<ERC721Mock> => {
   await erc721Mock.deployed();
 
   return erc721Mock;
+};
+
+export const deployERC1155Mock = async (): Promise<ERC1155Mock> => {
+  const ERC1155MockFactory = await ethers.getContractFactory("ERC1155Mock");
+  const erc1155Mock = await ERC1155MockFactory.deploy();
+  await erc1155Mock.deployed();
+
+  return erc1155Mock;
 };

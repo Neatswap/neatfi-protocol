@@ -245,17 +245,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
     getContractFactory(
-      name: "MyToken",
+      name: "ERC1155Mock",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.MyToken__factory>;
+    ): Promise<Contracts.ERC1155Mock__factory>;
     getContractFactory(
       name: "ERC20Mock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Mock__factory>;
     getContractFactory(
-      name: "MyToken",
+      name: "ERC721Mock",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.MyToken__factory>;
+    ): Promise<Contracts.ERC721Mock__factory>;
     getContractFactory(
       name: "ERC1155",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -568,20 +568,20 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Ownable>;
     getContractAt(
-      name: "MyToken",
+      name: "ERC1155Mock",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.MyToken>;
+    ): Promise<Contracts.ERC1155Mock>;
     getContractAt(
       name: "ERC20Mock",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC20Mock>;
     getContractAt(
-      name: "MyToken",
+      name: "ERC721Mock",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.MyToken>;
+    ): Promise<Contracts.ERC721Mock>;
     getContractAt(
       name: "ERC1155",
       address: string,

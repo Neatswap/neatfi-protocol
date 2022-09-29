@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import "./tokens/ERC1155.sol";
 import "../lib/utils/Ownable.sol";
 
-contract MyToken is ERC1155, Ownable {
+contract ERC1155Mock is ERC1155, Ownable {
     constructor() ERC1155("https://test.com") {}
 
     function setURI(string memory newuri) public onlyOwner {
