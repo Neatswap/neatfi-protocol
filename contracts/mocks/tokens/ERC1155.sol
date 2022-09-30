@@ -43,7 +43,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         public
         view
         virtual
-        override(ERC165, IERC165Upgradeable)
+        override(ERC165, IERC165)
         returns (bool)
     {
         return

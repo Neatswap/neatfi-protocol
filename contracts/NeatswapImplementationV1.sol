@@ -40,6 +40,11 @@ contract NeatSwapImplementationV1 is
     event EtherReceived(address sender, uint256 amount);
 
     /**
+     * @dev Fired when an order is created
+     */
+    event MakeOrder(bytes32 orderHash);
+
+    /**
      * @dev Sets the version for the current implementation of this contract.
      */
     function _setVersion(string memory newVersion) internal {
@@ -118,16 +123,19 @@ contract NeatSwapImplementationV1 is
         uint256 startPrice,
         bytes32 actorKey
     ) public payable nonReentrant returns (bytes32 orderHash) {
-        return
-            INeatFi(neatFiProtocolAddress).makeOrder{value: msg.value}(
-                tokens,
-                orderType,
-                payable(_msgSender()),
-                block.timestamp,
-                expirationTime,
-                startPrice,
-                actorKey
-            );
+        orderHash = INeatFi(neatFiProtocolAddress).makeOrder{value: msg.value}(
+            tokens,
+            orderType,
+            payable(_msgSender()),
+            block.timestamp,
+            expirationTime,
+            startPrice,
+            actorKey
+        );
+
+        emit MakeOrder(orderHash);
+
+        return orderHash;
     }
 
     /**

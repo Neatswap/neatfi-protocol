@@ -53,7 +53,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         public
         view
         virtual
-        override(ERC165, IERC165Upgradeable)
+        override(ERC165, IERC165)
         returns (bool)
     {
         return

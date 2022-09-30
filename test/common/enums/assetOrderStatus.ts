@@ -8,7 +8,7 @@ enum AssetOrderStatus {
   // 3: Order has been cancelled by the maker.
   CANCELLED,
   // 4: Order was successfully executed and an escrow was formed.
-  CLOSED
+  CLOSED,
 }
 
 export default AssetOrderStatus;

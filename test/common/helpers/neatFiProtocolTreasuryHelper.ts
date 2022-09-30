@@ -1,11 +1,6 @@
 import { Signer } from "ethers";
 import { NeatFiProtocolTreasuryV1 } from "src/types";
-import { ERC20Mock } from "src/types/mocks/ERC20.sol";
 import ONE_DAY_IN_MILLI_SECS from "../constants/time";
-import {
-  deployERC20Mock,
-  deployNeatFiProtocolTreasuryV1,
-} from "./deploymentHelper";
 
 export const grantRoles = async (
   neatFiProtocolTreasuryV1: NeatFiProtocolTreasuryV1,

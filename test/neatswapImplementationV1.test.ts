@@ -15,9 +15,12 @@ import {
   deployNeatFiProtocolTreasuryV1,
   deployNeatFiV1,
   deployNeatswapImplementationV1,
+  deployERC721Mock,
+  deployERC1155Mock,
 } from "./common/helpers/deploymentHelper";
 
 import ONE_DAY_IN_MILLI_SECS from "./common/constants/time";
+import { buildToken } from "./common/helpers/tokenHelper";
 import AssetOrderStatus from "./common/enums/assetOrderStatus";
 import AssetOrderType from "./common/enums/assetOrderType";
 import TokenType from "./common/enums/tokenType";
@@ -54,16 +57,21 @@ describe("NeatSwapImplementationV1", () => {
       await deployPaymentsResolverOperationsV1(protocolSettingsV1);
 
     const erc20Mock = await deployERC20Mock(makerNonAdminAddress);
-    //const erc721Mock = await deplo
+    const erc721Mock = await deployERC721Mock();
+    const erc1155Mock = await deployERC1155Mock();
     const mockNeatToken = await deployERC20Mock(deployerAddress);
 
     const neatFiProtocolTreasuryV1 = await deployNeatFiProtocolTreasuryV1(
       mockNeatToken
     );
 
-    await erc20Mock
-      .connect(makerNonAdmin)
-      .mint(makerNonAdminAddress, "1000000000000000000000");
+    const data = "0x6f72646572";
+
+    await erc20Mock.mint(makerNonAdminAddress, "1000000000000000000000");
+
+    await erc721Mock.safeMint(makerNonAdminAddress, 0);
+
+    await erc1155Mock.mint(makerNonAdminAddress, 0, 10, data);
 
     const neatFiV1 = await deployNeatFiV1(
       assetSwapV1,
@@ -92,6 +100,10 @@ describe("NeatSwapImplementationV1", () => {
     );
     await neatFiProtocolStorageV1.grantRole(
       authorizedOperatorRole,
+      deployerAddress
+    );
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
       neatFiV1.address
     );
     await paymentsResolverOperationsV1.grantRole(
@@ -109,14 +121,18 @@ describe("NeatSwapImplementationV1", () => {
 
     const defaultAdminRole = await neatSwap.DEFAULT_ADMIN_ROLE();
 
-    // grant approvals
-    await erc20MockOne
+    // grant approvals on token contracts
+    await erc20Mock
       .connect(makerNonAdmin)
       .approve(assetTransferV1.address, "1000000000000000000000000");
 
-    await erc20MockTwo
-      .connect(bidder)
-      .approve(assetTransferV1.address, "1000000000000000000000000");
+    await erc721Mock
+      .connect(makerNonAdmin)
+      .setApprovalForAll(assetTransferV1.address, true);
+
+    await erc1155Mock
+      .connect(makerNonAdmin)
+      .setApprovalForAll(assetTransferV1.address, true);
 
     // get actor key
     await neatSwap.requestActorKey();
@@ -129,25 +145,14 @@ describe("NeatSwapImplementationV1", () => {
       await actorFactoryV1.actorInfo(neatSwap.address)
     ).actorKey;
 
-    const sellOrderData = [
-      [erc20MockOne.address, 0, 100, TokenType.ERC20],
-      AssetOrderType.SELL,
-      (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
-      "1000000000000000000",
-      actorKey,
-    ];
-
-    const swapOrderData = [
-      [erc20MockOne.address, 0, 0, TokenType.ERC721],
-      AssetOrderType.SELL,
-      (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
-      "1000000000000000000",
-      actorKey,
-    ];
-
-    const data = "0x6f72646572";
+    const erc20Token = buildToken(erc20Mock, 0, 100, TokenType.ERC20);
+    const erc721Token = buildToken(erc721Mock, 0, 0, TokenType.ERC721);
+    const erc1155Token = buildToken(erc1155Mock, 0, 5, TokenType.ERC1155);
 
     return {
+      erc20Token,
+      erc721Token,
+      erc1155Token,
       bidder,
       deployer,
       bidderAddress,
@@ -229,9 +234,36 @@ describe("NeatSwapImplementationV1", () => {
     describe("makeOrder", () => {
       context.only("when order data is valid", () => {
         it("creates an order", async () => {
-          const { deployer, neatSwap, actorFactoryV1 } = await loadFixture(
-            deployNeatSwapImplementationV1
-          );
+          const {
+            erc20Token,
+            makerNonAdmin,
+            neatSwap,
+            actorKey,
+            deployer,
+            makerNonAdminAddress,
+            neatFiProtocolStorageV1,
+          } = await loadFixture(deployNeatSwapImplementationV1);
+
+          const makeOrderTx = await neatSwap
+            .connect(makerNonAdmin)
+            .makeOrder(
+              [erc20Token],
+              AssetOrderType.SELL,
+              (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+              "1000000000000000000",
+              actorKey
+            );
+
+          const receipt = await makeOrderTx.wait();
+
+          const { orderHash } = receipt.events[1].args;
+
+          const order = await neatFiProtocolStorageV1
+            .connect(deployer)
+            .getOrder(orderHash);
+
+          expect(order.maker).to.eq(makerNonAdminAddress);
+          expect(order.status).to.eq(AssetOrderStatus.OPEN);
         });
       });
     });
