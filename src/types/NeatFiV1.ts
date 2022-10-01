@@ -732,8 +732,8 @@ export interface NeatFiV1 extends BaseContract {
     ): Promise<[string]>;
 
     getSwapProtocolFee(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { sellProtocolFee: BigNumber }>;
 
     grantRole(
       role: PromiseOrValue<BytesLike>,
@@ -963,9 +963,7 @@ export interface NeatFiV1 extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getSwapProtocolFee(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getSwapProtocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   grantRole(
     role: PromiseOrValue<BytesLike>,
@@ -1484,9 +1482,7 @@ export interface NeatFiV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getSwapProtocolFee(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
+    getSwapProtocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     grantRole(
       role: PromiseOrValue<BytesLike>,
@@ -1724,7 +1720,7 @@ export interface NeatFiV1 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getSwapProtocolFee(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     grantRole(

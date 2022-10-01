@@ -396,7 +396,7 @@ describe("AssetAuctionV1", () => {
 
         await assetAuctionV1
           .connect(deployer)
-          .bidForDutchAuction(bidderAddress, orderHash, order.endPrice);
+          .bidForDutchAuction(bidderAddress, orderHash, "50000000000000000");
 
         const lastBidderAddress = await assetAuctionV1.lastBidderForOrder(
           orderHash
@@ -432,7 +432,7 @@ describe("AssetAuctionV1", () => {
 
         const { orderHash } = await makeOrder(AssetOrderType.DUTCH_AUCTION);
 
-        const bidValue = ethers.utils.parseEther("0.00005");
+        const bidValue = ethers.utils.parseEther("100");
 
         await time.increaseTo(
           (await time.latest()) + 15 * ONE_DAY_IN_MILLI_SECS

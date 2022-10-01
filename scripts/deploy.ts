@@ -240,6 +240,36 @@ const main = async () => {
   const AUTHORIZED_OPERATOR_ROLE = neatFiV1.AUTHORIZED_OPERATOR();
   const PROTOCOL_TREASURER_ROLE = neatFiV1.PROTOCOL_TREASURER();
 
+  console.log(
+    "assetTransferV1 receives AUTHORIZED_OPERATOR role in neatFiProtocolStorageV1..."
+  );
+  const tx00 = await neatFiProtocolStorageV1.grantRole(
+    AUTHORIZED_OPERATOR_ROLE,
+    assetTransferV1.address
+  );
+  await tx00.wait();
+  console.log(
+    await neatFiProtocolStorageV1.hasRole(
+      AUTHORIZED_OPERATOR_ROLE,
+      assetTransferV1.address
+    )
+  );
+
+  console.log(
+    "assetSwapV1 receives AUTHORIZEd_OPERATOR role in neatFiProtocolStorageV1..."
+  );
+  const tx0 = await neatFiProtocolStorageV1.grantRole(
+    AUTHORIZED_OPERATOR_ROLE,
+    assetSwapV1.address
+  );
+  await tx0.wait();
+  console.log(
+    await neatFiProtocolStorageV1.hasRole(
+      AUTHORIZED_OPERATOR_ROLE,
+      assetSwapV1.address
+    )
+  );
+
   // NeatFi receives AUTHORIZED_OPERATOR role in protocol modules
   console.log(
     "neatFiV1 receives AUTHORIZED_OPERATOR role in actorFactoryV1..."

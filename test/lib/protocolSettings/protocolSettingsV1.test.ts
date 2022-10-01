@@ -20,9 +20,9 @@ describe("ProtocolSettingsV1", () => {
   let protocolSettingsV1Factory: ProtocolSettingsV1Factory;
 
   const swapProtocolFeeValue = 1000000000;
-  const sellProtocolFeeValue = 3000000000;
-  const dutchAuctiouProtocolFeeNumeratorValue = 1;
-  const englishAuctionProtocolFeeNumeratorValue = 1;
+  const sellProtocolFeeValue = 15;
+  const dutchAuctiouProtocolFeeNumeratorValue = 15;
+  const englishAuctionProtocolFeeNumeratorValue = 15;
 
   beforeEach(async () => {
     [deployer, protocolAdmin, nonAdmin] = await ethers.getSigners();
@@ -38,10 +38,12 @@ describe("ProtocolSettingsV1", () => {
     protocolSettingsV1 = (await upgrades.deployProxy(
       protocolSettingsV1Factory,
       [
+        700,
         swapProtocolFeeValue,
         sellProtocolFeeValue,
         dutchAuctiouProtocolFeeNumeratorValue,
         englishAuctionProtocolFeeNumeratorValue,
+        700,
       ],
       { kind: "uups" }
     )) as ProtocolSettingsV1;
@@ -224,13 +226,9 @@ describe("ProtocolSettingsV1", () => {
 
   describe("setSellProtocolFee", () => {
     let newSellProtocolFee: BigNumberish;
-    let belowLimitSellProtocolFee: BigNumberish;
-    let aboveLimitSellProtocolFee: BigNumberish;
 
     before(() => {
-      newSellProtocolFee = 6000000000;
-      belowLimitSellProtocolFee = 10;
-      aboveLimitSellProtocolFee = "10000000000000000000000000001";
+      newSellProtocolFee = 20;
     });
 
     context("when the caller is a protocol admin", () => {
@@ -242,30 +240,6 @@ describe("ProtocolSettingsV1", () => {
 
           expect(await protocolSettingsV1.getSellProtocolFeeNumerator()).to.eq(
             newSellProtocolFee
-          );
-        });
-      });
-
-      context("when the value is below limits", () => {
-        it("reverts with limit too low error", async () => {
-          await expect(
-            protocolSettingsV1
-              .connect(protocolAdmin)
-              .setSellProtocolFeeNumerator(belowLimitSellProtocolFee)
-          ).to.be.revertedWith(
-            "LimitsCheck:isWithinLimits: value is too small."
-          );
-        });
-      });
-
-      context("when the value is above limits", () => {
-        it("reverts with limit too large error", async () => {
-          await expect(
-            protocolSettingsV1
-              .connect(protocolAdmin)
-              .setSellProtocolFeeNumerator(aboveLimitSellProtocolFee)
-          ).to.be.revertedWith(
-            "LimitsCheck:isWithinLimits: value is too large."
           );
         });
       });

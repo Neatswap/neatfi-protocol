@@ -3,6 +3,7 @@ pragma solidity ^0.8.15;
 
 import {UUPSUpgradeable} from "../proxy/UUPSUpgradeable.sol";
 import {ProtocolTreasuryOperationsUpgradeable} from "./ProtocolTreasuryOperationsUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title NeatFiProtocolTreasuryV1
@@ -13,7 +14,8 @@ import {ProtocolTreasuryOperationsUpgradeable} from "./ProtocolTreasuryOperation
  */
 contract NeatFiProtocolTreasuryV1 is
     UUPSUpgradeable,
-    ProtocolTreasuryOperationsUpgradeable
+    ProtocolTreasuryOperationsUpgradeable,
+    ReentrancyGuardUpgradeable
 {
     string internal name;
     string internal currentVersion;
@@ -88,6 +90,7 @@ contract NeatFiProtocolTreasuryV1 is
      */
     function lockNeatTokens(uint256 tokenAmount, uint256 lockPeriod)
         public
+        nonReentrant
         returns (bytes32 lockerHash)
     {
         return _lockNeatTokens(_msgSender(), tokenAmount, lockPeriod);
@@ -98,7 +101,7 @@ contract NeatFiProtocolTreasuryV1 is
      *         More info can be found in the notes of the internal function.
      * @param lockerHash - The hash of the Locker to unlock.
      */
-    function unlockNeatTokens(bytes32 lockerHash) public {
+    function unlockNeatTokens(bytes32 lockerHash) public nonReentrant {
         _unlockNeatTokens(_msgSender(), lockerHash);
     }
 
@@ -110,6 +113,7 @@ contract NeatFiProtocolTreasuryV1 is
      */
     function extendLockPeriod(bytes32 lockerHash, uint256 extensionPeriod)
         public
+        nonReentrant
     {
         _extendLockPeriod(_msgSender(), lockerHash, extensionPeriod);
     }
@@ -171,7 +175,7 @@ contract NeatFiProtocolTreasuryV1 is
      *         from tokens in ACTIVE Lockers. More info can be
      *         found in the notes of the internal function.
      */
-    function claimYield() public {
+    function claimYield() public nonReentrant {
         _claimYield(payable(_msgSender()));
     }
 
@@ -183,7 +187,11 @@ contract NeatFiProtocolTreasuryV1 is
      *         internal function.
      * @dev Can be executed by a protocol treasurer only.
      */
-    function generateDistributionPool() external onlyRole(PROTOCOL_TREASURER) {
+    function generateDistributionPool()
+        external
+        nonReentrant
+        onlyRole(PROTOCOL_TREASURER)
+    {
         _generateDistributionPool();
     }
 
@@ -249,6 +257,7 @@ contract NeatFiProtocolTreasuryV1 is
             _vestingEscrowAddress,
             _protocolSettingsAddress
         );
+        __ReentrancyGuard_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         name = "NeatFi Treasury Contract";

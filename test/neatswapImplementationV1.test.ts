@@ -67,10 +67,13 @@ describe("NeatSwapImplementationV1", () => {
 
     const data = "0x6f72646572";
 
-    await erc20Mock.mint(makerNonAdminAddress, "1000000000000000000000");
-
+    await erc20Mock
+      .connect(makerNonAdmin)
+      .mint(makerNonAdminAddress, "1000000000000000000000");
+    await erc20Mock
+      .connect(makerNonAdmin)
+      .mint(bidderAddress, "1000000000000000000000");
     await erc721Mock.safeMint(makerNonAdminAddress, 0);
-
     await erc1155Mock.mint(makerNonAdminAddress, 0, 10, data);
 
     const neatFiV1 = await deployNeatFiV1(
@@ -90,6 +93,34 @@ describe("NeatSwapImplementationV1", () => {
     // grant roles
     const authorizedOperatorRole = await assetSellV1.AUTHORIZED_OPERATOR();
     const protocolAdminRole = await assetSellV1.PROTOCOL_ADMIN();
+
+    await assetTransferV1.grantRole(
+      authorizedOperatorRole,
+      assetSwapV1.address
+    );
+    await assetTransferV1.grantRole(
+      authorizedOperatorRole,
+      assetSellV1.address
+    );
+    await assetTransferV1.grantRole(
+      authorizedOperatorRole,
+      assetAuctionV1.address
+    );
+
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
+      assetSwapV1.address
+    );
+
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
+      assetSellV1.address
+    );
+
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
+      assetAuctionV1.address
+    );
 
     await assetSwapV1.grantRole(authorizedOperatorRole, neatFiV1.address);
     await assetSellV1.grantRole(authorizedOperatorRole, neatFiV1.address);
@@ -115,6 +146,11 @@ describe("NeatSwapImplementationV1", () => {
       neatFiV1.address
     );
 
+    await neatFiProtocolStorageV1.grantRole(
+      authorizedOperatorRole,
+      assetTransferV1.address
+    );
+
     await neatFiV1.grantRole(protocolAdminRole, protocolAdminAddress);
     await actorFactoryV1.grantRole(protocolAdminRole, protocolAdminAddress);
     await actorFactoryV1.grantRole(authorizedOperatorRole, deployerAddress);
@@ -124,7 +160,11 @@ describe("NeatSwapImplementationV1", () => {
     // grant approvals on token contracts
     await erc20Mock
       .connect(makerNonAdmin)
-      .approve(assetTransferV1.address, "1000000000000000000000000");
+      .approve(assetTransferV1.address, "10000000000000000000000000000");
+
+    await erc20Mock
+      .connect(bidder)
+      .approve(assetTransferV1.address, "10000000000000000000000000000");
 
     await erc721Mock
       .connect(makerNonAdmin)
@@ -149,6 +189,9 @@ describe("NeatSwapImplementationV1", () => {
     const erc721Token = buildToken(erc721Mock, 0, 0, TokenType.ERC721);
     const erc1155Token = buildToken(erc1155Mock, 0, 5, TokenType.ERC1155);
 
+    const mockActorKey =
+      "0x289ee93e07df6282d6aa058d1080e7eb2f905bd675a2071583a40b1cb3c96baa";
+
     return {
       erc20Token,
       erc721Token,
@@ -161,14 +204,19 @@ describe("NeatSwapImplementationV1", () => {
       makerNonAdmin,
       makerNonAdminAddress,
       deployerAddress,
-      erc20Mock,
       assetSellV1,
+      assetSwapV1,
+      assetAuctionV1,
       actorFactoryV1,
       neatFiProtocolStorageV1,
       data,
       actorKey,
       neatSwap,
       defaultAdminRole,
+      mockActorKey,
+      erc721Mock,
+      erc20Mock,
+      erc1155Mock,
     };
   };
 
@@ -230,56 +278,951 @@ describe("NeatSwapImplementationV1", () => {
         );
       });
     });
+  });
 
-    describe("makeOrder", () => {
-      context.only("when order data is valid", () => {
-        it("creates an order", async () => {
-          const {
-            erc20Token,
-            makerNonAdmin,
-            neatSwap,
+  describe("makeOrder", () => {
+    context("when order data is valid", () => {
+      it("creates an order", async () => {
+        const {
+          erc20Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          deployer,
+          makerNonAdminAddress,
+          neatFiProtocolStorageV1,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc20Token],
+            AssetOrderType.SELL,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "1000000000000000000",
+            actorKey
+          );
+
+        const receipt = await makeOrderTx.wait();
+
+        const { orderHash } = receipt.events[1].args;
+
+        const order = await neatFiProtocolStorageV1
+          .connect(deployer)
+          .getOrder(orderHash);
+
+        expect(order.maker).to.eq(makerNonAdminAddress);
+        expect(order.status).to.eq(AssetOrderStatus.OPEN);
+      });
+    });
+    context("when order type is SWAP and the msg.value is correct", () => {
+      it("creates an order", async () => {
+        const {
+          erc20Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          deployer,
+          makerNonAdminAddress,
+          neatFiProtocolStorageV1,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc20Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "1000000000000000000",
             actorKey,
-            deployer,
-            makerNonAdminAddress,
-            neatFiProtocolStorageV1,
-          } = await loadFixture(deployNeatSwapImplementationV1);
+            { value: "3000000000000000" }
+          );
 
-          const makeOrderTx = await neatSwap
+        const receipt = await makeOrderTx.wait();
+
+        const { orderHash } = receipt.events[3].args;
+
+        const order = await neatFiProtocolStorageV1
+          .connect(deployer)
+          .getOrder(orderHash);
+
+        expect(order.maker).to.eq(makerNonAdminAddress);
+        expect(order.status).to.eq(AssetOrderStatus.OPEN);
+      });
+    });
+    context("when order type is SWAP and the msg.value is wrong", () => {
+      it("returns an error", async () => {
+        const { erc20Token, makerNonAdmin, neatSwap, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .makeOrder(
+              [erc20Token],
+              AssetOrderType.SWAP,
+              (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+              "1000000000000000000",
+              actorKey,
+              { value: "5000000000000000" }
+            )
+        ).to.be.revertedWith(
+          "NeatFiProtocolOperationsUpgradeable::_makeOrder: wrong value for SWAP protocol fee."
+        );
+      });
+    });
+    context("for non-SWAP orders with non 0 msg.value", () => {
+      it("returns an error", async () => {
+        const { erc20Token, makerNonAdmin, neatSwap, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        await expect(
+          neatSwap
             .connect(makerNonAdmin)
             .makeOrder(
               [erc20Token],
               AssetOrderType.SELL,
               (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
               "1000000000000000000",
-              actorKey
-            );
-
-          const receipt = await makeOrderTx.wait();
-
-          const { orderHash } = receipt.events[1].args;
-
-          const order = await neatFiProtocolStorageV1
-            .connect(deployer)
-            .getOrder(orderHash);
-
-          expect(order.maker).to.eq(makerNonAdminAddress);
-          expect(order.status).to.eq(AssetOrderStatus.OPEN);
-        });
+              actorKey,
+              { value: "5000000000000000" }
+            )
+        ).to.be.revertedWith(
+          "NeatFiProtocolOperationsUpgradeable::_makeOrder: value should be 0."
+        );
       });
     });
   });
 
-  // swap order but value is wrong case
-  // no value case
+  describe("makeBid", () => {
+    context("when data is correct", () => {
+      it("creates a BID type order for a SWAP type order", async () => {
+        const {
+          erc721Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          bidder,
+          erc20Token,
+          assetSwapV1,
+        } = await loadFixture(deployNeatSwapImplementationV1);
 
-  // manually create order
-  //describe("makeOrder");
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        const makeBidTx = await neatSwap
+          .connect(bidder)
+          .makeBid([erc20Token], orderHash, actorKey);
+
+        const makeBidTxReceipt = await makeBidTx.wait();
+
+        expect(await assetSwapV1.bidsByOrder(orderHash, 0)).to.eq(
+          makeBidTxReceipt.events[2].args.orderHash
+        );
+      });
+    });
+    context("when order is not valid", () => {
+      it("returns an error", async () => {
+        const {
+          erc721Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          bidder,
+          erc20Token,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        time.increaseTo((await time.latest()) + 100 * ONE_DAY_IN_MILLI_SECS);
+
+        await expect(
+          neatSwap.connect(bidder).makeBid([erc20Token], orderHash, actorKey)
+        ).to.be.revertedWith(
+          "AssetSwapOperationsUpgradeable::_makeBid: invalid order."
+        );
+      });
+    });
+    context("when order type is not SWAP", () => {
+      it("returns an error", async () => {
+        const {
+          erc721Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          bidder,
+          erc20Token,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SELL,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap.connect(bidder).makeBid([erc20Token], orderHash, actorKey)
+        ).to.be.revertedWith(
+          "AssetSwapOperationsUpgradeable::_makeBid: wrong order type."
+        );
+      });
+    });
+    context("when bidder is the order maker", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, actorKey, erc20Token } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .makeBid([erc20Token], orderHash, actorKey)
+        ).to.be.revertedWith(
+          "AssetSwapOperationsUpgradeable::_makeBid: self-bidding is not available."
+        );
+      });
+    });
+  });
+
+  describe("cancelOrder", () => {
+    context("when order is valid", () => {
+      it("changes the order status to CANCELLED", async () => {
+        const {
+          erc721Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          neatFiProtocolStorageV1,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        await neatSwap.connect(makerNonAdmin).cancelOrder(orderHash);
+
+        const order = await neatFiProtocolStorageV1.getOrder(orderHash);
+
+        expect(order.status).to.eq(AssetOrderStatus.CANCELLED);
+      });
+    });
+
+    context("when caller is not the order maker", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, bidder, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        await expect(
+          neatSwap.connect(bidder).cancelOrder(orderHash)
+        ).to.be.revertedWith(
+          "AssetStorageOperationsUpgradeable::_isValidOwner: claimant address is not the order maker."
+        );
+      });
+    });
+  });
+
+  describe("approveAndResolveSwap", () => {
+    context("when SWAP order has a valid bid", () => {
+      it("changes the order status to CLOSED and transfers the token assets", async () => {
+        const {
+          erc721Token,
+          makerNonAdmin,
+          makerNonAdminAddress,
+          neatSwap,
+          actorKey,
+          bidder,
+          bidderAddress,
+          erc20Token,
+          erc721Mock,
+          data,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (30 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        expect(await erc721Mock.ownerOf(erc721Token.tokenId)).to.eq(
+          makerNonAdminAddress
+        );
+
+        const makeBidTx = await neatSwap
+          .connect(bidder)
+          .makeBid([erc20Token], orderHash, actorKey);
+
+        const makeBidTxReceipt = await makeBidTx.wait();
+
+        await neatSwap
+          .connect(makerNonAdmin)
+          .approveAndResolveSwap(
+            orderHash,
+            makeBidTxReceipt.events[2].args.orderHash,
+            data,
+            data
+          );
+
+        expect(await erc721Mock.ownerOf(erc721Token.tokenId)).to.eq(
+          bidderAddress
+        );
+      });
+    });
+    context("when order is not valid", () => {
+      it("returns an error", async () => {
+        const {
+          erc721Token,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          bidder,
+          erc20Token,
+          data,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SWAP,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            0,
+            actorKey,
+            { value: "3000000000000000" }
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[3].args;
+
+        const makeBidTx = await neatSwap
+          .connect(bidder)
+          .makeBid([erc20Token], orderHash, actorKey);
+
+        const makeBidTxReceipt = await makeBidTx.wait();
+
+        time.increaseTo((await time.latest()) + 20 * ONE_DAY_IN_MILLI_SECS);
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .approveAndResolveSwap(
+              orderHash,
+              makeBidTxReceipt.events[2].args.orderHash,
+              data,
+              data
+            )
+        ).to.be.revertedWith(
+          "AssetSwapOperationsUpgradeable::_approveAndResolveSwap: invalid order."
+        );
+      });
+    });
+  });
 
   describe("buyItNow", () => {
     context("when the order is valid", () => {
-      it("changes the order status to CLOSED", async () => {
-        const { data, neatFiProtocolStorageV1, bidder, neatSwap } =
+      it("changes the order status to CLOSED and transfers token assets", async () => {
+        const {
+          erc721Token,
+          erc721Mock,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+          bidder,
+          bidderAddress,
+          data,
+          neatFiProtocolStorageV1,
+          deployer,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SELL,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(bidder)
+          .buyItNow(orderHash, data, { value: "3000000000000000" });
+
+        expect(await erc721Mock.ownerOf(erc721Token.tokenId)).to.eq(
+          bidderAddress
+        );
+
+        expect(
+          await (
+            await neatFiProtocolStorageV1.connect(deployer).getOrder(orderHash)
+          ).status
+        ).to.eq(AssetOrderStatus.CLOSED);
+      });
+    });
+    context("when buyer is the order maker", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, actorKey, data } =
           await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SELL,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .buyItNow(orderHash, data, { value: "3000000000000000" })
+        ).to.be.revertedWith(
+          "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker"
+        );
+      });
+    });
+    context("when order type is wrong", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, bidder, neatSwap, actorKey, data } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.DUTCH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(bidder)
+            .buyItNow(orderHash, data, { value: "3000000000000000" })
+        ).to.be.revertedWith(
+          "AssetSellOperationsUpgradeable::_buyItNow: wrong order type."
+        );
+      });
+    });
+    context("when purchase value is wrong", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, bidder, neatSwap, actorKey, data } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.SELL,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(bidder)
+            .buyItNow(orderHash, data, { value: "2000000000000000" })
+        ).to.be.revertedWith(
+          "AssetSellOperationsUpgradeable::_buyItNow: wrong purchase value."
+        );
+      });
+    });
+  });
+  describe("decreaseDucthAuctionPrice", () => {
+    context("when order is correct", () => {
+      it("decreases the price", async () => {
+        const {
+          erc721Token,
+          neatFiProtocolStorageV1,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.DUTCH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(makerNonAdmin)
+          .decreaseDucthAuctionPrice(orderHash, "2000000000000000");
+
+        const order = await neatFiProtocolStorageV1.getOrder(orderHash);
+
+        expect(order.endPrice).to.eq("2000000000000000");
+      });
+    });
+    context("when order type is wrong", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.ENGLISH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .decreaseDucthAuctionPrice(orderHash, "2000000000000000")
+        ).to.be.revertedWith(
+          "AssetAuctionOperationsUpgradeable::_decreaseDucthAuctionPrice: wrong order type."
+        );
+      });
+    });
+    context("when price value is wrong", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.DUTCH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .decreaseDucthAuctionPrice(orderHash, "5000000000000000")
+        ).to.be.revertedWith(
+          "AssetAuctionOperationsUpgradeable::_decreaseDucthAuctionPrice: price can only be decreased."
+        );
+      });
+    });
+  });
+  describe("_increaseEnglishAuctionPrice", () => {
+    context("when order is correct", () => {
+      it("decreases the price", async () => {
+        const {
+          erc721Token,
+          neatFiProtocolStorageV1,
+          makerNonAdmin,
+          neatSwap,
+          actorKey,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.ENGLISH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(makerNonAdmin)
+          .increaseEnglishAuctionPrice(orderHash, "5000000000000000");
+
+        const order = await neatFiProtocolStorageV1.getOrder(orderHash);
+
+        expect(order.endPrice).to.eq("5000000000000000");
+      });
+    });
+    context("when order type is wrong", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.DUTCH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .increaseEnglishAuctionPrice(orderHash, "5000000000000000")
+        ).to.be.revertedWith(
+          "AssetAuctionOperationsUpgradeable::_increaseEnglishAuctionPrice: wrong order type."
+        );
+      });
+    });
+    context("when price value is wrong", () => {
+      it("returns an error", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.ENGLISH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await expect(
+          neatSwap
+            .connect(makerNonAdmin)
+            .increaseEnglishAuctionPrice(orderHash, "1000000000000000")
+        ).to.be.revertedWith(
+          "AssetAuctionOperationsUpgradeable::_increaseEnglishAuctionPrice: price can only be increased."
+        );
+      });
+    });
+  });
+
+  describe("bidForEnglishAuction", () => {
+    context("when the order is correct", () => {
+      it("records a bid in native tokens", async () => {
+        const {
+          erc721Token,
+          deployer,
+          assetAuctionV1,
+          makerNonAdmin,
+          neatSwap,
+          bidder,
+          bidderAddress,
+          actorKey,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.ENGLISH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(bidder)
+          .bidForEnglishAuction(orderHash, "5000000000000000");
+
+        expect(
+          await assetAuctionV1.connect(deployer).lastBidderForOrder(orderHash)
+        ).to.eq(bidderAddress);
+      });
+    });
+  });
+
+  describe("bidForDutchAuction", () => {
+    context("when the order is correct", () => {
+      it("records a bid in native tokens", async () => {
+        const {
+          erc721Token,
+          deployer,
+          assetAuctionV1,
+          makerNonAdmin,
+          neatSwap,
+          bidder,
+          bidderAddress,
+          actorKey,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.DUTCH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(bidder)
+          .bidForDutchAuction(orderHash, "2000000000000000");
+
+        expect(
+          await assetAuctionV1.connect(deployer).lastBidderForOrder(orderHash)
+        ).to.eq(bidderAddress);
+      });
+    });
+  });
+
+  describe("approveLastBid", () => {
+    context("when the order is correct", () => {
+      it("approves the last bid for the order", async () => {
+        const { erc721Token, makerNonAdmin, neatSwap, bidder, actorKey } =
+          await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.ENGLISH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(bidder)
+          .bidForEnglishAuction(orderHash, "5000000000000000");
+
+        await expect(neatSwap.connect(makerNonAdmin).approveLastBid(orderHash))
+          .to.not.be.reverted;
+      });
+    });
+  });
+
+  describe("claimEnglishAuction", () => {
+    context("when order is valid and has a bid", () => {
+      it("transfers the token assets and changes the order status", async () => {
+        const {
+          erc721Token,
+          deployer,
+          data,
+          makerNonAdmin,
+          erc721Mock,
+          neatFiProtocolStorageV1,
+          neatSwap,
+          bidder,
+          bidderAddress,
+          actorKey,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.ENGLISH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(bidder)
+          .bidForEnglishAuction(orderHash, "5000000000000000");
+
+        await neatSwap.connect(makerNonAdmin).approveLastBid(orderHash);
+
+        await neatSwap
+          .connect(bidder)
+          .claimEnglishAuction(orderHash, data, { value: "5000000000000000" });
+
+        const order = await neatFiProtocolStorageV1
+          .connect(deployer)
+          .getOrder(orderHash);
+
+        expect(await erc721Mock.ownerOf(erc721Token.tokenId)).to.eq(
+          bidderAddress
+        );
+
+        expect(order.status).to.eq(AssetOrderStatus.CLOSED);
+      });
+    });
+  });
+
+  describe("claimDutchAuction", () => {
+    context("when order is valid and has a bid", () => {
+      it("transfers the token assets and changes the order status", async () => {
+        const {
+          erc721Token,
+          deployer,
+          data,
+          makerNonAdmin,
+          erc721Mock,
+          neatFiProtocolStorageV1,
+          neatSwap,
+          bidder,
+          bidderAddress,
+          actorKey,
+        } = await loadFixture(deployNeatSwapImplementationV1);
+
+        const makeOrderTx = await neatSwap
+          .connect(makerNonAdmin)
+          .makeOrder(
+            [erc721Token],
+            AssetOrderType.DUTCH_AUCTION,
+            (await time.latest()) + (10 * ONE_DAY_IN_MILLI_SECS) / 1000,
+            "3000000000000000",
+            actorKey
+          );
+
+        const makeOrderTxReceipt = await makeOrderTx.wait();
+
+        const { orderHash } = makeOrderTxReceipt.events[1].args;
+
+        await neatSwap
+          .connect(bidder)
+          .bidForDutchAuction(orderHash, "2000000000000000");
+
+        await neatSwap.connect(makerNonAdmin).approveLastBid(orderHash);
+
+        await neatSwap
+          .connect(bidder)
+          .claimDutchAuction(orderHash, data, { value: "2000000000000000" });
+
+        const order = await neatFiProtocolStorageV1
+          .connect(deployer)
+          .getOrder(orderHash);
+
+        expect(await erc721Mock.ownerOf(erc721Token.tokenId)).to.eq(
+          bidderAddress
+        );
+
+        expect(order.status).to.eq(AssetOrderStatus.CLOSED);
       });
     });
   });

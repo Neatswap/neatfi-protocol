@@ -151,14 +151,17 @@ contract NeatSwapImplementationV1 is
         bytes32 orderHash,
         bytes32 actorKey
     ) public nonReentrant returns (bytes32 bidHash) {
-        return
-            INeatFi(neatFiProtocolAddress).makeBid(
-                tokens,
-                _msgSender(),
-                block.timestamp,
-                orderHash,
-                actorKey
-            );
+        bidHash = INeatFi(neatFiProtocolAddress).makeBid(
+            tokens,
+            _msgSender(),
+            block.timestamp,
+            orderHash,
+            actorKey
+        );
+
+        emit MakeOrder(bidHash);
+
+        return bidHash;
     }
 
     /**

@@ -3,6 +3,7 @@ pragma solidity ^0.8.15;
 
 import {NeatFiProtocolOperationsUpgradeable} from "./lib/protocolOperations/NeatFiProtocolOperationsUpgradeable.sol";
 import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "./lib/utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title NeatFiV1
@@ -14,7 +15,11 @@ import {UUPSUpgradeable} from "./lib/proxy/UUPSUpgradeable.sol";
  *         to interact with the NeatFi contract through its INeatFi interface.
  */
 
-contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
+contract NeatFiV1 is
+    NeatFiProtocolOperationsUpgradeable,
+    UUPSUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     string internal name;
     string internal currentVersion;
 
@@ -152,7 +157,11 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      *                           a Swap Order creation.
      */
 
-    function getSwapProtocolFee() external returns (uint256 sellProtocolFee) {
+    function getSwapProtocolFee()
+        external
+        view
+        returns (uint256 sellProtocolFee)
+    {
         return _getSwapProtocolFee();
     }
 
@@ -167,7 +176,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      *      order to interact with the NeatFi contract.
      * @param actorAddress - The address of the Actor contract.
      */
-    function requestActorKey(address actorAddress) external {
+    function requestActorKey(address actorAddress) external nonReentrant {
         _requestActorKey(actorAddress);
     }
 
@@ -181,7 +190,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
     function changeFeeDistributionAddress(
         address actorAddress,
         address payable newFeeDistributionAddress
-    ) external {
+    ) external nonReentrant {
         _changeFeeDistributionAddress(actorAddress, newFeeDistributionAddress);
     }
 
@@ -230,7 +239,13 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         uint256 expirationTime,
         uint256 startPrice,
         bytes32 actorKey
-    ) external payable onlyActor(msg.sender) returns (bytes32 orderHash) {
+    )
+        external
+        payable
+        nonReentrant
+        onlyActor(msg.sender)
+        returns (bytes32 orderHash)
+    {
         return
             _makeOrder(
                 msg.sender,
@@ -261,7 +276,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         uint256 listingTime,
         bytes32 orderHash,
         bytes32 actorKey
-    ) external onlyActor(msg.sender) returns (bytes32 bidHash) {
+    ) external nonReentrant onlyActor(msg.sender) returns (bytes32 bidHash) {
         return _makeBid(bidder, tokens, listingTime, orderHash, actorKey);
     }
 
@@ -294,7 +309,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) external onlyActor(msg.sender) {
+    ) external nonReentrant onlyActor(msg.sender) {
         _approveAndResolveSwap(
             msg.sender,
             maker,
@@ -317,7 +332,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address buyer,
         bytes32 orderHash,
         bytes calldata data
-    ) external payable onlyActor(msg.sender) {
+    ) external payable nonReentrant onlyActor(msg.sender) {
         _buyItNow(msg.sender, orderHash, msg.value, buyer, data);
     }
 
@@ -332,7 +347,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) external onlyActor(msg.sender) {
+    ) external nonReentrant onlyActor(msg.sender) {
         _decreaseDucthAuctionPrice(msg.sender, maker, orderHash, newPrice);
     }
 
@@ -347,7 +362,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) external onlyActor(msg.sender) {
+    ) external nonReentrant onlyActor(msg.sender) {
         _increaseEnglishAuctionPrice(msg.sender, maker, orderHash, newPrice);
     }
 
@@ -363,7 +378,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) external onlyActor(msg.sender) {
+    ) external nonReentrant onlyActor(msg.sender) {
         _bidForEnglishAuction(msg.sender, bidder, orderHash, bidValue);
     }
 
@@ -379,7 +394,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) external onlyActor(msg.sender) {
+    ) external nonReentrant onlyActor(msg.sender) {
         _bidForDutchAuction(msg.sender, bidder, orderHash, bidValue);
     }
 
@@ -391,6 +406,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
      */
     function approveLastBid(address maker, bytes32 orderHash)
         external
+        nonReentrant
         onlyActor(msg.sender)
     {
         _approveLastBid(msg.sender, maker, orderHash);
@@ -407,7 +423,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         bytes calldata data
-    ) external payable onlyActor(msg.sender) {
+    ) external payable nonReentrant onlyActor(msg.sender) {
         _claimEnglishAuction(msg.sender, bidder, orderHash, msg.value, data);
     }
 
@@ -422,7 +438,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
         address bidder,
         bytes32 orderHash,
         bytes calldata data
-    ) external payable onlyActor(msg.sender) {
+    ) external payable nonReentrant onlyActor(msg.sender) {
         _claimDutchAuction(msg.sender, bidder, orderHash, msg.value, data);
     }
 
@@ -455,6 +471,7 @@ contract NeatFiV1 is NeatFiProtocolOperationsUpgradeable, UUPSUpgradeable {
             actorFactoryAddress,
             protocolTreasuryAddress
         );
+        __ReentrancyGuard_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
 

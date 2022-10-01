@@ -12,7 +12,6 @@ import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {AssetEnumsUpgradeable} from "../protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
 import {AssetStructsUpgradeable} from "../protocolStorage/assetStorage/AssetStructsUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title NeatFiProtocolOperationsUpgradeable
@@ -23,8 +22,7 @@ contract NeatFiProtocolOperationsUpgradeable is
     RoleConstantsUpgradeable,
     AccessControlUpgradeable,
     AssetEnumsUpgradeable,
-    AssetStructsUpgradeable,
-    ReentrancyGuardUpgradeable
+    AssetStructsUpgradeable
 {
     address public swapModule;
     address public sellModule;
@@ -149,7 +147,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      *      Actor Factory contract.
      * @param actorAddress - The address of the Actor contract.
      */
-    function _requestActorKey(address actorAddress) internal nonReentrant {
+    function _requestActorKey(address actorAddress) internal {
         IActorFactory(actorFactory).requestActorKey(actorAddress);
     }
 
@@ -162,7 +160,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _isValidActorKey(address actorAddress, bytes32 orderHash)
         internal
-        nonReentrant
+        view
         returns (bool)
     {
         bytes32 actorKey = IActorFactory(actorFactory).getActorKey(
@@ -186,7 +184,7 @@ contract NeatFiProtocolOperationsUpgradeable is
     function _changeFeeDistributionAddress(
         address actorAddress,
         address payable newFeeDistributionAddress
-    ) internal nonReentrant {
+    ) internal {
         IActorFactory(actorFactory).changeFeeDistributionAddress(
             actorAddress,
             newFeeDistributionAddress
@@ -220,7 +218,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getEnglishAuctionProtocolFeeNumerator()
         internal
-        nonReentrant
+        view
         returns (uint256 englishAuctionProtocolFee)
     {
         return
@@ -236,7 +234,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getDutchAuctionProtocolFeeNumerator()
         internal
-        nonReentrant
+        view
         returns (uint256 dutchAuctionProtocolFee)
     {
         return
@@ -252,7 +250,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getSellProtocolFeeNumerator()
         internal
-        nonReentrant
+        view
         returns (uint256 sellProtocolFee)
     {
         return
@@ -267,7 +265,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getSwapProtocolFee()
         internal
-        nonReentrant
+        view
         returns (uint256 sellProtocolFee)
     {
         return IProtocolSettings(protocolSettings).getSwapProtocolFee();
@@ -313,7 +311,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 expirationTime,
         uint256 startPrice,
         bytes32 actorKey
-    ) internal nonReentrant returns (bytes32 orderHash) {
+    ) internal returns (bytes32 orderHash) {
         if (orderType == AssetOrderType.SWAP) {
             require(
                 value == _getSwapProtocolFee(),
@@ -333,6 +331,8 @@ contract NeatFiProtocolOperationsUpgradeable is
                 actorFactory
             ).getFeeDistributionAddress(actorAddress);
 
+            uint256 netProtocolFee = value - actorEarnings;
+
             _transferHelper(
                 actorFeeDistributionAddress,
                 actorEarnings,
@@ -340,8 +340,6 @@ contract NeatFiProtocolOperationsUpgradeable is
             );
 
             // Protocol fee distribution
-
-            uint256 netProtocolFee = value - actorEarnings;
 
             _transferHelper(
                 protocolTreasury,
@@ -383,7 +381,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         uint256 listingTime,
         bytes32 orderHash,
         bytes32 actorKey
-    ) internal nonReentrant returns (bytes32 bidHash) {
+    ) internal returns (bytes32 bidHash) {
         return
             IAssetSwap(swapModule).makeBid(
                 bidder,
@@ -404,7 +402,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address actorAddress,
         address maker,
         bytes32 orderHash
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         require(
@@ -440,7 +438,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
         require(_isValidActorKey(actorAddress, bidHash));
 
@@ -541,7 +539,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).decreaseDucthAuctionPrice(
@@ -564,7 +562,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).increaseEnglishAuctionPrice(
@@ -587,7 +585,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).bidForEnglishAuction(
@@ -610,7 +608,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).bidForDutchAuction(
@@ -631,7 +629,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         address actorAddress,
         address maker,
         bytes32 orderHash
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         IAssetAuction(auctionModule).approveLastBid(maker, orderHash);
@@ -652,7 +650,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bytes32 orderHash,
         uint256 purchaseValue,
         bytes calldata data
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         // Maker earnings distribution
@@ -662,12 +660,6 @@ contract NeatFiProtocolOperationsUpgradeable is
 
         uint256 makerEarnings = IPaymentsResolver(paymentsResolver)
             .englishAuctionFeeResolver(purchaseValue);
-
-        bool makerEarningsSent = maker.send(makerEarnings);
-        require(
-            makerEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send maker earnings."
-        );
 
         // Actor earnings distribution
 
@@ -684,22 +676,25 @@ contract NeatFiProtocolOperationsUpgradeable is
             actorFactory
         ).getFeeDistributionAddress(actorAddress);
 
-        bool actorEarningsSent = actorFeeDistributionAddress.send(
-            actorEarnings
-        );
-
-        require(
-            actorEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to actor earnings."
-        );
-
         // Protocol fee distribution
 
         uint256 netProtocolFee = grossProtocolFee - actorEarnings;
 
-        bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
-        require(
-            protocolFeeSent,
+        _transferHelper(
+            maker,
+            makerEarnings,
+            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send maker earnings."
+        );
+
+        _transferHelper(
+            actorFeeDistributionAddress,
+            actorEarnings,
+            "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to actor earnings."
+        );
+
+        _transferHelper(
+            protocolTreasury,
+            netProtocolFee,
             "NeatFiProtocolOperationsUpgradeable::_claimEnglishAuction: failed to send protocol fee."
         );
 
@@ -721,7 +716,7 @@ contract NeatFiProtocolOperationsUpgradeable is
         bytes32 orderHash,
         uint256 purchaseValue,
         bytes calldata data
-    ) internal nonReentrant {
+    ) internal {
         require(_isValidActorKey(actorAddress, orderHash));
 
         // Maker earnings distribution
@@ -731,12 +726,6 @@ contract NeatFiProtocolOperationsUpgradeable is
 
         uint256 makerEarnings = IPaymentsResolver(paymentsResolver)
             .dutchAuctionFeeResolver(purchaseValue);
-
-        bool makerEarningsSent = maker.send(makerEarnings);
-        require(
-            makerEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send maker earnings."
-        );
 
         // Actor earnings distribution
 
@@ -753,22 +742,25 @@ contract NeatFiProtocolOperationsUpgradeable is
             actorFactory
         ).getFeeDistributionAddress(actorAddress);
 
-        bool actorEarningsSent = actorFeeDistributionAddress.send(
-            actorEarnings
-        );
-
-        require(
-            actorEarningsSent,
-            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to actor earnings."
-        );
-
         // Protocol fee distribution
 
         uint256 netProtocolFee = grossProtocolFee - actorEarnings;
 
-        bool protocolFeeSent = protocolTreasury.send(netProtocolFee);
-        require(
-            protocolFeeSent,
+        _transferHelper(
+            maker,
+            makerEarnings,
+            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send maker earnings."
+        );
+
+        _transferHelper(
+            actorFeeDistributionAddress,
+            actorEarnings,
+            "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to actor earnings."
+        );
+
+        _transferHelper(
+            protocolTreasury,
+            netProtocolFee,
             "NeatFiProtocolOperationsUpgradeable::_claimDutchAuction: failed to send protocol fee."
         );
 
@@ -784,7 +776,7 @@ contract NeatFiProtocolOperationsUpgradeable is
      */
     function _getLastBidderAddress(address actorAddress, bytes32 orderHash)
         internal
-        nonReentrant
+        view
         returns (address lastBidder)
     {
         require(_isValidActorKey(actorAddress, orderHash));
@@ -808,7 +800,6 @@ contract NeatFiProtocolOperationsUpgradeable is
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
-        __ReentrancyGuard_init();
 
         _setSwapModule(newSwapModule);
         _setSellModule(newSellModule);
@@ -820,58 +811,3 @@ contract NeatFiProtocolOperationsUpgradeable is
         _setProtocolTreasury(newProtocolTreasury);
     }
 }
-
-/*
-function _transferHelper(
-        address payable[] memory receivers,
-        uint256[] memory amounts,
-        string[] memory errorMessages
-    ) internal {
-        for (uint256 i = 0; i < receivers.length; i++) {
-            require(
-                address(this).balance >= amounts[i],
-                "NeatFiProtocolOperationsUpgradeable::_transferHelper: not enought Ether on the contract balance."
-            );
-
-            (bool sent, bytes memory data) = receivers[i].call{
-                value: amounts[i]
-            }("");
-            require(sent, errorMessages[i]);
-        }
-    }
-
-
-    address[] memory addresses = new address[](3);
-        uint256[] memory amounts = new uint256[](3);
-        string[] memory errors = new string[](3);
-
-        addresses[0] = maker;
-        addresses[1] = actorFeeDistributionAddress;
-        addresses[2] = protocolTreasury;
-
-        amounts[0] = makerEarnings;
-        amounts[1] = actorEarnings;
-        amounts[2] = netProtocolFee;
-
-        errors[
-            0
-        ] = "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send maker earnings.";
-        errors[
-            1
-        ] = "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send actor earnings.";
-        errors[
-            2
-        ] = "NeatFiProtocolOperationsUpgradeable::_buyItNow: failed to send protocol fee.";
-
-        for (uint256 i = 0; i < addresses.length; i++) {
-            require(
-                address(this).balance >= amounts[i],
-                "NeatFiProtocolOperationsUpgradeable::_transferHelper: not enought Ether on the contract balance."
-            );
-
-            (bool sent, bytes memory data) = addresses[i].call{
-                value: amounts[i]
-            }("");
-            require(sent, errors[i]);
-        }
-*/

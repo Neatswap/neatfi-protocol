@@ -322,13 +322,13 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
 
     dutchAuctionFeeResolver(
       value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { makerEarnings: BigNumber }>;
 
     englishAuctionFeeResolver(
       value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { makerEarnings: BigNumber }>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -375,8 +375,8 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     ): Promise<[boolean]>;
 
     swapFeeResolver(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { feeToBePaid: BigNumber }>;
 
     updateProtocolSettingsAddress(
       newProtocolAddress: PromiseOrValue<string>,
@@ -405,13 +405,13 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
 
   dutchAuctionFeeResolver(
     value: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   englishAuctionFeeResolver(
     value: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
@@ -457,9 +457,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  swapFeeResolver(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  swapFeeResolver(overrides?: CallOverrides): Promise<BigNumber>;
 
   updateProtocolSettingsAddress(
     newProtocolAddress: PromiseOrValue<string>,
@@ -628,12 +626,12 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
 
     dutchAuctionFeeResolver(
       value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     englishAuctionFeeResolver(
       value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getRoleAdmin(
@@ -680,9 +678,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    swapFeeResolver(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
+    swapFeeResolver(overrides?: CallOverrides): Promise<BigNumber>;
 
     updateProtocolSettingsAddress(
       newProtocolAddress: PromiseOrValue<string>,
@@ -718,12 +714,12 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
 
     dutchAuctionFeeResolver(
       value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     englishAuctionFeeResolver(
       value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getRoleAdmin(
@@ -770,9 +766,7 @@ export interface PaymentsResolverOperationsV1 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    swapFeeResolver(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    swapFeeResolver(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     updateProtocolSettingsAddress(
       newProtocolAddress: PromiseOrValue<string>,

@@ -6,7 +6,6 @@ import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
 import {INeatToken} from "../../interfaces/neatTokenInterfaces/INeatToken.sol";
 import {IVestingEscrow} from "../../interfaces/vestingEscrowInterfaces/IVestingEscrow.sol";
 import {IProtocolSettings} from "../../interfaces/protocolSettingsInterfaces/IProtocolSettings.sol";
-import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.sol";
 import {ProtocolTreasuryStorageUpgradeable} from "./ProtocolTreasuryStorageUpgradeable.sol";
 
 /**
@@ -19,8 +18,7 @@ import {ProtocolTreasuryStorageUpgradeable} from "./ProtocolTreasuryStorageUpgra
 contract ProtocolTreasuryOperationsUpgradeable is
     AccessControlUpgradeable,
     RoleConstantsUpgradeable,
-    ProtocolTreasuryStorageUpgradeable,
-    ReentrancyGuardUpgradeable
+    ProtocolTreasuryStorageUpgradeable
 {
     /**
      * @dev An internal function to update the address of the
@@ -142,7 +140,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
         address tokenHolder,
         uint256 tokenAmount,
         uint256 lockPeriod
-    ) internal nonReentrant returns (bytes32 lockerHash) {
+    ) internal returns (bytes32 lockerHash) {
         require(
             tokenAmount == 100e18 ||
                 tokenAmount == 1_000e18 ||
@@ -206,7 +204,6 @@ contract ProtocolTreasuryOperationsUpgradeable is
      */
     function _unlockNeatTokens(address tokenHolder, bytes32 lockerHash)
         internal
-        nonReentrant
     {
         Locker storage locker = lockerInfo[lockerHash];
 
@@ -344,7 +341,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
      *      claimant.
      * @param tokenHolder - Address of the claimant.
      */
-    function _claimYield(address payable tokenHolder) internal nonReentrant {
+    function _claimYield(address payable tokenHolder) internal {
         // Sanity check on first run, before pool generation.
         require(
             lastPoolGenerationTimestamp != 0,
@@ -436,7 +433,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
      *         Locker creators are able to claim their share of the
      *         yield in Ethers.
      */
-    function _generateDistributionPool() internal nonReentrant {
+    function _generateDistributionPool() internal {
         uint256 protocolFeeDistributionNumerator = IProtocolSettings(
             protocolSettingsAddress
         ).getProtocolFeeDistributionNumerator();
@@ -469,7 +466,7 @@ contract ProtocolTreasuryOperationsUpgradeable is
         uint256 cliffDays,
         uint256 initiallyAvailableTokens,
         uint256 periodMonths
-    ) internal nonReentrant {
+    ) internal {
         require(
             _getNeatTokenBalance() >= tokenAmount,
             "ProtocolTreasuryOperationsUpgradeable::_vestNeatTokens: not enought Neat tokens in treasury."
@@ -534,7 +531,6 @@ contract ProtocolTreasuryOperationsUpgradeable is
 
         __RoleConstants_init();
         __AccessControl_init();
-        __ReentrancyGuard_init();
         __ProtocolTreasuryStorage_init();
     }
 }

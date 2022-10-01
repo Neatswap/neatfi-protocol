@@ -9,7 +9,6 @@ import {AssetAuctionStorageUpgradeable} from "./AssetAuctionStorageUpgradeable.s
 import {AssetAuctionEventsUpgradeable} from "./AssetAuctionEventsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title AssetAuctionOperationsUpgradeable
@@ -23,8 +22,7 @@ contract AssetAuctionOperationsUpgradeable is
     AssetAuctionStorageUpgradeable,
     AssetAuctionEventsUpgradeable,
     RoleConstantsUpgradeable,
-    AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
+    AccessControlUpgradeable
 {
     address internal neatFiProtocolStorage;
     address internal assetTransfer;
@@ -58,7 +56,7 @@ contract AssetAuctionOperationsUpgradeable is
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) internal nonReentrant {
+    ) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(
                 orderHash,
@@ -104,7 +102,7 @@ contract AssetAuctionOperationsUpgradeable is
         address maker,
         bytes32 orderHash,
         uint256 newPrice
-    ) internal nonReentrant {
+    ) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(
                 orderHash,
@@ -150,7 +148,7 @@ contract AssetAuctionOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) internal nonReentrant {
+    ) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -200,7 +198,7 @@ contract AssetAuctionOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         uint256 bidValue
-    ) internal nonReentrant {
+    ) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -217,7 +215,7 @@ contract AssetAuctionOperationsUpgradeable is
         );
 
         require(
-            bidValue == order.endPrice,
+            bidValue < order.endPrice,
             "AssetAuctionOperations::_bidForDutchAuction: invalid bid value."
         );
 
@@ -245,10 +243,7 @@ contract AssetAuctionOperationsUpgradeable is
      * @param orderHash - The hash of the Order.
      * @param maker - The address of the Order maker.
      */
-    function _approveLastBid(address maker, bytes32 orderHash)
-        internal
-        nonReentrant
-    {
+    function _approveLastBid(address maker, bytes32 orderHash) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -293,7 +288,7 @@ contract AssetAuctionOperationsUpgradeable is
         address bidder,
         bytes32 orderHash,
         bytes calldata data
-    ) internal nonReentrant {
+    ) internal {
         Order memory order = INeatFiProtocolStorage(neatFiProtocolStorage)
             .getOrder(orderHash);
 
@@ -334,7 +329,6 @@ contract AssetAuctionOperationsUpgradeable is
         __AssetAuctionEvents_init();
         __RoleConstants_init();
         __AccessControl_init();
-        __ReentrancyGuard_init();
 
         _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);
         _updateAssetTransferAddress(newAssetTransfer);

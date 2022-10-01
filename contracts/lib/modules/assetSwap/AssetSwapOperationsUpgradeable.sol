@@ -9,7 +9,6 @@ import {AccessControlUpgradeable} from "../../access/AccessControlUpgradeable.so
 import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.sol";
 import {AssetSwapStorageUpgradeable} from "./AssetSwapStorageUpgradeable.sol";
 import {AssetSwapEventsUpgradeable} from "./AssetSwapEventsUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title AssetSwapOperationsUpgradeable
@@ -23,8 +22,7 @@ contract AssetSwapOperationsUpgradeable is
     RoleConstantsUpgradeable,
     AccessControlUpgradeable,
     AssetSwapEventsUpgradeable,
-    AssetSwapStorageUpgradeable,
-    ReentrancyGuardUpgradeable
+    AssetSwapStorageUpgradeable
 {
     address internal neatFiProtocolStorage;
     address internal assetTransfer;
@@ -62,7 +60,7 @@ contract AssetSwapOperationsUpgradeable is
         uint256 listingTime,
         bytes32 orderHash,
         bytes32 actorKey
-    ) internal nonReentrant returns (bytes32 bidHash) {
+    ) internal returns (bytes32 bidHash) {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -88,7 +86,7 @@ contract AssetSwapOperationsUpgradeable is
             AssetOrderType.BID,
             bidder,
             listingTime,
-            0,
+            order.expirationTime,
             0,
             0,
             actorKey
@@ -115,7 +113,7 @@ contract AssetSwapOperationsUpgradeable is
         bytes32 bidHash,
         bytes calldata orderData,
         bytes calldata bidData
-    ) internal nonReentrant {
+    ) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -177,7 +175,6 @@ contract AssetSwapOperationsUpgradeable is
         __AssetSwapEvents_init();
         __RoleConstants_init();
         __AccessControl_init();
-        __ReentrancyGuard_init();
 
         _updateAssetTransferAddress(newAssetTransfer);
         _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);

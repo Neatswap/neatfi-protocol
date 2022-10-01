@@ -7,7 +7,6 @@ import {AssetStructsUpgradeable} from "../../protocolStorage/assetStorage/AssetS
 import {AssetEnumsUpgradeable} from "../../protocolStorage/assetStorage/AssetEnumsUpgradeable.sol";
 import {AccessControlUpgradeable} from "../../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../../access/RoleConstantsUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title AssetSellOperationsUpgradeable
@@ -19,8 +18,7 @@ contract AssetSellOperationsUpgradeable is
     AssetEnumsUpgradeable,
     AssetStructsUpgradeable,
     RoleConstantsUpgradeable,
-    AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
+    AccessControlUpgradeable
 {
     address internal neatFiProtocolStorage;
     address internal assetTransfer;
@@ -56,15 +54,7 @@ contract AssetSellOperationsUpgradeable is
         uint256 purchaseValue,
         address buyer,
         bytes calldata data
-    ) internal nonReentrant {
-        require(
-            !INeatFiProtocolStorage(neatFiProtocolStorage).isValidOwner(
-                orderHash,
-                msg.sender
-            ),
-            "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker."
-        );
-
+    ) internal {
         require(
             INeatFiProtocolStorage(neatFiProtocolStorage).isValidOrder(
                 orderHash
@@ -74,6 +64,11 @@ contract AssetSellOperationsUpgradeable is
 
         Order memory order = INeatFiProtocolStorage(neatFiProtocolStorage)
             .getOrder(orderHash);
+
+        require(
+            order.maker != buyer,
+            "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker"
+        );
 
         require(
             order.orderType == AssetOrderType.SELL,
@@ -108,7 +103,6 @@ contract AssetSellOperationsUpgradeable is
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
-        __ReentrancyGuard_init();
 
         _updateAssetTransferAddress(newAssetTransfer);
         _updateNeatFiProtocolStorageAddress(newNeatFiProtocolStorage);

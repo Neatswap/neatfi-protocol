@@ -85,7 +85,7 @@ describe("AssetSellV1", () => {
     context("when the buyer is not an authorized operator", () => {
       it("returns an error", async () => {
         const {
-          buyer,
+          nonAdminAddress,
           data,
           protocolAdmin,
           protocolAdminAddress,
@@ -97,12 +97,12 @@ describe("AssetSellV1", () => {
 
         const authorizedOperatorRole = await assetSellV1.AUTHORIZED_OPERATOR();
 
-        await time.increaseTo(listingTime + 5 * ONE_DAY_IN_MILLI_SECS);
+        await time.increaseTo(listingTime + 11 * ONE_DAY_IN_MILLI_SECS);
 
         await expect(
           assetSellV1
             .connect(protocolAdmin)
-            .buyItNow(orderHash, purchaseValue, buyer, data)
+            .buyItNow(orderHash, purchaseValue, nonAdminAddress, data)
         ).to.be.revertedWith(
           `'AccessControl: account ${protocolAdminAddress.toLowerCase()} is missing role ${authorizedOperatorRole}`
         );
@@ -111,19 +111,21 @@ describe("AssetSellV1", () => {
 
     context("when the buyer is the order maker", () => {
       it("returns an error", async () => {
-        const { buyer, data, nonAdmin, assetSellV1, makeOrder } =
+        const { nonAdminAddress, data, nonAdmin, assetSellV1, makeOrder } =
           await loadFixture(deployAssetSellV1Fixture);
 
-        const { orderHash, purchaseValue, listingTime } = await makeOrder();
+        const { orderHash, purchaseValue, listingTime } = await makeOrder(
+          AssetOrderType.SELL
+        );
 
-        await time.increaseTo(listingTime + 5 * ONE_DAY_IN_MILLI_SECS);
+        await time.increaseTo(listingTime);
 
         await expect(
           assetSellV1
             .connect(nonAdmin)
-            .buyItNow(orderHash, purchaseValue, buyer, data)
+            .buyItNow(orderHash, purchaseValue, nonAdminAddress, data)
         ).to.be.revertedWith(
-          "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker."
+          "AssetSellOperationsUpgradeable::_buyItNow: buyer can not be the order maker"
         );
       });
     });
@@ -134,7 +136,9 @@ describe("AssetSellV1", () => {
           deployAssetSellV1Fixture
         );
 
-        const { orderHash, purchaseValue } = await makeOrder();
+        const { orderHash, purchaseValue, listingTime } = await makeOrder();
+
+        await time.increaseTo(listingTime + 11 * ONE_DAY_IN_MILLI_SECS);
 
         await expect(
           assetSellV1.buyItNow(orderHash, purchaseValue, buyer, data)

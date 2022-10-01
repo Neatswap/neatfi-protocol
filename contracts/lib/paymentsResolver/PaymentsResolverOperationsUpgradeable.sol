@@ -5,7 +5,6 @@ import {AssetEnumsUpgradeable} from "../protocolStorage/assetStorage/AssetEnumsU
 import {IProtocolSettings} from "../../interfaces/protocolSettingsInterfaces/IProtocolSettings.sol";
 import {AccessControlUpgradeable} from "../access/AccessControlUpgradeable.sol";
 import {RoleConstantsUpgradeable} from "../access/RoleConstantsUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title PaymentsResolverOperationsUpgradeable
@@ -16,8 +15,7 @@ import {ReentrancyGuardUpgradeable} from "../utils/ReentrancyGuardUpgradeable.so
 contract PaymentsResolverOperationsUpgradeable is
     AssetEnumsUpgradeable,
     RoleConstantsUpgradeable,
-    AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
+    AccessControlUpgradeable
 {
     address protocolSettings;
 
@@ -40,7 +38,7 @@ contract PaymentsResolverOperationsUpgradeable is
      */
     function _englishAuctionFeeResolver(uint256 value)
         internal
-        nonReentrant
+        view
         returns (uint256 makerEarnings)
     {
         return
@@ -59,7 +57,7 @@ contract PaymentsResolverOperationsUpgradeable is
      */
     function _dutchAuctionFeeResolver(uint256 value)
         internal
-        nonReentrant
+        view
         returns (uint256 makerEarnings)
     {
         return
@@ -91,11 +89,7 @@ contract PaymentsResolverOperationsUpgradeable is
      *      for a Swap Order creation.
      * @return feeToBePaid - The protocol fee for Swap Order creation.
      */
-    function _swapFeeResolver()
-        internal
-        nonReentrant
-        returns (uint256 feeToBePaid)
-    {
+    function _swapFeeResolver() internal view returns (uint256 feeToBePaid) {
         return IProtocolSettings(protocolSettings).getSwapProtocolFee();
     }
 
@@ -108,7 +102,6 @@ contract PaymentsResolverOperationsUpgradeable is
         __AssetEnums_init();
         __RoleConstants_init();
         __AccessControl_init();
-        __ReentrancyGuard_init();
 
         _updateProtocolSettingsAddress(_protocolSettings);
     }
